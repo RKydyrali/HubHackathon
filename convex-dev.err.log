@@ -1,0 +1,28 @@
+- Preparing Convex functions...
+
+[32m√[39m 02:33:50 Convex functions ready! (7.46s)
+24.04.2026, 02:33:44 [CONVEX Q(profiles:getMyProfile)] Uncaught ConvexError: Unauthorized
+    at async handler (../convex/profiles.ts:16:15)
+
+24.04.2026, 02:34:43 [CONVEX Q(profiles:getMyProfile)] Uncaught ConvexError: Unauthorized
+    at async handler (../convex/profiles.ts:16:15)
+
+24.04.2026, 02:34:43 [CONVEX Q(profiles:getMyProfile)] Uncaught ConvexError: Unauthorized
+    at async handler (../convex/profiles.ts:16:15)
+
+24.04.2026, 02:35:09 [CONVEX Q(profiles:getMyProfile)] Uncaught ConvexError: Unauthorized
+    at async handler (../convex/profiles.ts:16:15)
+
+24.04.2026, 02:35:09 [CONVEX Q(profiles:getMyProfile)] Uncaught ConvexError: Unauthorized
+    at async handler (../convex/profiles.ts:16:15)
+
+24.04.2026, 02:36:04 [CONVEX Q(profiles:getMyProfile)] Uncaught ConvexError: Unauthorized
+    at async handler (../convex/profiles.ts:16:15)
+
+24.04.2026, 02:36:04 [CONVEX Q(profiles:getMyProfile)] Uncaught ConvexError: Unauthorized
+    at async handler (../convex/profiles.ts:16:15)
+
+24.04.2026, 02:38:17 [CONVEX Q(profiles:getMyProfile)] Uncaught ConvexError: Unauthorized
+    at async handler (../convex/profiles.ts:16:15)
+
+^C^C

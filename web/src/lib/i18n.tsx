@@ -1,0 +1,433 @@
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+
+export const supportedLocales = ["ru", "kk"] as const;
+export type Locale = (typeof supportedLocales)[number];
+
+export const LOCALE_STORAGE_KEY = "jumysai.locale";
+
+const copy = {
+  ru: {
+    localeName: "Рус",
+    switchLocale: "Қаз",
+    brand: "JumysAI",
+    city: "Актау",
+    nav: {
+      dashboard: "Главная",
+      vacancies: "Вакансии",
+      applications: "Отклики",
+      profile: "Профиль",
+      notifications: "Уведомления",
+      interviews: "Интервью",
+      users: "Пользователи",
+      admin: "Админ",
+      aiSearch: "AI-подбор",
+      signIn: "Войти",
+      signOut: "Выйти",
+    },
+    publicHome: {
+      heroKicker: "Локальная работа для Актау и Мангистау",
+      heroTitle: "Работа рядом в Актау",
+      heroBody:
+        "Опишите опыт, район и удобный график. JumysAI покажет вакансии рядом, объяснит совпадения и оставит обычный поиск доступным, даже если AI временно недоступен.",
+      seekerCta: "Подобрать работу",
+      employerCta: "Разместить вакансию",
+      browseCta: "Смотреть вакансии",
+      liveVacancies: "Живые вакансии",
+      nativeAndHh: "JumysAI и HH.kz в одном спокойном поиске",
+      trustTitle: "Сделано для местного найма",
+      aiTitle: "AI помогает, но не решает за вас",
+      howTitle: "Как это работает",
+      footer: "JumysAI помогает людям и работодателям Актау находить друг друга без лишнего шума.",
+    },
+    auth: {
+      signInTitle: "Вход в JumysAI",
+      signInBody: "Продолжите как соискатель, работодатель или администратор.",
+      setupTitle: "Фронтенд еще не готов",
+      setupBody: "Добавьте реальные значения в web/.env.local и перезапустите Vite.",
+      chooseRoleTitle: "Как вы будете пользоваться JumysAI?",
+      chooseRoleBody: "Роль можно уточнить с администратором позже, но рабочее пространство откроется сразу.",
+      seekerTitle: "Ищу работу",
+      seekerBody: "Найти вакансии рядом, откликнуться внутри сервиса и отслеживать статус.",
+      employerTitle: "Нанимаю людей",
+      employerBody: "Создавать вакансии, смотреть отклики, назначать интервью.",
+      backToVacancies: "Вернуться к вакансиям",
+    },
+    dashboard: {
+      seekerTitle: "Спокойный центр поиска",
+      employerTitle: "Рабочий стол работодателя",
+      nextStep: "Что сделать дальше",
+      profileComplete: "Профиль заполнен",
+      profileMissing: "Профиль стоит дополнить",
+      telegramLinked: "Telegram подключен",
+      telegramMissing: "Telegram не подключен",
+      unread: "Непрочитанные",
+      activeVacancies: "Активные вакансии",
+      newApplications: "Новые отклики",
+      upcomingInterviews: "Ближайшие интервью",
+      continueAi: "Продолжить подбор",
+      startAi: "Начать AI-подбор",
+      quickRequest: "Быстрый запрос",
+      quickPlaceholder: "Например: без опыта, вечер, 12 мкр",
+    },
+    vacancies: {
+      title: "Вакансии",
+      subtitle: "Опубликованные вакансии JumysAI и HH.kz по Актау.",
+      search: "Поиск",
+      district: "Район",
+      source: "Источник",
+      all: "Все",
+      anyDistrict: "Любой район",
+      details: "Подробнее",
+      applyNative: "Откликнуться в JumysAI",
+      applyHh: "Открыть на HH",
+      externalOnly: "Отклик происходит на внешнем сайте HH.kz.",
+      nativeHelper: "Отклик внутри сервиса",
+      salary: "Зарплата",
+      screening: "Вопросы работодателя",
+      discussAi: "Обсудить с AI",
+      notOpen: "Эта вакансия не принимает отклики внутри JumysAI.",
+      notFound: "Вакансия не найдена",
+      noResults: "Нет вакансий по этим фильтрам",
+    },
+    apply: {
+      title: "Отклик",
+      support: "Мы сохраним ответы и покажем работодателю только то, что относится к вакансии.",
+      defaultQuestion: "Почему вам подходит эта работа?",
+      submit: "Отправить отклик",
+      submitting: "Отправляем",
+      success: "Отклик отправлен",
+      duplicate: "Вы уже откликались на эту вакансию.",
+    },
+    profile: {
+      title: "Профиль",
+      subtitle: "Данные используются для откликов и подбора.",
+      progress: "Заполненность профиля",
+      personal: "Личные данные",
+      skills: "Навыки",
+      resume: "Резюме",
+      fullName: "Имя и фамилия",
+      bio: "О себе",
+      resumeText: "Текст резюме",
+      addSkill: "Добавить навык",
+      save: "Сохранить профиль",
+      saving: "Сохраняем",
+      saved: "Профиль сохранен",
+      aiRefresh: "AI-совпадения обновятся в фоне после сохранения.",
+    },
+    ai: {
+      title: "AI-подбор вакансий",
+      subtitle: "Опишите ситуацию своими словами, уточните критерии и сравните подходящие вакансии.",
+      emptyPrompt: "Напишите, какую работу ищете. Можно обычными словами.",
+      inputLabel: "Сообщение AI-помощнику",
+      inputPlaceholder: "Я студент, живу в 12 мкр, могу работать вечером, опыта нет",
+      privacy: "Не указывайте ИИН, документы или лишние личные данные.",
+      send: "Подобрать вакансии",
+      thinking: "JumysAI разбирает запрос",
+      understood: "AI понял запрос так",
+      reset: "Сбросить",
+      runAgain: "Подобрать снова",
+      edit: "Изменить",
+      partial: "Показаны совпадения по известным условиям. Некоторые детали работодатель мог не указать.",
+      unavailableTitle: "AI временно недоступен, но поиск работает",
+      unavailableBody: "Можно открыть обычные фильтры или повторить AI-запрос позже.",
+      fallback: "Показаны надежные результаты по фильтрам без AI.",
+      compare: "Сравнить",
+      compareNeedsTwo: "Выберите минимум две вакансии для сравнения.",
+      best: "Лучшие совпадения",
+      nearby: "Рядом с районом",
+      fastStart: "Можно начать быстро",
+      hh: "Внешние вакансии HH.kz",
+    },
+    applications: {
+      title: "Отклики",
+      candidate: "Кандидат",
+      vacancy: "Вакансия",
+      ai: "AI-анализ",
+      noSummary: "AI-анализ еще готовится",
+      reviewTitle: "Разбор отклика",
+      nextActions: "Следующие действия",
+      noActions: "Дальнейших действий нет.",
+      advisory: "AI-подсказка является вспомогательной, решение принимает человек.",
+    },
+    interviews: {
+      title: "Интервью",
+      schedule: "Назначить интервью",
+      scheduledAt: "Дата и время",
+      location: "Место или ссылка",
+      save: "Сохранить интервью",
+    },
+    notifications: {
+      title: "Уведомления",
+      markAllRead: "Отметить прочитанными",
+      noUnread: "Нет непрочитанных уведомлений",
+    },
+    admin: {
+      overview: "Админ-панель",
+      denseSubtitle: "Операционные данные с пагинацией и аккуратными действиями восстановления.",
+      loadMore: "Загрузить еще",
+      recover: "Восстановить статус",
+      confirm: "Подтвердить действие",
+    },
+    common: {
+      loading: "Загружаем",
+      error: "Нужно внимание",
+      retry: "Повторить",
+      save: "Сохранить",
+      cancel: "Отмена",
+      confirm: "Подтвердить",
+      close: "Закрыть",
+      filters: "Фильтры",
+      done: "Готово",
+      empty: "Пока пусто",
+      noPermission: "У вас нет доступа к этому разделу",
+      noProfile: "Профиль еще не заполнен",
+      noApplications: "Откликов пока нет",
+      noNotifications: "Уведомлений пока нет",
+      noInterviews: "Интервью пока нет",
+      salaryByAgreement: "Зарплата по договоренности",
+    },
+  },
+  kk: {
+    localeName: "Қаз",
+    switchLocale: "Рус",
+    brand: "JumysAI",
+    city: "Ақтау",
+    nav: {
+      dashboard: "Басты",
+      vacancies: "Вакансиялар",
+      applications: "Өтініштер",
+      profile: "Профиль",
+      notifications: "Хабарламалар",
+      interviews: "Сұхбаттар",
+      users: "Пайдаланушылар",
+      admin: "Әкімші",
+      aiSearch: "AI таңдау",
+      signIn: "Кіру",
+      signOut: "Шығу",
+    },
+    publicHome: {
+      heroKicker: "Ақтау мен Маңғыстауға арналған жергілікті жұмыс",
+      heroTitle: "Ақтаудағы жақын жұмыс",
+      heroBody:
+        "Тәжірибеңізді, ауданды және ыңғайлы кестені жазыңыз. JumysAI жақын вакансияларды көрсетеді, сәйкестікті түсіндіреді және AI уақытша өшсе де қарапайым іздеуді қалдырады.",
+      seekerCta: "Жұмыс таңдау",
+      employerCta: "Вакансия жариялау",
+      browseCta: "Вакансияларды көру",
+      liveVacancies: "Белсенді вакансиялар",
+      nativeAndHh: "JumysAI және HH.kz бір іздеуде",
+      trustTitle: "Жергілікті найм үшін жасалған",
+      aiTitle: "AI көмектеседі, бірақ шешімді сіз қабылдайсыз",
+      howTitle: "Қалай жұмыс істейді",
+      footer: "JumysAI Ақтаудағы адамдар мен жұмыс берушілерді артық шуылсыз табыстырады.",
+    },
+    auth: {
+      signInTitle: "JumysAI жүйесіне кіру",
+      signInBody: "Ізденуші, жұмыс беруші немесе әкімші ретінде жалғастырыңыз.",
+      setupTitle: "Фронтенд әлі дайын емес",
+      setupBody: "web/.env.local ішіне нақты мәндерді қосып, Vite серверін қайта іске қосыңыз.",
+      chooseRoleTitle: "JumysAI жүйесін қалай қолданасыз?",
+      chooseRoleBody: "Рөлді кейін әкімшімен нақтылауға болады, ал жұмыс кеңістігі бірден ашылады.",
+      seekerTitle: "Жұмыс іздеймін",
+      seekerBody: "Жақын вакансия табу, сервисте өтініш беру және мәртебені бақылау.",
+      employerTitle: "Қызметкер іздеймін",
+      employerBody: "Вакансия құру, өтініштерді қарау, сұхбат белгілеу.",
+      backToVacancies: "Вакансияларға оралу",
+    },
+    dashboard: {
+      seekerTitle: "Жұмыс іздеудің тыныш орталығы",
+      employerTitle: "Жұмыс беруші үстелі",
+      nextStep: "Келесі қадам",
+      profileComplete: "Профиль толтырылған",
+      profileMissing: "Профильді толықтыру керек",
+      telegramLinked: "Telegram қосылған",
+      telegramMissing: "Telegram қосылмаған",
+      unread: "Оқылмаған",
+      activeVacancies: "Белсенді вакансиялар",
+      newApplications: "Жаңа өтініштер",
+      upcomingInterviews: "Жақын сұхбаттар",
+      continueAi: "Таңдауды жалғастыру",
+      startAi: "AI таңдауды бастау",
+      quickRequest: "Жылдам сұрау",
+      quickPlaceholder: "Мысалы: тәжірибесіз, кешкі уақыт, 12 шағын аудан",
+    },
+    vacancies: {
+      title: "Вакансиялар",
+      subtitle: "Ақтау бойынша JumysAI және HH.kz жариялаған вакансиялар.",
+      search: "Іздеу",
+      district: "Аудан",
+      source: "Дереккөз",
+      all: "Барлығы",
+      anyDistrict: "Кез келген аудан",
+      details: "Толығырақ",
+      applyNative: "JumysAI арқылы өтініш беру",
+      applyHh: "HH сайтында ашу",
+      externalOnly: "Өтініш HH.kz сыртқы сайтында беріледі.",
+      nativeHelper: "Өтініш сервис ішінде",
+      salary: "Жалақы",
+      screening: "Жұмыс беруші сұрақтары",
+      discussAi: "AI-мен талқылау",
+      notOpen: "Бұл вакансия JumysAI ішінде өтініш қабылдамайды.",
+      notFound: "Вакансия табылмады",
+      noResults: "Бұл сүзгілер бойынша вакансия жоқ",
+    },
+    apply: {
+      title: "Өтініш",
+      support: "Жауаптарыңызды сақтап, жұмыс берушіге тек вакансияға қатысты мәліметті көрсетеміз.",
+      defaultQuestion: "Бұл жұмыс сізге неге сәйкес келеді?",
+      submit: "Өтініш жіберу",
+      submitting: "Жіберіліп жатыр",
+      success: "Өтініш жіберілді",
+      duplicate: "Бұл вакансияға өтініш беріп қойғансыз.",
+    },
+    profile: {
+      title: "Профиль",
+      subtitle: "Бұл деректер өтініш пен жұмыс таңдауда қолданылады.",
+      progress: "Профиль толықтығы",
+      personal: "Жеке деректер",
+      skills: "Дағдылар",
+      resume: "Резюме",
+      fullName: "Аты-жөні",
+      bio: "Өзіңіз туралы",
+      resumeText: "Резюме мәтіні",
+      addSkill: "Дағды қосу",
+      save: "Профильді сақтау",
+      saving: "Сақталып жатыр",
+      saved: "Профиль сақталды",
+      aiRefresh: "AI сәйкестіктері сақтаудан кейін фонда жаңарады.",
+    },
+    ai: {
+      title: "AI арқылы вакансия таңдау",
+      subtitle: "Жағдайыңызды өз сөзіңізбен жазыңыз, критерийді нақтылап, қолайлы вакансияларды салыстырыңыз.",
+      emptyPrompt: "Қандай жұмыс іздеп жүргеніңізді қарапайым сөзбен жазыңыз.",
+      inputLabel: "AI көмекшіге хабарлама",
+      inputPlaceholder: "Мен студентпін, 12 шағын ауданда тұрамын, кешке жұмыс істей аламын, тәжірибем жоқ",
+      privacy: "ЖСН, құжат немесе артық жеке дерек жазбаңыз.",
+      send: "Вакансия таңдау",
+      thinking: "JumysAI сұрауды талдап жатыр",
+      understood: "AI сұрауды былай түсінді",
+      reset: "Тазарту",
+      runAgain: "Қайта таңдау",
+      edit: "Өзгерту",
+      partial: "Белгілі шарттар бойынша сәйкестіктер көрсетілді. Кей мәліметті жұмыс беруші көрсетпеуі мүмкін.",
+      unavailableTitle: "AI уақытша қолжетімсіз, бірақ іздеу жұмыс істейді",
+      unavailableBody: "Қарапайым сүзгілерді ашуға немесе AI сұрауын кейін қайталауға болады.",
+      fallback: "AI-сыз сенімді сүзгі нәтижелері көрсетілді.",
+      compare: "Салыстыру",
+      compareNeedsTwo: "Салыстыру үшін кемінде екі вакансия таңдаңыз.",
+      best: "Ең жақсы сәйкестіктер",
+      nearby: "Ауданға жақын",
+      fastStart: "Тез бастауға болады",
+      hh: "HH.kz сыртқы вакансиялары",
+    },
+    applications: {
+      title: "Өтініштер",
+      candidate: "Кандидат",
+      vacancy: "Вакансия",
+      ai: "AI талдауы",
+      noSummary: "AI талдауы әлі дайындалып жатыр",
+      reviewTitle: "Өтінішті қарау",
+      nextActions: "Келесі әрекеттер",
+      noActions: "Қосымша әрекет жоқ.",
+      advisory: "AI кеңесі көмекші ғана, шешімді адам қабылдайды.",
+    },
+    interviews: {
+      title: "Сұхбаттар",
+      schedule: "Сұхбат белгілеу",
+      scheduledAt: "Күні мен уақыты",
+      location: "Орын немесе сілтеме",
+      save: "Сұхбатты сақтау",
+    },
+    notifications: {
+      title: "Хабарламалар",
+      markAllRead: "Барлығын оқылды деп белгілеу",
+      noUnread: "Оқылмаған хабарлама жоқ",
+    },
+    admin: {
+      overview: "Әкімші панелі",
+      denseSubtitle: "Пагинациясы және нақты қалпына келтіру әрекеттері бар операциялық деректер.",
+      loadMore: "Тағы жүктеу",
+      recover: "Мәртебені қалпына келтіру",
+      confirm: "Әрекетті растау",
+    },
+    common: {
+      loading: "Жүктеліп жатыр",
+      error: "Назар қажет",
+      retry: "Қайталау",
+      save: "Сақтау",
+      cancel: "Бас тарту",
+      confirm: "Растау",
+      close: "Жабу",
+      filters: "Сүзгілер",
+      done: "Дайын",
+      empty: "Әзірге бос",
+      noPermission: "Бұл бөлімге кіруге рұқсатыңыз жоқ",
+      noProfile: "Профиль әлі толтырылмаған",
+      noApplications: "Әзірге өтініш жоқ",
+      noNotifications: "Әзірге хабарлама жоқ",
+      noInterviews: "Әзірге сұхбат жоқ",
+      salaryByAgreement: "Жалақы келісім бойынша",
+    },
+  },
+} as const;
+
+export type AppCopy = (typeof copy)[Locale];
+
+const I18nContext = createContext<{
+  locale: Locale;
+  setLocale: (locale: Locale) => void;
+  copy: AppCopy;
+} | null>(null);
+
+function normalizeLocale(value: string | null | undefined): Locale {
+  return supportedLocales.includes(value as Locale) ? (value as Locale) : "ru";
+}
+
+export function getCopy(locale: Locale = "ru") {
+  return copy[locale];
+}
+
+export function I18nProvider({ children }: { children: ReactNode }) {
+  const [locale, setLocaleState] = useState<Locale>(() => {
+    if (typeof window === "undefined") return "ru";
+    return normalizeLocale(window.localStorage.getItem(LOCALE_STORAGE_KEY));
+  });
+
+  useEffect(() => {
+    document.documentElement.lang = locale;
+    window.localStorage.setItem(LOCALE_STORAGE_KEY, locale);
+  }, [locale]);
+
+  const value = useMemo(
+    () => ({
+      locale,
+      setLocale: setLocaleState,
+      copy: getCopy(locale),
+    }),
+    [locale],
+  );
+
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+}
+
+export function useI18n() {
+  const context = useContext(I18nContext);
+  if (!context) {
+    return {
+      locale: "ru" as const,
+      setLocale: () => undefined,
+      copy: getCopy("ru"),
+    };
+  }
+  return context;
+}
+
+export const aktauDistricts = [
+  "1 мкр",
+  "3 мкр",
+  "7 мкр",
+  "12 мкр",
+  "Приморский",
+  "Самал",
+  "Шыгыс",
+  "Порт Актау",
+] as const;
