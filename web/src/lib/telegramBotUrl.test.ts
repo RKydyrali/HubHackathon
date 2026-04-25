@@ -12,6 +12,6 @@ describe("getTelegramBotUrl", () => {
   });
 
   test("falls back to the public JumysAI bot URL", () => {
-    expect(getTelegramBotUrl({})).toBe("https://t.me/JumysAIBot");
+    expect(getTelegramBotUrl({})).toBe("https://t.me/JumysAI_bot");
   });
 });

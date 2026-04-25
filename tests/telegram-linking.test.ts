@@ -9,11 +9,11 @@ import {
 
 describe("telegram account linking policy", () => {
   test("builds a Telegram deep link with a one-time start payload", () => {
-    expect(buildTelegramDeepLink("https://t.me/JumysAIBot", "abc123")).toBe(
-      "https://t.me/JumysAIBot?start=abc123",
+    expect(buildTelegramDeepLink("https://t.me/JumysAI_bot", "abc123")).toBe(
+      "https://t.me/JumysAI_bot?start=abc123",
     );
-    expect(buildTelegramDeepLink("https://t.me/JumysAIBot?foo=bar", "abc123")).toBe(
-      "https://t.me/JumysAIBot?foo=bar&start=abc123",
+    expect(buildTelegramDeepLink("https://t.me/JumysAI_bot?foo=bar", "abc123")).toBe(
+      "https://t.me/JumysAI_bot?foo=bar&start=abc123",
     );
   });
 

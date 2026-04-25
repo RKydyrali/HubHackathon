@@ -43,7 +43,7 @@ describe("SettingsPage Telegram connection", () => {
       },
     } as ReturnType<typeof useUser>);
     useActionMock.mockReturnValue(
-      vi.fn().mockResolvedValue({ url: "https://t.me/JumysAIBot?start=abc123" }) as unknown as ReturnType<
+      vi.fn().mockResolvedValue({ url: "https://t.me/JumysAI_bot?start=abc123" }) as unknown as ReturnType<
         typeof useAction
       >,
     );

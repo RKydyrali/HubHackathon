@@ -1,6 +1,6 @@
 type TelegramBotEnv = Record<string, string | undefined>;
 
-const DEFAULT_TELEGRAM_BOT_URL = "https://t.me/JumysAIBot";
+const DEFAULT_TELEGRAM_BOT_URL = "https://t.me/JumysAI_bot";
 
 export function getTelegramBotUrl(env: TelegramBotEnv): string {
   const configured = env.VITE_TELEGRAM_BOT_URL?.trim();
