@@ -188,6 +188,54 @@ export const listPublic = query({
   },
 });
 
+/**
+ * Public list for seekers/anonymous, but lets signed-in employers/admins
+ * also see their own draft vacancies in the same list.
+ */
+export const listPublicOrOwner = query({
+  args: {
+    city: v.optional(v.string()),
+    district: v.optional(v.string()),
+    source: v.optional(vacancySourceValidator),
+    limit: v.optional(v.number()),
+    region: v.optional(v.literal("aktau")),
+  },
+  handler: async (ctx, args) => {
+    const limit = Math.min(args.limit ?? 20, 50);
+    const published = await ctx.db
+      .query("vacancies")
+      .withIndex("by_status", (q) => q.eq("status", "published"))
+      .collect();
+
+    const visiblePublished = filterPublicVacancies(published, { ...args, limit });
+
+    const identity = await ctx.auth.getUserIdentity();
+    if (!identity) return visiblePublished;
+
+    const user = await getUserByIdentity(ctx, identity);
+    if (!user) return visiblePublished;
+
+    try {
+      assertEmployerOrAdmin(user);
+    } catch {
+      return visiblePublished;
+    }
+
+    const mine = await ctx.db
+      .query("vacancies")
+      .withIndex("by_ownerUserId", (q) => q.eq("ownerUserId", user._id))
+      .collect();
+
+    // Include drafts in the public list (but never archived).
+    const myVisibleDrafts = mine.filter((v) => v.status === "draft" || v.status === "published");
+
+    const merged = new Map<string, (typeof visiblePublished)[number]>();
+    for (const v of visiblePublished) merged.set(String(v._id), v);
+    for (const v of myVisibleDrafts) merged.set(String(v._id), v);
+    return [...merged.values()];
+  },
+});
+
 export const listMyVacancies = query({
   args: {},
   handler: async (ctx) => {

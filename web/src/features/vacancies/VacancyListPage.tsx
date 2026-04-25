@@ -66,7 +66,7 @@ export function VacancyListPage() {
   const filters = useVacancyFilters();
   const { copy } = useI18n();
   const { isLoaded, isSignedIn } = useAuth();
-  const vacancies = useQuery(api.vacancies.listPublic, filters.convexArgs);
+  const vacancies = useQuery(api.vacancies.listPublicOrOwner, filters.convexArgs);
   const { matchMap } = useVacancyMatchMap();
   const filterKey = useMemo(
     () =>

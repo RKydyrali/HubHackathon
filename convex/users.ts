@@ -303,7 +303,9 @@ export const redeemTelegramLinkTokenFromBot = internalMutation({
     }
 
     if (targetUser.telegramChatId && targetUser.telegramChatId !== args.telegramChatId) {
-      throw new ConvexError("This JumysAI account is already linked to another Telegram chat");
+      throw new ConvexError(
+        "This JumysAI account is already linked to another Telegram chat. Open JumysAI → Settings → Telegram and disconnect it, then try again.",
+      );
     }
 
     const existingTelegramUser = await ctx.db
@@ -317,7 +319,9 @@ export const redeemTelegramLinkTokenFromBot = internalMutation({
         targetUserId: String(targetUser._id),
       })
     ) {
-      throw new ConvexError("This Telegram chat is already linked to another JumysAI account");
+      throw new ConvexError(
+        "This Telegram chat is already linked to another JumysAI account. Open JumysAI → Settings → Telegram and disconnect it in the other account, then try again.",
+      );
     }
 
     const now = Date.now();
