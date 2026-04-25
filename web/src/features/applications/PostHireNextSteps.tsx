@@ -20,7 +20,7 @@ export function PostHireNextSteps({
   const seeded = useRef(false);
 
   useEffect(() => {
-    if (!workspace?.isHired || seeded.current) {
+    if (!workspace || !workspace.isHired || seeded.current) {
       return;
     }
     if (workspace.channels.some((c) => c.missingRow)) {
@@ -33,7 +33,7 @@ export function PostHireNextSteps({
     return <p className="text-sm text-muted-foreground">{locale === "kk" ? "Жүктелуде…" : "Загрузка…"}</p>;
   }
 
-  if (!workspace.isHired) {
+  if (!workspace || !workspace.isHired) {
     return null;
   }
 

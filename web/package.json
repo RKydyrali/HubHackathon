@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "postinstall": "npm install --prefix .. --no-fund --no-audit",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "test": "vitest run",

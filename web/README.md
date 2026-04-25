@@ -24,4 +24,4 @@ From the repository root, use `npm run dev:web` for just the web app or `npm run
 
 ## Vercel
 
-Set **Root Directory** to `web`. This app imports `../convex/_generated/api`, so `tsc` must resolve Convex backend types; `web/vercel.json` runs **`npm install` in the repo root** first (`npm install --prefix ..`), then installs `web` dependencies. SPA rewrites are included for client-side routing.
+Set **Root Directory** to `web`. This app imports `../convex/_generated/api`, so `tsc` must resolve Convex backend types from the **repo root** (`../node_modules`). After `npm install` in `web`, the **`postinstall`** script runs `npm install --prefix ..` so root deps (`convex`, `zod`, `@faker-js/faker`, …) exist on CI/Vercel even without custom Install Command. `web/vercel.json` can still set `installCommand` + SPA rewrites.
