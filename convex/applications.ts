@@ -6,9 +6,11 @@ import {
   internalQuery,
   mutation,
   query,
+  type MutationCtx,
 } from "./_generated/server";
-import type { Doc } from "./_generated/dataModel";
+import type { Doc, Id } from "./_generated/dataModel";
 import { requireCurrentUser } from "./lib/auth";
+import { recalculateCompanyTrustMetrics } from "./lib/companyTrust";
 import {
   assertCanAdminRecoverApplicationStatus,
   assertCanApplyToVacancy,
@@ -29,10 +31,10 @@ import { recordDemoAnalyticsEvent } from "./lib/demoAnalytics";
 import { applicationStatusValidator } from "./lib/validators";
 
 async function createApplicationRecord(
-  ctx: any,
+  ctx: MutationCtx,
   input: {
-    vacancyId: any;
-    seekerUserId: any;
+    vacancyId: Id<"vacancies">;
+    seekerUserId: Id<"users">;
     /** When set (user-facing apply), enforces seeker-or-admin + domain rules. */
     actingUser?: Doc<"users">;
     screeningAnswers?: Array<{ question: string; answer: string }>;
@@ -50,10 +52,10 @@ async function createApplicationRecord(
 
   const existing = await ctx.db
     .query("applications")
-    .withIndex("by_vacancyId", (q: any) => q.eq("vacancyId", input.vacancyId))
+    .withIndex("by_vacancyId", (q) => q.eq("vacancyId", input.vacancyId))
     .collect();
 
-  if (existing.some((application: any) => application.seekerUserId === input.seekerUserId)) {
+  if (existing.some((application) => application.seekerUserId === input.seekerUserId)) {
     throw new ConvexError("Application already exists");
   }
 
@@ -63,6 +65,15 @@ async function createApplicationRecord(
     status: "submitted",
     screeningAnswers: input.screeningAnswers,
   });
+  await ctx.db.insert("applicationStatusEvents", {
+    applicationId,
+    toStatus: "submitted",
+    changedAt: Date.now(),
+    actorUserId: input.seekerUserId,
+  });
+  if (vacancy.source === "native" && vacancy.companyId) {
+    await recalculateCompanyTrustMetrics(ctx, vacancy.companyId);
+  }
 
   await recordDemoAnalyticsEvent(ctx, {
     kind: "application_submitted",
@@ -356,11 +367,22 @@ export const withdrawApplication = mutation({
     if (!application) {
       throw new ConvexError("Application not found");
     }
+    const vacancy = await ctx.db.get(application.vacancyId);
     assertCanWithdrawApplication(user, application);
     if (!isValidApplicationTransition(application.status, "withdrawn")) {
       throw new ConvexError("Application cannot be withdrawn in its current status");
     }
     await ctx.db.patch(args.applicationId, { status: "withdrawn" });
+    await ctx.db.insert("applicationStatusEvents", {
+      applicationId: args.applicationId,
+      fromStatus: application.status,
+      toStatus: "withdrawn",
+      changedAt: Date.now(),
+      actorUserId: user._id,
+    });
+    if (vacancy?.source === "native" && vacancy.companyId) {
+      await recalculateCompanyTrustMetrics(ctx, vacancy.companyId);
+    }
     await ctx.scheduler.runAfter(0, internal.notifications.handleStatusChange, {
       applicationId: args.applicationId,
       seekerUserId: application.seekerUserId,
@@ -400,6 +422,16 @@ export const updateApplicationStatus = mutation({
     assertApplicationTransition(application.status, args.status);
 
     await ctx.db.patch(args.applicationId, { status: args.status });
+    await ctx.db.insert("applicationStatusEvents", {
+      applicationId: args.applicationId,
+      fromStatus: application.status,
+      toStatus: args.status,
+      changedAt: Date.now(),
+      actorUserId: user._id,
+    });
+    if (vacancy.source === "native" && vacancy.companyId) {
+      await recalculateCompanyTrustMetrics(ctx, vacancy.companyId);
+    }
     await ctx.scheduler.runAfter(0, internal.notifications.handleStatusChange, {
       applicationId: args.applicationId,
       seekerUserId: application.seekerUserId,
@@ -428,7 +460,18 @@ export const adminRecoverApplicationStatus = mutation({
     if (!application) {
       throw new ConvexError("Application not found");
     }
+    const vacancy = await ctx.db.get(application.vacancyId);
     await ctx.db.patch(args.applicationId, { status: args.status });
+    await ctx.db.insert("applicationStatusEvents", {
+      applicationId: args.applicationId,
+      fromStatus: application.status,
+      toStatus: args.status,
+      changedAt: Date.now(),
+      actorUserId: user._id,
+    });
+    if (vacancy?.source === "native" && vacancy.companyId) {
+      await recalculateCompanyTrustMetrics(ctx, vacancy.companyId);
+    }
     return ctx.db.get(args.applicationId);
   },
 });

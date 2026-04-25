@@ -21,15 +21,15 @@ describe("Sidebar", () => {
     );
 
     expect(screen.getByRole("link", { name: "Главная" })).toHaveAttribute("href", "/employer/dashboard");
-    expect(screen.getByRole("link", { name: "AI-подбор" })).toHaveAttribute("href", AI_MATCHING_ROOT);
+    expect(screen.queryByRole("link", { name: "AI-подбор" })).not.toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Вакансии" })).toHaveAttribute("href", "/employer/vacancies");
     expect(screen.getByRole("link", { name: "Отклики" })).toHaveAttribute("href", "/employer/applications");
     expect(screen.getByRole("link", { name: "Интервью" })).toHaveAttribute("href", "/employer/interviews");
   });
 
-  test("keeps employer AI search available across shell navigation", () => {
-    expect(navByRole.employer.some((item) => item.to === AI_MATCHING_ROOT && item.labelKey === "aiSearch")).toBe(true);
-    expect(topNavByRole.employer.some((item) => item.to === AI_MATCHING_ROOT && item.labelKey === "aiSearch")).toBe(true);
+  test("does not include AI search in employer shell navigation", () => {
+    expect(navByRole.employer.some((item) => item.to === AI_MATCHING_ROOT && item.labelKey === "aiSearch")).toBe(false);
+    expect(topNavByRole.employer.some((item) => item.to === AI_MATCHING_ROOT && item.labelKey === "aiSearch")).toBe(false);
   });
 
   test("makes admin AI access explicit in navigation", () => {

@@ -79,6 +79,20 @@ export const interviewStatusValidator = v.union(
   v.literal("cancelled"),
 );
 
+export const companyComplaintKindValidator = v.union(
+  v.literal("no_response"),
+  v.literal("misleading_vacancy"),
+  v.literal("bad_conditions"),
+  v.literal("other"),
+);
+
+export const companyComplaintStatusValidator = v.union(
+  v.literal("open"),
+  v.literal("valid"),
+  v.literal("rejected"),
+  v.literal("resolved"),
+);
+
 export const mockInterviewSessionStatusValidator = v.union(
   v.literal("in_progress"),
   v.literal("completed"),

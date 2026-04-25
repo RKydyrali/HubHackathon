@@ -11,7 +11,7 @@ import { Button } from "@/components/shared/Button";
 import { LoadingSkeleton } from "@/components/feedback/LoadingSkeleton";
 import { useVacancyFilters } from "@/hooks/useVacancyFilters";
 import { useVacancyMatchMap } from "@/hooks/useVacancyMatchMap";
-import { api } from "@/lib/convex-api";
+import { api, type Id } from "@/lib/convex-api";
 import { useI18n } from "@/lib/i18n";
 import {
   sortVacancies,
@@ -122,6 +122,21 @@ export function VacancyListPage() {
     () => processedVacancies.slice((pageSafe - 1) * PAGE_SIZE, pageSafe * PAGE_SIZE),
     [processedVacancies, pageSafe],
   );
+  const pagedVacancyIds = useMemo(
+    () => pagedVacancies.map((vacancy) => vacancy._id as Id<"vacancies">),
+    [pagedVacancies],
+  );
+  const trustRows = useQuery(
+    api.companyTrust.listVacancyTrust,
+    pagedVacancyIds.length ? { vacancyIds: pagedVacancyIds } : "skip",
+  );
+  const trustByVacancyId = useMemo(
+    () =>
+      Object.fromEntries(
+        (trustRows ?? []).map((row) => [String(row.vacancyId), row.trust]),
+      ),
+    [trustRows],
+  );
 
   const pages = useMemo(() => pageButtons(pageSafe, pageCount), [pageSafe, pageCount]);
 
@@ -231,7 +246,12 @@ export function VacancyListPage() {
         ) : (
           <div className="grid gap-3">
             <AiAdvisoryNotice title={copy.applications.advisoryTitle} body={copy.vacancies.matchPreviewHint} />
-            <VacancyTable vacancies={pagedVacancies} ownerView={false} matchMap={matchMap} />
+            <VacancyTable
+              vacancies={pagedVacancies}
+              ownerView={false}
+              matchMap={matchMap}
+              trustByVacancyId={trustByVacancyId}
+            />
           </div>
         )}
 

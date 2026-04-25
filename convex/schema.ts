@@ -20,6 +20,8 @@ import {
   employmentTypeValidator,
   experienceLevelValidator,
   interviewStatusValidator,
+  companyComplaintKindValidator,
+  companyComplaintStatusValidator,
   mockInterviewMessageValidator,
   mockInterviewSessionStatusValidator,
   notificationDeliveryStatusValidator,
@@ -83,6 +85,8 @@ export default defineSchema({
     email: v.string(),
     website: v.optional(v.string()),
     ownerUserId: v.id("users"),
+    /** Widened migration field. New writes set it; old rows fall back to 0 until backfilled. */
+    companyTrustScore: v.optional(v.number()),
     seedBatchId: v.optional(v.string()),
   })
     .index("by_slug", ["slug"])
@@ -190,6 +194,35 @@ export default defineSchema({
     seedBatchId: v.optional(v.string()),
   })
     .index("by_applicationId", ["applicationId"])
+    .index("by_seedBatchId", ["seedBatchId"]),
+
+  companyComplaints: defineTable({
+    companyId: v.id("companies"),
+    authorUserId: v.id("users"),
+    vacancyId: v.optional(v.id("vacancies")),
+    applicationId: v.optional(v.id("applications")),
+    kind: companyComplaintKindValidator,
+    details: v.string(),
+    status: companyComplaintStatusValidator,
+    createdAt: v.number(),
+    seedBatchId: v.optional(v.string()),
+  })
+    .index("by_companyId", ["companyId"])
+    .index("by_companyId_and_status", ["companyId", "status"])
+    .index("by_seedBatchId", ["seedBatchId"]),
+
+  companyTrustMetrics: defineTable({
+    companyId: v.id("companies"),
+    applicationsCount: v.number(),
+    employerResponsesCount: v.number(),
+    hiresCount: v.number(),
+    validComplaintsCount: v.number(),
+    firstResponseTimeTotalMs: v.number(),
+    averageFirstResponseTimeMs: v.optional(v.number()),
+    updatedAt: v.number(),
+    seedBatchId: v.optional(v.string()),
+  })
+    .index("by_companyId", ["companyId"])
     .index("by_seedBatchId", ["seedBatchId"]),
 
   savedVacancies: defineTable({

@@ -73,9 +73,11 @@ export function PublicWelcomePage() {
         >
           <div className="max-w-3xl">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary" className="rounded-full px-3 py-1 text-xs">
-                {copy.publicHome.heroKicker}
-              </Badge>
+              {copy.publicHome.heroKicker ? (
+                <Badge variant="secondary" className="rounded-full px-3 py-1 text-xs">
+                  {copy.publicHome.heroKicker}
+                </Badge>
+              ) : null}
             </div>
             <WordReveal
               as="h1"

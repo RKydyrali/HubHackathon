@@ -14,6 +14,7 @@ import type * as aiJobAssistant from "../aiJobAssistant.js";
 import type * as applicationMessages from "../applicationMessages.js";
 import type * as applications from "../applications.js";
 import type * as coach from "../coach.js";
+import type * as companyTrust from "../companyTrust.js";
 import type * as crons from "../crons.js";
 import type * as dashboards from "../dashboards.js";
 import type * as dataLifecycle from "../dataLifecycle.js";
@@ -26,6 +27,7 @@ import type * as lib_aiJobAssistantValidators from "../lib/aiJobAssistantValidat
 import type * as lib_auth from "../lib/auth.js";
 import type * as lib_botUserHttpSchema from "../lib/botUserHttpSchema.js";
 import type * as lib_coach from "../lib/coach.js";
+import type * as lib_companyTrust from "../lib/companyTrust.js";
 import type * as lib_constants from "../lib/constants.js";
 import type * as lib_demoAnalytics from "../lib/demoAnalytics.js";
 import type * as lib_domain from "../lib/domain.js";
@@ -68,6 +70,7 @@ declare const fullApi: ApiFromModules<{
   applicationMessages: typeof applicationMessages;
   applications: typeof applications;
   coach: typeof coach;
+  companyTrust: typeof companyTrust;
   crons: typeof crons;
   dashboards: typeof dashboards;
   dataLifecycle: typeof dataLifecycle;
@@ -80,6 +83,7 @@ declare const fullApi: ApiFromModules<{
   "lib/auth": typeof lib_auth;
   "lib/botUserHttpSchema": typeof lib_botUserHttpSchema;
   "lib/coach": typeof lib_coach;
+  "lib/companyTrust": typeof lib_companyTrust;
   "lib/constants": typeof lib_constants;
   "lib/demoAnalytics": typeof lib_demoAnalytics;
   "lib/domain": typeof lib_domain;

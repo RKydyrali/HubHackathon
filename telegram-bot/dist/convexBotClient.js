@@ -34,6 +34,34 @@ const listVacanciesResponseSchema = z.object({
 const applicationResponseSchema = z.object({
     application: z.object({}).passthrough(),
 });
+const linkTelegramResponseSchema = z.object({
+    user: userDocSchema,
+});
+const botApplicationRowSchema = z.object({
+    application: z.object({
+        _id: z.string(),
+        status: z.string(),
+    }).passthrough(),
+    vacancy: z
+        .object({
+        title: z.string(),
+        city: z.string().optional(),
+    })
+        .passthrough()
+        .nullable(),
+});
+const listApplicationsResponseSchema = z.object({
+    applications: z.array(botApplicationRowSchema),
+});
+const botNotificationSchema = z.object({
+    _id: z.string(),
+    title: z.string(),
+    body: z.string(),
+    readAt: z.number().optional(),
+}).passthrough();
+const listNotificationsResponseSchema = z.object({
+    notifications: z.array(botNotificationSchema),
+});
 const errorBodySchema = z.object({
     error: z.string(),
     issues: z.array(z.unknown()).optional(),
@@ -62,6 +90,15 @@ export class ConvexBotClient {
         this.baseUrl = baseUrl;
         this.secret = secret;
     }
+    // #region agent log
+    logHttpFailure(input) {
+        console.error(JSON.stringify({
+            event: "convex_bot_http_error",
+            ...input,
+            timestamp: Date.now(),
+        }));
+    }
+    // #endregion
     async postJson(path, body, parse) {
         const url = `${this.baseUrl}${path}`;
         const res = await fetch(url, {
@@ -74,6 +111,14 @@ export class ConvexBotClient {
         });
         const json = await res.json().catch(() => ({}));
         if (!res.ok) {
+            // #region agent log
+            this.logHttpFailure({
+                method: "POST",
+                url,
+                status: res.status,
+                bodyType: typeof json,
+            });
+            // #endregion
             throw new ConvexBotHttpError(res.status, json);
         }
         return parse(json);
@@ -86,6 +131,14 @@ export class ConvexBotClient {
         });
         const json = await res.json().catch(() => ({}));
         if (!res.ok) {
+            // #region agent log
+            this.logHttpFailure({
+                method: "GET",
+                url,
+                status: res.status,
+                bodyType: typeof json,
+            });
+            // #endregion
             throw new ConvexBotHttpError(res.status, json);
         }
         return parse(json);
@@ -102,12 +155,24 @@ export class ConvexBotClient {
         });
         const json = await res.json().catch(() => ({}));
         if (!res.ok) {
+            // #region agent log
+            this.logHttpFailure({
+                method: "PATCH",
+                url,
+                status: res.status,
+                bodyType: typeof json,
+            });
+            // #endregion
             throw new ConvexBotHttpError(res.status, json);
         }
         return parse(json);
     }
     async upsertUser(input) {
         const data = await this.postJson("/users/upsert", input, (j) => upsertUserResponseSchema.parse(j));
+        return data.user;
+    }
+    async linkTelegram(input) {
+        const data = await this.postJson("/users/link-telegram", input, (j) => linkTelegramResponseSchema.parse(j));
         return data.user;
     }
     async listVacancies(params) {
@@ -128,6 +193,16 @@ export class ConvexBotClient {
     async submitApplication(input) {
         const data = await this.postJson("/applications", input, (j) => applicationResponseSchema.parse(j));
         return data.application;
+    }
+    async listApplications(telegramChatId) {
+        const path = `/applications?telegramChatId=${encodeURIComponent(telegramChatId)}`;
+        const data = await this.get(path, (j) => listApplicationsResponseSchema.parse(j));
+        return data.applications;
+    }
+    async listNotifications(telegramChatId) {
+        const path = `/notifications?telegramChatId=${encodeURIComponent(telegramChatId)}`;
+        const data = await this.get(path, (j) => listNotificationsResponseSchema.parse(j));
+        return data.notifications;
     }
     async getNotificationPreferences(telegramChatId) {
         const path = `/users/notification-preferences?telegramChatId=${encodeURIComponent(telegramChatId)}`;

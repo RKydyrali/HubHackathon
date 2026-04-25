@@ -26,6 +26,14 @@ vi.mock("convex/react", () => ({
 const useAuthMock = vi.mocked(useAuth);
 const useQueryMock = vi.mocked(useQuery);
 
+function mockVacancyDetailQueries(self: unknown, trust: unknown = null) {
+  useQueryMock.mockImplementation(((_ref: unknown, args: unknown) => {
+    if (args === "skip") return undefined;
+    if (args && typeof args === "object" && "vacancyId" in args) return trust;
+    return self;
+  }) as typeof useQuery);
+}
+
 const nativeVacancy = {
   _id: "native_1" as Id<"vacancies">,
   _creationTime: 1,
@@ -61,7 +69,7 @@ describe("VacancyDetail role-aware actions", () => {
 
   test("sends anonymous users to login while preserving apply intent", () => {
     useAuthMock.mockReturnValue({ isSignedIn: false } as ReturnType<typeof useAuth>);
-    useQueryMock.mockReturnValue(undefined);
+    mockVacancyDetailQueries(undefined);
 
     render(
       <MemoryRouter initialEntries={["/vacancies/native_1"]}>
@@ -79,7 +87,7 @@ describe("VacancyDetail role-aware actions", () => {
 
   test("shows native apply only to signed-in seekers", () => {
     useAuthMock.mockReturnValue({ isSignedIn: true } as ReturnType<typeof useAuth>);
-    useQueryMock.mockReturnValue({ role: "seeker" });
+    mockVacancyDetailQueries({ role: "seeker" });
 
     render(
       <MemoryRouter>
@@ -95,7 +103,7 @@ describe("VacancyDetail role-aware actions", () => {
 
   test("shows employers a relevant alternative instead of apply", () => {
     useAuthMock.mockReturnValue({ isSignedIn: true } as ReturnType<typeof useAuth>);
-    useQueryMock.mockReturnValue({ role: "employer" });
+    mockVacancyDetailQueries({ role: "employer" });
 
     render(
       <MemoryRouter>
@@ -112,7 +120,19 @@ describe("VacancyDetail role-aware actions", () => {
 
   test("keeps HH external apply available", () => {
     useAuthMock.mockReturnValue({ isSignedIn: true } as ReturnType<typeof useAuth>);
-    useQueryMock.mockReturnValue({ role: "employer" });
+    mockVacancyDetailQueries(
+      { role: "employer" },
+      {
+        score: null,
+        badgeText: "внешняя вакансия",
+        tone: "muted",
+        responseRate: null,
+        averageResponseTime: null,
+        hiresCount: 0,
+        complaintsCount: 0,
+        dataSufficiency: "external",
+      },
+    );
 
     render(
       <MemoryRouter>
@@ -131,5 +151,30 @@ describe("VacancyDetail role-aware actions", () => {
       "href",
       "https://hh.kz/vacancy/1",
     );
+  });
+
+  test("shows compact company trust badge near vacancy metadata", () => {
+    useAuthMock.mockReturnValue({ isSignedIn: true } as ReturnType<typeof useAuth>);
+    mockVacancyDetailQueries(
+      { role: "seeker" },
+      {
+        score: 91,
+        badgeText: "часто отвечает",
+        tone: "success",
+        responseRate: 1,
+        averageResponseTime: 2 * 60 * 60 * 1000,
+        hiresCount: 1,
+        complaintsCount: 0,
+        dataSufficiency: "sufficient",
+      },
+    );
+
+    render(
+      <MemoryRouter>
+        <VacancyDetail vacancy={nativeVacancy} />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getAllByText("часто отвечает").length).toBeGreaterThan(0);
   });
 });

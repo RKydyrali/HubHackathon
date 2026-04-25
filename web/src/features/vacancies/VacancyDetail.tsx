@@ -18,6 +18,7 @@ import { AiAdvisoryNotice } from "@/components/product/AiTrust";
 import { DetailAside } from "@/components/product/DetailAside";
 import { VacancyShareSheet } from "@/components/product/VacancyShareSheet";
 import { Button } from "@/components/shared/Button";
+import { CompanyTrustBadge } from "@/components/shared/CompanyTrustBadge";
 import { SourceBadge, StatusBadge } from "@/components/shared/StatusBadge";
 import { formatSalary } from "@/lib/format";
 import { api } from "@/lib/convex-api";
@@ -31,6 +32,7 @@ export function VacancyDetail({ vacancy }: { vacancy: Vacancy }) {
   const { isSignedIn } = useAuth();
   const { copy, locale } = useI18n();
   const currentUser = useQuery(api.users.getSelf, isSignedIn ? {} : "skip");
+  const trust = useQuery(api.companyTrust.getVacancyTrust, { vacancyId: vacancy._id });
   const trackDemo = useMutation(api.demoAnalytics.track);
   const showPrepareInterview =
     isSignedIn &&
@@ -89,6 +91,7 @@ export function VacancyDetail({ vacancy }: { vacancy: Vacancy }) {
         <div className="flex flex-wrap gap-2">
           <SourceBadge source={vacancy.source} locale={locale} />
           <StatusBadge status={vacancy.status} locale={locale} />
+          <CompanyTrustBadge trust={trust} />
           {vacancy.district ? <span className="rounded-full border bg-secondary px-2 py-1 text-xs font-medium">{vacancy.district}</span> : null}
         </div>
         <dl className="mt-5 grid gap-3 sm:grid-cols-2">
@@ -119,6 +122,10 @@ export function VacancyDetail({ vacancy }: { vacancy: Vacancy }) {
             <div className="flex items-center justify-between gap-3 border-b pb-3 text-sm">
               <span className="text-muted-foreground">{copy.vacancies.source}</span>
               <SourceBadge source={vacancy.source} locale={locale} compact />
+            </div>
+            <div className="flex items-center justify-between gap-3 border-b pb-3 text-sm">
+              <span className="text-muted-foreground">Trust Score</span>
+              <CompanyTrustBadge trust={trust} />
             </div>
             <div className="flex items-center justify-between gap-3 border-b pb-3 text-sm">
               <span className="text-muted-foreground">Status</span>

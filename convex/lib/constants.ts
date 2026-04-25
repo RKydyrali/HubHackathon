@@ -34,6 +34,18 @@ export const INTERVIEW_STATUSES = [
   "completed",
   "cancelled",
 ] as const;
+export const COMPANY_COMPLAINT_KINDS = [
+  "no_response",
+  "misleading_vacancy",
+  "bad_conditions",
+  "other",
+] as const;
+export const COMPANY_COMPLAINT_STATUSES = [
+  "open",
+  "valid",
+  "rejected",
+  "resolved",
+] as const;
 
 export type UserRole = (typeof USER_ROLES)[number];
 export type VacancySource = (typeof VACANCY_SOURCES)[number];
@@ -43,6 +55,8 @@ export type NotificationDeliveryStatus =
   (typeof NOTIFICATION_DELIVERY_STATUSES)[number];
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 export type InterviewStatus = (typeof INTERVIEW_STATUSES)[number];
+export type CompanyComplaintKind = (typeof COMPANY_COMPLAINT_KINDS)[number];
+export type CompanyComplaintStatus = (typeof COMPANY_COMPLAINT_STATUSES)[number];
 
 /** Mock interview: production limits (see convex/lib/mockInterviewHardening.ts). */
 export const MOCK_INTERVIEW_MAX_USER_MESSAGE_CHARS = 8000;

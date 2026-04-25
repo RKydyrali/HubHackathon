@@ -11,6 +11,17 @@ export type Application = Doc<"applications"> & { status: ApplicationStatus };
 export type Interview = Doc<"interviews">;
 export type Notification = Doc<"notifications">;
 
+export type CompanyTrust = {
+  score: number | null;
+  badgeText: string;
+  tone: "success" | "warning" | "muted";
+  responseRate: number | null;
+  averageResponseTime: number | null;
+  hiresCount: number;
+  complaintsCount: number;
+  dataSufficiency: "external" | "none" | "low" | "sufficient";
+};
+
 export type ApplicationWithVacancy = {
   application: Application;
   vacancy: Vacancy | null;

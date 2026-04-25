@@ -8,6 +8,7 @@ import { ConvexError, v } from "convex/values";
 import { mutation, query, type MutationCtx, type QueryCtx } from "./_generated/server";
 import type { Id } from "./_generated/dataModel";
 import { requireCurrentUser } from "./lib/auth";
+import { recalculateCompanyTrustMetrics } from "./lib/companyTrust";
 import { assertCanAccessHiredApplicationMessaging } from "./lib/permissions";
 
 async function loadApplicationBundle(ctx: QueryCtx | MutationCtx, applicationId: Id<"applications">) {
@@ -74,13 +75,24 @@ export const send = mutation({
     if (user._id !== seekerUserId && user._id !== employerUserId) {
       throw new ConvexError("Forbidden");
     }
+    const existingMessages = await ctx.db
+      .query("applicationMessages")
+      .withIndex("by_applicationId", (q) => q.eq("applicationId", args.applicationId))
+      .take(100);
+    const isFirstEmployerMessage =
+      user._id === employerUserId &&
+      !existingMessages.some((message) => message.senderUserId === employerUserId);
     const now = Date.now();
-    return ctx.db.insert("applicationMessages", {
+    const messageId = await ctx.db.insert("applicationMessages", {
       applicationId: args.applicationId,
       senderUserId: user._id,
       recipientUserId,
       body,
       createdAt: now,
     });
+    if (isFirstEmployerMessage && bundle.vacancy.source === "native" && bundle.vacancy.companyId) {
+      await recalculateCompanyTrustMetrics(ctx, bundle.vacancy.companyId);
+    }
+    return messageId;
   },
 });

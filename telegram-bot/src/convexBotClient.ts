@@ -110,6 +110,23 @@ export class ConvexBotClient {
     private readonly secret: string,
   ) {}
 
+  // #region agent log
+  private logHttpFailure(input: {
+    method: "GET" | "POST" | "PATCH";
+    url: string;
+    status: number;
+    bodyType: string;
+  }): void {
+    console.error(
+      JSON.stringify({
+        event: "convex_bot_http_error",
+        ...input,
+        timestamp: Date.now(),
+      }),
+    );
+  }
+  // #endregion
+
   private async postJson<T>(path: string, body: unknown, parse: (j: unknown) => T): Promise<T> {
     const url = `${this.baseUrl}${path}`;
     const res = await fetch(url, {
@@ -122,6 +139,14 @@ export class ConvexBotClient {
     });
     const json: unknown = await res.json().catch(() => ({}));
     if (!res.ok) {
+      // #region agent log
+      this.logHttpFailure({
+        method: "POST",
+        url,
+        status: res.status,
+        bodyType: typeof json,
+      });
+      // #endregion
       throw new ConvexBotHttpError(res.status, json);
     }
     return parse(json);
@@ -135,6 +160,14 @@ export class ConvexBotClient {
     });
     const json: unknown = await res.json().catch(() => ({}));
     if (!res.ok) {
+      // #region agent log
+      this.logHttpFailure({
+        method: "GET",
+        url,
+        status: res.status,
+        bodyType: typeof json,
+      });
+      // #endregion
       throw new ConvexBotHttpError(res.status, json);
     }
     return parse(json);
@@ -152,6 +185,14 @@ export class ConvexBotClient {
     });
     const json: unknown = await res.json().catch(() => ({}));
     if (!res.ok) {
+      // #region agent log
+      this.logHttpFailure({
+        method: "PATCH",
+        url,
+        status: res.status,
+        bodyType: typeof json,
+      });
+      // #endregion
       throw new ConvexBotHttpError(res.status, json);
     }
     return parse(json);

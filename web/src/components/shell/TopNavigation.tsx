@@ -50,7 +50,6 @@ export const topNavByRole: Record<UserRole, NavItem[]> = {
     { to: "/interview-trainer", labelKey: "interviewTrainer", end: true },
   ],
   employer: [
-    { to: AI_MATCHING_ROOT, labelKey: "aiSearch", end: true },
     { to: "/employer/hiring-assistant", labelKey: "hiringAssistant" },
     { to: "/employer/vacancies", labelKey: "vacancies" },
     { to: "/employer/applications", labelKey: "applications" },

@@ -5,6 +5,7 @@ import type { Id } from "../_generated/dataModel";
 import { internalMutation, type MutationCtx } from "../_generated/server";
 import type { ApplicationStatus } from "../lib/constants";
 import { EMBEDDING_DIMENSION } from "../lib/constants";
+import { recalculateCompanyTrustMetrics } from "../lib/companyTrust";
 import {
   BENEFITS_POOL,
   AKTAU_MICRODISTRICTS,
@@ -132,6 +133,8 @@ function buildStatusPath(final: ApplicationStatus, rng: () => number): Applicati
 const CLEAR_PAGE = 96;
 
 const CLEAR_TABLE_ORDER = [
+  "companyTrustMetrics",
+  "companyComplaints",
   "applicationMessages",
   "applicationStatusEvents",
   "savedVacancies",
@@ -276,6 +279,7 @@ export const run = internalMutation({
           email: `hr.${slug}@seed-jumysai.kz`,
           website: rng() < 0.45 ? `https://${slug.slice(0, 24)}.example.kz` : undefined,
           ownerUserId: ownerId,
+          companyTrustScore: 0,
           seedBatchId: args.batchId,
         });
         employers.push(ownerId);
@@ -593,6 +597,30 @@ export const run = internalMutation({
               mt += Math.floor(rng() * 6 * 3600 * 1000);
             }
           }
+
+          if (
+            vacancy.companyId &&
+            (finalSt === "rejected" || finalSt === "withdrawn") &&
+            rng() < 0.06
+          ) {
+            await ctx.db.insert("companyComplaints", {
+              companyId: vacancy.companyId,
+              authorUserId: seekerUserId,
+              vacancyId,
+              applicationId,
+              kind: finalSt === "withdrawn" ? "no_response" : "misleading_vacancy",
+              details:
+                finalSt === "withdrawn"
+                  ? "Seed: candidate withdrew after delayed employer communication."
+                  : "Seed: candidate reported mismatch between vacancy and process.",
+              status: rng() < 0.58 ? "valid" : "rejected",
+              createdAt: t + Math.floor(rng() * 3 * 24 * 3600 * 1000),
+              seedBatchId: args.batchId,
+            });
+          }
+        }
+        if (vacancy.companyId) {
+          await recalculateCompanyTrustMetrics(ctx, vacancy.companyId);
         }
       }
 

@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { DataTable, type DataColumn } from "@/components/product/DataTable";
 import { MatchMeter } from "@/components/product/MatchMeter";
 import { Badge } from "@/components/shared/Badge";
+import { CompanyTrustBadge } from "@/components/shared/CompanyTrustBadge";
 import { Icon } from "@/components/shared/Icon";
 import { SourceBadge, StatusBadge } from "@/components/shared/StatusBadge";
 import { Button as UiButton, buttonVariants } from "@/components/ui/button";
@@ -24,7 +25,7 @@ import {
   vacancyListMatchPreview,
 } from "@/lib/vacancyListUi";
 import { cn } from "@/lib/utils";
-import type { Vacancy } from "@/types/domain";
+import type { CompanyTrust, Vacancy } from "@/types/domain";
 
 function MutedDash() {
   return (
@@ -295,11 +296,13 @@ function VacancyMobileCard({
   ownerView,
   onOwnerNavigate,
   employerSlim,
+  trust,
 }: {
   vacancy: Vacancy;
   ownerView: boolean;
   onOwnerNavigate?: (v: Vacancy) => void;
   employerSlim?: boolean;
+  trust?: CompanyTrust;
 }) {
   const { copy, locale } = useI18n();
   const match = ownerView ? null : vacancyListMatchPreview(vacancy._id);
@@ -329,7 +332,10 @@ function VacancyMobileCard({
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
           <VacancyTitleCell vacancy={vacancy} ownerView={ownerView} employerSlim={employerSlim} />
-          <p className="mt-1 text-xs text-muted-foreground">{vacancyCompanyLabel(vacancy, locale)}</p>
+          <div className="mt-1 flex min-w-0 flex-wrap items-center gap-1.5">
+            <p className="text-xs text-muted-foreground">{vacancyCompanyLabel(vacancy, locale)}</p>
+            <CompanyTrustBadge trust={trust} />
+          </div>
         </div>
         <SourceBadge source={vacancy.source} locale={locale} compact className="shrink-0" />
       </div>
@@ -374,6 +380,7 @@ export function VacancyTable({
   stickyHeader = false,
   stickyHeaderClassName,
   matchMap,
+  trustByVacancyId,
 }: {
   vacancies: Vacancy[];
   ownerView?: boolean;
@@ -384,19 +391,25 @@ export function VacancyTable({
   stickyHeaderClassName?: string;
   /** Optional: real match scores keyed by vacancy id; falls back to deterministic preview. */
   matchMap?: Record<string, number>;
+  /** Optional: company trust keyed by vacancy id. */
+  trustByVacancyId?: Record<string, CompanyTrust>;
 }) {
   const { copy, locale } = useI18n();
 
   const companyCell = (vacancy: Vacancy) => {
     const label = vacancyCompanyLabel(vacancy, locale).trim();
     if (!label) return <MutedDash />;
+    const trust = trustByVacancyId?.[String(vacancy._id)];
     return (
-      <span
-        className="line-clamp-2 min-w-0 break-words text-left text-sm leading-normal text-muted-foreground"
-        title={label}
-      >
-        {label}
-      </span>
+      <div className="flex min-w-0 flex-col items-start gap-1">
+        <span
+          className="line-clamp-2 min-w-0 break-words text-left text-sm leading-normal text-muted-foreground"
+          title={label}
+        >
+          {label}
+        </span>
+        <CompanyTrustBadge trust={trust} />
+      </div>
     );
   };
 
@@ -525,12 +538,13 @@ export function VacancyTable({
       getKey={(vacancy) => vacancy._id}
       empty={<span className="text-sm text-muted-foreground">{copy.vacancies.noResults}</span>}
       mobileRow={(vacancy) => (
-        <VacancyMobileCard
-          vacancy={vacancy}
-          ownerView={ownerView}
-          employerSlim={employerSlim}
-          onOwnerNavigate={onOwnerRowNavigate}
-        />
+          <VacancyMobileCard
+            vacancy={vacancy}
+            ownerView={ownerView}
+            employerSlim={employerSlim}
+            onOwnerNavigate={onOwnerRowNavigate}
+            trust={trustByVacancyId?.[String(vacancy._id)]}
+          />
       )}
       onRowClick={ownerRowClick}
       dense

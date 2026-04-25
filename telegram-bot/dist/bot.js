@@ -2,14 +2,48 @@ import { Bot, InlineKeyboard, Keyboard } from "grammy";
 import { ConvexBotClient, ConvexBotHttpError, formatConvexErrorMessage, } from "./convexBotClient.js";
 const PAGE = 5;
 const applyDrafts = new Map();
-function mainMenuKeyboard() {
+export function linkedMenuLabels() {
+    return ["Вакансии", "Мои отклики", "Уведомления", "Настройки"];
+}
+export function unlinkedMenuLabels() {
+    return ["Подключить Telegram"];
+}
+export function parseStartPayload(text) {
+    const match = text?.trim().match(/^\/start(?:@\w+)?(?:\s+(.+))?$/);
+    const payload = match?.[1]?.trim();
+    return payload || null;
+}
+export function menuActionFromText(text) {
+    if (text === "Вакансии")
+        return { type: "jobs" };
+    if (text === "Мои отклики")
+        return { type: "applications" };
+    if (text === "Уведомления")
+        return { type: "notifications" };
+    if (text === "Настройки")
+        return { type: "settings" };
+    return null;
+}
+function linkedMenuKeyboard() {
+    return new Keyboard()
+        .text("Вакансии")
+        .text("Мои отклики")
+        .row()
+        .text("Уведомления")
+        .text("Настройки")
+        .resized();
+}
+function unlinkedMenuKeyboard() {
+    return new Keyboard().text("Подключить Telegram").resized();
+}
+function jobsMenuKeyboard() {
     return new Keyboard()
         .text("Вакансии Актау (все)")
         .row()
         .text("Только на платформе")
         .text("Только с HH")
         .row()
-        .text("Настройки уведомлений")
+        .text("Настройки")
         .resized();
 }
 function sourceFromMenuKey(key) {
@@ -45,7 +79,7 @@ async function sendVacancyList(ctx, client, params, offset) {
         await ctx.reply("Подходящих вакансий сейчас нет. Загляните позже.");
         return;
     }
-    const srcTag = params.source ?? "a";
+    const srcTag = params.source === "native" ? "n" : params.source === "hh" ? "h" : "a";
     let kb = new InlineKeyboard();
     for (const v of slice) {
         kb = kb.text(v.title.slice(0, 28), `d:${v._id}`).row();
@@ -106,6 +140,55 @@ function settingsKeyboard(p) {
     }
     return kb;
 }
+function linkedWelcomeText(username) {
+    const name = username ? ` @${username}` : "";
+    return `JumysAI подключён${name}. Выберите раздел ниже.`;
+}
+function unlinkedWelcomeText() {
+    return [
+        "Здравствуйте! Чтобы связать Telegram с вашим веб-аккаунтом JumysAI, откройте профиль или настройки на сайте и нажмите «Подключить Telegram».",
+        "",
+        "Обычный /start больше не создаёт отдельный Telegram-аккаунт, поэтому ваши отклики и уведомления останутся в одном профиле.",
+    ].join("\n");
+}
+function formatApplications(items) {
+    if (items.length === 0) {
+        return "Откликов пока нет. Откройте вакансии и отправьте первую заявку.";
+    }
+    return [
+        "Последние отклики:",
+        "",
+        ...items.map((item, index) => {
+            const title = item.vacancy?.title ?? "Вакансия";
+            return `${index + 1}. ${title} — ${item.application.status}`;
+        }),
+    ].join("\n");
+}
+function formatNotifications(items) {
+    if (items.length === 0) {
+        return "Новых уведомлений пока нет.";
+    }
+    return [
+        "Последние уведомления:",
+        "",
+        ...items.map((item, index) => {
+            const unread = item.readAt ? "" : " • новое";
+            return `${index + 1}. ${item.title}${unread}\n${item.body}`;
+        }),
+    ].join("\n\n");
+}
+async function isLinked(client, chatId) {
+    try {
+        await client.getNotificationPreferences(chatId);
+        return true;
+    }
+    catch (e) {
+        if (e instanceof ConvexBotHttpError && e.status === 404) {
+            return false;
+        }
+        throw e;
+    }
+}
 async function showSettings(ctx, client, chatId) {
     await ctx.replyWithChatAction("typing");
     try {
@@ -121,10 +204,38 @@ async function showSettings(ctx, client, chatId) {
     }
     catch (e) {
         if (e instanceof ConvexBotHttpError && e.status === 404) {
-            await ctx.reply("Сначала выполните /start, чтобы привязать аккаунт.");
+            await ctx.reply(unlinkedWelcomeText(), { reply_markup: unlinkedMenuKeyboard() });
             return;
         }
         await ctx.reply(`Не удалось загрузить настройки: ${formatConvexErrorMessage(e)}`);
+    }
+}
+async function showApplications(ctx, client, chatId) {
+    await ctx.replyWithChatAction("typing");
+    try {
+        const rows = await client.listApplications(chatId);
+        await ctx.reply(formatApplications(rows), { reply_markup: linkedMenuKeyboard() });
+    }
+    catch (e) {
+        if (e instanceof ConvexBotHttpError && e.status === 404) {
+            await ctx.reply(unlinkedWelcomeText(), { reply_markup: unlinkedMenuKeyboard() });
+            return;
+        }
+        await ctx.reply(`Не удалось загрузить отклики: ${formatConvexErrorMessage(e)}`);
+    }
+}
+async function showNotifications(ctx, client, chatId) {
+    await ctx.replyWithChatAction("typing");
+    try {
+        const rows = await client.listNotifications(chatId);
+        await ctx.reply(formatNotifications(rows), { reply_markup: linkedMenuKeyboard() });
+    }
+    catch (e) {
+        if (e instanceof ConvexBotHttpError && e.status === 404) {
+            await ctx.reply(unlinkedWelcomeText(), { reply_markup: unlinkedMenuKeyboard() });
+            return;
+        }
+        await ctx.reply(`Не удалось загрузить уведомления: ${formatConvexErrorMessage(e)}`);
     }
 }
 async function showVacancyDetail(ctx, client, vacancyId) {
@@ -170,18 +281,32 @@ export function createBot(token, convexBase, secret) {
         const chatId = String(ctx.chat?.id ?? "");
         if (!chatId)
             return;
+        const token = parseStartPayload(ctx.message?.text);
         await ctx.replyWithChatAction("typing");
         try {
-            await client.upsertUser({
-                telegramChatId: chatId,
-                telegramUsername: ctx.from?.username,
-                role: "seeker",
-            });
-            await ctx.reply("Добро пожаловать в JumysAI. Вы подключены. Выберите действие ниже или откройте /settings.", { reply_markup: mainMenuKeyboard() });
+            if (token) {
+                await client.linkTelegram({
+                    token,
+                    telegramChatId: chatId,
+                    telegramUsername: ctx.from?.username,
+                });
+                await ctx.reply(linkedWelcomeText(ctx.from?.username), {
+                    reply_markup: linkedMenuKeyboard(),
+                });
+                return;
+            }
+            const linked = await isLinked(client, chatId);
+            await ctx.reply(linked ? linkedWelcomeText(ctx.from?.username) : unlinkedWelcomeText(), { reply_markup: linked ? linkedMenuKeyboard() : unlinkedMenuKeyboard() });
         }
         catch (e) {
-            console.error("upsertUser", e);
-            await ctx.reply(`Не удалось связать аккаунт: ${formatConvexErrorMessage(e)}. Попробуйте позже.`);
+            console.error("start", e);
+            const message = formatConvexErrorMessage(e);
+            const hint = /expired/i.test(message)
+                ? "Ссылка истекла. Вернитесь на сайт и нажмите «Подключить Telegram» ещё раз."
+                : /already linked|already used|already/i.test(message)
+                    ? "Эта ссылка или Telegram-чат уже использованы. Проверьте подключение в настройках сайта."
+                    : "Не удалось подключить Telegram. Попробуйте создать новую ссылку в настройках сайта.";
+            await ctx.reply(`${hint}\n\n${message}`, { reply_markup: unlinkedMenuKeyboard() });
         }
     });
     bot.command("settings", async (ctx) => {
@@ -190,10 +315,32 @@ export function createBot(token, convexBase, secret) {
             return;
         await showSettings(ctx, client, chatId);
     });
+    bot.hears("Подключить Telegram", async (ctx) => {
+        await ctx.reply(unlinkedWelcomeText(), { reply_markup: unlinkedMenuKeyboard() });
+    });
     bot.hears("Настройки уведомлений", async (ctx) => {
         const chatId = String(ctx.chat?.id ?? "");
         if (!chatId)
             return;
+        await showSettings(ctx, client, chatId);
+    });
+    bot.on("message:text").filter((ctx) => menuActionFromText(ctx.message?.text ?? "") !== null, async (ctx) => {
+        const chatId = String(ctx.chat?.id ?? "");
+        if (!chatId)
+            return;
+        const action = menuActionFromText(ctx.message.text);
+        if (action.type === "jobs") {
+            await ctx.reply("Выберите список вакансий:", { reply_markup: jobsMenuKeyboard() });
+            return;
+        }
+        if (action.type === "applications") {
+            await showApplications(ctx, client, chatId);
+            return;
+        }
+        if (action.type === "notifications") {
+            await showNotifications(ctx, client, chatId);
+            return;
+        }
         await showSettings(ctx, client, chatId);
     });
     bot.on("message:text", async (ctx, next) => {
