@@ -8,6 +8,12 @@ import {
   aiJobCriteriaValidator,
 } from "./lib/aiJobAssistantValidators";
 import {
+  postHireChannelValidator,
+  postHireVisibilityValidator,
+  recruiterChatMessageMetadataValidator,
+  recruiterChatMessageRoleValidator,
+} from "./lib/recruiterChatValidators";
+import {
   applicationStatusValidator,
   demoAnalyticsKindValidator,
   embeddingValidator,
@@ -265,6 +271,31 @@ export default defineSchema({
     metadata: aiJobChatMessageMetadataValidator,
     createdAt: v.number(),
   }).index("by_chatId_and_createdAt", ["chatId", "createdAt"]),
+
+  recruiterAiChats: defineTable({
+    employerUserId: v.id("users"),
+    vacancyId: v.optional(v.id("vacancies")),
+    title: v.string(),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index("by_employerUserId_and_updatedAt", ["employerUserId", "updatedAt"]),
+
+  recruiterAiChatMessages: defineTable({
+    chatId: v.id("recruiterAiChats"),
+    role: recruiterChatMessageRoleValidator,
+    content: v.string(),
+    metadata: recruiterChatMessageMetadataValidator,
+    createdAt: v.number(),
+  }).index("by_chatId_and_createdAt", ["chatId", "createdAt"]),
+
+  /** Per hired application + channel: visibility policy and mutual-consent timestamps. */
+  postHireChannelConsents: defineTable({
+    applicationId: v.id("applications"),
+    channel: postHireChannelValidator,
+    visibility: postHireVisibilityValidator,
+    employerConsentAt: v.optional(v.number()),
+    seekerConsentAt: v.optional(v.number()),
+  }).index("by_applicationId_and_channel", ["applicationId", "channel"]),
 
   interviews: defineTable({
     applicationId: v.id("applications"),

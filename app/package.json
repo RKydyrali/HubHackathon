@@ -1,0 +1,20 @@
+{
+  "name": "jumysai-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -k -n convex,web -c cyan,green \"npm run dev:convex\" \"npm run dev:web\"",
+    "dev:convex": "convex dev",
+    "dev:web": "npm --prefix web run dev",
+    "build:web": "npm --prefix web run build",
+    "typecheck:web": "npm --prefix web run build -- --emptyOutDir=false"
+  },
+  "dependencies": {
+    "convex": "^1.36.0"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
+

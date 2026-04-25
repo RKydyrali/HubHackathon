@@ -1,5 +1,25 @@
 # JumysAI Local Development
 
+## Repository layout (recommended)
+
+We keep the Vite frontend and the Convex backend together under `app/`, and run the Telegram bot as a separate service under `telegram-bot/`.
+
+Target layout:
+
+- `app/web` — Vite React SPA (deploy to Vercel)
+- `app/convex` — Convex backend + HTTP routes (deploy to Convex)
+- `telegram-bot` — long polling runtime (deploy to Railway/Render/Fly/VPS)
+
+If your repo still has `web/` and `convex/` at the root, you can migrate with:
+
+```bash
+mkdir app
+git mv web app/web
+git mv convex app/convex
+```
+
+After moving, use `npm --prefix app install` plus the package installs described below (or keep installing in each package).
+
 From the repository root, install dependencies for each package once:
 
 ```bash
@@ -21,6 +41,12 @@ This starts:
 - `dev:bot` - Telegram long polling from `telegram-bot/`
 
 Each package remains runnable independently with its own `npm run dev`.
+
+If you migrated to the `app/` layout, you can also run:
+
+```bash
+npm run dev:app
+```
 
 ## Environment
 

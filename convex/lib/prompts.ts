@@ -246,3 +246,74 @@ export function buildAiJobComparisonPrompt(input: {
     `Comparison JSON: ${input.comparisonJson}`,
   ].join("\n");
 }
+
+const RECRUITER_AGENT_SYSTEM = [
+  "You are JumysAI, an employer-side hiring copilot for Kazakhstan (Aktau / Mangystau).",
+  "Answer in Russian by default. Be concise, practical, and honest.",
+  "Never invent candidate employers, exact salaries, or contact details not supplied in the prompt.",
+  "Do not encourage illegal discrimination; flag vague or risky wording instead of repeating it as advice.",
+].join("\n");
+
+export function recruiterAgentSystemPrompt(): string {
+  return RECRUITER_AGENT_SYSTEM;
+}
+
+export function buildRecruiterRouterPrompt(input: {
+  vacancySnapshot: string | null;
+  recentMessages: string[];
+  userMessage: string;
+}): string {
+  return [
+    RECRUITER_AGENT_SYSTEM,
+    "Classify the employer's latest message for the next tool step.",
+    "match_candidates: they want to find or rank people (ideal hire, who fits, similar profiles, «найди кандидатов»).",
+    "improve_job_post: they want to polish the posting (title, requirements, tone, salary wording, missing fields, bias check).",
+    "both: they clearly want both in one turn.",
+    "clarify: you need one short disambiguation question before running matching or vacancy edits.",
+    "If improve_job_post or both is chosen but no vacancy snapshot is provided, you MUST use mode=clarify and ask them to open the assistant from a specific vacancy page or paste key fields.",
+    "quickReplies: up to 4 very short Russian tap replies when clarifying; otherwise [].",
+    input.vacancySnapshot
+      ? `Current native vacancy snapshot (may be partial):\n${input.vacancySnapshot}`
+      : "Vacancy snapshot: none (vacancy context not loaded).",
+    input.recentMessages.length
+      ? `Recent chat:\n${input.recentMessages.join("\n")}`
+      : "Recent chat: none",
+    `Employer message: ${input.userMessage}`,
+  ].join("\n\n");
+}
+
+export function buildRecruiterMatchPackPrompt(input: {
+  roleOrUserMessage: string;
+  vacancySnapshot: string | null;
+  profilesJson: string;
+}): string {
+  return [
+    RECRUITER_AGENT_SYSTEM,
+    "You rank candidate PROFILE SNIPPETS for an employer. Use only provided profiles JSON.",
+    "Return assistantMessage in Russian: brief intro + how to interpret scores + invite clarifying filters next.",
+    "For each candidate: reasons must be 1-5 short bullets in Russian tied to skills/city/experience vs the role text.",
+    "matchScore is your qualitative fit 0-100 (independent of vector order). profileId MUST copy exactly from input.",
+    `Role / employer message:\n${input.roleOrUserMessage}`,
+    input.vacancySnapshot
+      ? `Vacancy snapshot:\n${input.vacancySnapshot}`
+      : "Vacancy snapshot: none.",
+    `Profiles JSON:\n${input.profilesJson}`,
+  ].join("\n\n");
+}
+
+export function buildRecruiterVacancyCoachPrompt(input: {
+  vacancyJson: string;
+  userMessage: string;
+}): string {
+  return [
+    RECRUITER_AGENT_SYSTEM,
+    "Review and improve this job post for clarity, completeness, and inclusive tone.",
+    "assistantMessage: Russian summary for the employer (what you changed mentally, what to fix next).",
+    "titleSuggestion / rewrites: null if the original is already strong; otherwise concrete Russian text.",
+    "salaryWording: suggest compliant, non-deceptive phrasing; null if salary already clear.",
+    "missingFields: bullet codes like salary_range, schedule, location, employment_type.",
+    "issues: discriminatory/vague/risky phrases with severity (block=likely illegal discrimination, warn=fix, info=nice-to-have).",
+    `Vacancy JSON:\n${input.vacancyJson}`,
+    `Employer instruction: ${input.userMessage}`,
+  ].join("\n\n");
+}

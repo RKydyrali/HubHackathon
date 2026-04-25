@@ -21,3 +21,7 @@ Copy `.env.example` to `.env.local` in this directory.
 - `npm test` - run Vitest tests.
 
 From the repository root, use `npm run dev:web` for just the web app or `npm run dev` for the full local stack.
+
+## Vercel
+
+Set **Root Directory** to `web`. This app imports `../convex/_generated/api`, so `tsc` must resolve Convex backend types; `web/vercel.json` runs **`npm install` in the repo root** first (`npm install --prefix ..`), then installs `web` dependencies. SPA rewrites are included for client-side routing.

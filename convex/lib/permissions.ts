@@ -342,6 +342,44 @@ export function assertCanReadReviewsAboutUser(
   }
 }
 
+export function canAccessRecruiterChat(
+  user: Doc<"users">,
+  chat: { employerUserId: Id<"users"> },
+): boolean {
+  return isAdmin(user) || user._id === chat.employerUserId;
+}
+
+export function assertCanAccessRecruiterChat(
+  user: Doc<"users">,
+  chat: { employerUserId: Id<"users"> },
+): void {
+  if (!canAccessRecruiterChat(user, chat)) {
+    throw new ConvexError("Forbidden");
+  }
+}
+
+/** In-product thread + post-hire contact workspace: hired pipeline only, both parties. */
+export function canAccessHiredApplicationMessaging(
+  user: Doc<"users">,
+  application: Doc<"applications">,
+  vacancy: Doc<"vacancies">,
+): boolean {
+  if (application.status !== "hired") {
+    return false;
+  }
+  return canAnalyzeScreeningApplication(user, application, vacancy);
+}
+
+export function assertCanAccessHiredApplicationMessaging(
+  user: Doc<"users">,
+  application: Doc<"applications">,
+  vacancy: Doc<"vacancies">,
+): void {
+  if (!canAccessHiredApplicationMessaging(user, application, vacancy)) {
+    throw new ConvexError("Forbidden");
+  }
+}
+
 export function assertNotificationRecipient(
   user: Doc<"users">,
   notification: { userId: Id<"users"> },

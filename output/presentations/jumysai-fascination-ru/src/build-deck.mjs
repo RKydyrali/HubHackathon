@@ -341,14 +341,9 @@ function problem() {
           ]),
         ]),
         row({ width: fill, height: fill, gap: 24, align: "center", justify: "center" }, [
-          screenshotFrame(mobileHomeScreenshot, "Мобильная главная JumysAI", {
-            width: fixed(330),
-            height: fixed(760),
-            radius: "rounded-lg",
-          }),
           screenshotFrame(mobileVacanciesScreenshot, "Мобильный каталог JumysAI", {
-            width: fixed(330),
-            height: fixed(760),
+            width: fixed(460),
+            height: fixed(820),
             radius: "rounded-lg",
           }),
         ]),
@@ -450,12 +445,8 @@ function seekerJourney() {
         ]),
         row({ width: fill, height: fill, gap: 26, align: "center", justify: "center" }, [
           screenshotFrame(mobileHomeScreenshot, "Мобильная главная JumysAI", {
-            width: fixed(330),
-            height: fixed(760),
-          }),
-          screenshotFrame(mobileVacanciesScreenshot, "Мобильные вакансии JumysAI", {
-            width: fixed(330),
-            height: fixed(760),
+            width: fixed(460),
+            height: fixed(820),
           }),
         ]),
       ],
@@ -587,10 +578,10 @@ function trust() {
       }),
     ],
     right: [
-      statLine("AI", "только подсказка для скрининга и сопоставления", C.lilac),
-      statLine("JumysAI", "можно откликнуться внутри продукта", C.green),
-      statLine("HH", "только поиск и внешний URL для отклика", C.coral),
-      statLine("сервер", "роль, владелец и статус проверяются в Convex", C.sea),
+      smallNode("AI", "подсказывает, объясняет и помогает сопоставлять", "#EAE8FF"),
+      smallNode("JumysAI", "дает нативный отклик внутри продукта", "#DFF6E9"),
+      smallNode("HH", "остается внешним источником, куда ведет ссылка", "#FFE1DA"),
+      smallNode("Сервер", "роль, владелец и статус проверяются в Convex", "#D7F4F1"),
     ],
     footer: "Правила взяты из PROJECT_SCOPE.md, docs/jumysai-technical-scope.md и Convex modules.",
   });
@@ -660,7 +651,8 @@ async function renderPresentation(deck, dir) {
   return files;
 }
 
-const renderFiles = await renderPresentation(presentation, path.join(scratch, "renders"));
+const renderFiles =
+  process.env.RENDER_SOURCE === "1" ? await renderPresentation(presentation, path.join(scratch, "renders")) : [];
 await fs.writeFile(
   path.join(scratch, "build-summary.json"),
   JSON.stringify(
