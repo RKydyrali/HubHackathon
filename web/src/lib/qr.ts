@@ -3,6 +3,8 @@
 // adapted to TypeScript and trimmed for our use case (single QR, canvas render).
 // Intentionally self-contained to avoid adding dependencies for a hackathon demo.
 
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 type QRErrorCorrectLevel = "L" | "M" | "Q" | "H";
 
 type DrawQrOptions = {
@@ -13,7 +15,6 @@ type DrawQrOptions = {
   ecLevel?: QRErrorCorrectLevel;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyObj = any;
 
 const EC_LEVEL_MAP: Record<QRErrorCorrectLevel, number> = { L: 1, M: 0, Q: 3, H: 2 };

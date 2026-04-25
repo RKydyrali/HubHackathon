@@ -20,6 +20,13 @@ import {
   employmentTypeValidator,
   experienceLevelValidator,
   interviewStatusValidator,
+  interviewScenarioAnswerValidator,
+  interviewScenarioConstraintsValidator,
+  interviewScenarioEvaluationValidator,
+  interviewScenarioRubricValidator,
+  interviewScenarioStatusValidator,
+  interviewScenarioSubmissionStatusValidator,
+  interviewScenarioTasksValidator,
   companyComplaintKindValidator,
   companyComplaintStatusValidator,
   mockInterviewMessageValidator,
@@ -343,6 +350,49 @@ export default defineSchema({
     .index("by_applicationId", ["applicationId"])
     .index("by_employerUserId", ["employerUserId"])
     .index("by_seekerUserId", ["seekerUserId"])
+    .index("by_seedBatchId", ["seedBatchId"]),
+
+  interviewScenarios: defineTable({
+    applicationId: v.id("applications"),
+    vacancyId: v.id("vacancies"),
+    employerUserId: v.id("users"),
+    seekerUserId: v.id("users"),
+    status: interviewScenarioStatusValidator,
+    context: v.string(),
+    tasks: interviewScenarioTasksValidator,
+    constraints: interviewScenarioConstraintsValidator,
+    rubric: interviewScenarioRubricValidator,
+    createdAt: v.number(),
+    updatedAt: v.number(),
+    publishedAt: v.optional(v.number()),
+    archivedAt: v.optional(v.number()),
+    seedBatchId: v.optional(v.string()),
+  })
+    .index("by_applicationId", ["applicationId"])
+    .index("by_applicationId_and_status", ["applicationId", "status"])
+    .index("by_employerUserId", ["employerUserId"])
+    .index("by_seekerUserId", ["seekerUserId"])
+    .index("by_seedBatchId", ["seedBatchId"]),
+
+  interviewScenarioSubmissions: defineTable({
+    scenarioId: v.id("interviewScenarios"),
+    applicationId: v.id("applications"),
+    vacancyId: v.id("vacancies"),
+    employerUserId: v.id("users"),
+    seekerUserId: v.id("users"),
+    attemptNumber: v.number(),
+    status: interviewScenarioSubmissionStatusValidator,
+    answers: v.array(interviewScenarioAnswerValidator),
+    evaluation: v.optional(interviewScenarioEvaluationValidator),
+    submittedAt: v.number(),
+    evaluatedAt: v.optional(v.number()),
+    evaluationError: v.optional(v.string()),
+    seedBatchId: v.optional(v.string()),
+  })
+    .index("by_scenarioId_and_attemptNumber", ["scenarioId", "attemptNumber"])
+    .index("by_applicationId", ["applicationId"])
+    .index("by_seekerUserId", ["seekerUserId"])
+    .index("by_employerUserId", ["employerUserId"])
     .index("by_seedBatchId", ["seedBatchId"]),
 
   mockInterviewSessions: defineTable({

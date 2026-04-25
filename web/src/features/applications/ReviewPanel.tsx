@@ -19,11 +19,17 @@ import { getStatusMeta } from "@/lib/status-ui";
 import { ALLOWED_TRANSITIONS } from "@/lib/status";
 import type { ApplicantWithProfile } from "@/types/domain";
 import { ApplicationStatusTimeline } from "./ApplicationStatusTimeline";
+import { EmployerInterviewScenarioSection } from "./EmployerInterviewScenarioSection";
 import { HiredApplicationThread } from "./HiredApplicationThread";
 import { PostHireNextSteps } from "./PostHireNextSteps";
 
 const scheduleSchema = z.object({
-  scheduledAt: z.string().min(1, "Укажите дату и время"),
+  scheduledAt: z
+    .string()
+    .min(1, "Укажите дату и время")
+    .refine((value) => Number.isFinite(new Date(value).getTime()), {
+      message: "Неверный формат даты и времени",
+    }),
   locationOrLink: z.string().optional(),
 });
 
@@ -42,15 +48,41 @@ export function ReviewPanel({ item }: { item: ApplicantWithProfile }) {
     defaultValues: { scheduledAt: "", locationOrLink: "" },
   });
 
+  const interviewDateFormatter = new Intl.DateTimeFormat(locale === "kk" ? "kk-KZ" : "ru-KZ", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+
+  function formatScheduledAt(value: unknown) {
+    const ms =
+      typeof value === "number"
+        ? value
+        : typeof value === "string"
+          ? new Date(value).getTime()
+          : NaN;
+
+    if (!Number.isFinite(ms)) {
+      return locale === "kk" ? "Күні көрсетілмеген" : "Дата не указана";
+    }
+
+    return interviewDateFormatter.format(new Date(ms));
+  }
+
   async function updateStatus(nextStatus: (typeof actions)[number]) {
     await moveStatus({ applicationId: item.application._id, status: nextStatus });
     toast.success(locale === "kk" ? "Өтініш мәртебесі жаңартылды" : "Статус отклика обновлен");
   }
 
   async function submitSchedule(values: ScheduleForm) {
+    const scheduledAtMs = new Date(values.scheduledAt).getTime();
+    if (!Number.isFinite(scheduledAtMs)) {
+      toast.error(locale === "kk" ? "Күн/уақыт қате" : "Некорректная дата/время");
+      return;
+    }
+
     await scheduleInterview({
       applicationId: item.application._id as Id<"applications">,
-      scheduledAt: new Date(values.scheduledAt).getTime(),
+      scheduledAt: scheduledAtMs,
       locationOrLink: values.locationOrLink || undefined,
     });
     scheduleForm.reset();
@@ -114,6 +146,8 @@ export function ReviewPanel({ item }: { item: ApplicantWithProfile }) {
             </div>
           </div>
         </SectionPanel>
+
+        <EmployerInterviewScenarioSection item={item} />
 
         {item.application.status === "hired" ? (
           <section className="rounded-lg border bg-background p-4">
@@ -187,10 +221,7 @@ export function ReviewPanel({ item }: { item: ApplicantWithProfile }) {
               {interviews.map((interview) => (
                 <div key={interview._id} className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-card p-3">
                   <span className="text-sm text-muted-foreground">
-                    {new Intl.DateTimeFormat(locale === "kk" ? "kk-KZ" : "ru-KZ", {
-                      dateStyle: "medium",
-                      timeStyle: "short",
-                    }).format(new Date(interview.scheduledAt))}
+                    {formatScheduledAt(interview.scheduledAt)}
                   </span>
                   <StatusBadge status={interview.status} locale={locale} />
                 </div>

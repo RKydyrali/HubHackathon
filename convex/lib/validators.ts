@@ -79,6 +79,62 @@ export const interviewStatusValidator = v.union(
   v.literal("cancelled"),
 );
 
+export const interviewScenarioStatusValidator = v.union(
+  v.literal("draft"),
+  v.literal("published"),
+  v.literal("archived"),
+);
+
+export const interviewScenarioSubmissionStatusValidator = v.union(
+  v.literal("submitted"),
+  v.literal("evaluating"),
+  v.literal("evaluated"),
+  v.literal("evaluation_failed"),
+);
+
+export const interviewScenarioTaskValidator = v.object({
+  prompt: v.string(),
+});
+
+export const interviewScenarioRubricCriterionValidator = v.object({
+  criterion: v.string(),
+  description: v.string(),
+  maxScore: v.number(),
+});
+
+export const interviewScenarioTasksValidator = v.array(interviewScenarioTaskValidator);
+export const interviewScenarioConstraintsValidator = v.array(v.string());
+export const interviewScenarioRubricValidator = v.array(
+  interviewScenarioRubricCriterionValidator,
+);
+
+export const interviewScenarioDraftValidator = v.object({
+  context: v.string(),
+  tasks: interviewScenarioTasksValidator,
+  constraints: interviewScenarioConstraintsValidator,
+  rubric: interviewScenarioRubricValidator,
+});
+
+export const interviewScenarioAnswerValidator = v.object({
+  taskIndex: v.number(),
+  answer: v.string(),
+  links: v.optional(v.array(v.string())),
+});
+
+export const interviewScenarioEvaluationValidator = v.object({
+  overallScore: v.number(),
+  criterionScores: v.array(
+    v.object({
+      criterion: v.string(),
+      score: v.number(),
+      maxScore: v.number(),
+      evidence: v.string(),
+    }),
+  ),
+  riskNotes: v.array(v.string()),
+  recommendation: v.string(),
+});
+
 export const companyComplaintKindValidator = v.union(
   v.literal("no_response"),
   v.literal("misleading_vacancy"),

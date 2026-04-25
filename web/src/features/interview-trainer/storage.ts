@@ -46,7 +46,10 @@ export function loadQuestionsState(): StoredQuestionsState | null {
     const parsed = JSON.parse(raw) as Partial<StoredQuestionsState>;
     return {
       activeIndex: typeof parsed.activeIndex === "number" ? parsed.activeIndex : 0,
-      answers: parsed.answers && typeof parsed.answers === "object" ? (parsed.answers as any) : {},
+      answers:
+        parsed.answers && typeof parsed.answers === "object"
+          ? (parsed.answers as StoredQuestionsState["answers"])
+          : {},
     };
   } catch {
     return null;

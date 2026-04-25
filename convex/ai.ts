@@ -3,6 +3,7 @@ import type { z } from "zod";
 
 import { api, internal } from "./_generated/api";
 import { action, internalAction, internalQuery } from "./_generated/server";
+import type { Doc } from "./_generated/dataModel";
 import { requireClerkIdentity } from "./lib/auth";
 import {
   assertCanAnalyzeScreeningApplication,
@@ -37,6 +38,8 @@ import {
   buildMockInterviewSystemPrompt,
   buildElevatorPitchImprovePrompt,
   buildInterviewAnswerFeedbackPrompt,
+  buildInterviewScenarioDraftPrompt,
+  buildInterviewScenarioEvaluationPrompt,
   buildResumeProfileExtractionPrompt,
   buildScreeningAnalysisPrompt,
   buildScreeningQuestionsPrompt,
@@ -46,6 +49,8 @@ import {
   createZeroEmbedding,
   answerFeedbackSchema,
   elevatorPitchSchema,
+  interviewScenarioDraftSchema,
+  interviewScenarioEvaluationSchema,
   mockInterviewDebriefSchema,
   screeningAnalysisSchema,
   screeningQuestionsSchema,
@@ -72,7 +77,7 @@ function isUsableEmbedding(embedding: number[] | undefined | null): boolean {
   );
 }
 
-async function requireActionUser(ctx: any) {
+async function requireActionUser(ctx: any): Promise<Doc<"users">> {
   const identity = await requireClerkIdentity(ctx);
   const user = await ctx.runQuery(internal.users.getUserByIdentityInternal, {
     subject: identity.subject,
@@ -340,6 +345,175 @@ export const analyzeScreeningInternal = internalAction({
       aiScore: analysis.data.score,
       aiSummary: analysis.data.summary,
     });
+  },
+});
+
+function buildScenarioProfileSummary(profile: {
+  fullName: string;
+  city: string;
+  bio?: string;
+  skills: string[];
+  resumeText?: string;
+} | null): string | undefined {
+  if (!profile) {
+    return undefined;
+  }
+  return [
+    `${profile.fullName}, ${profile.city}`,
+    profile.bio?.trim(),
+    profile.skills.length ? `Skills: ${profile.skills.slice(0, 12).join(", ")}` : undefined,
+    profile.resumeText?.trim() ? `Resume excerpt: ${profile.resumeText.trim().slice(0, 1200)}` : undefined,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+function fallbackInterviewScenarioDraft(input: {
+  vacancyTitle: string;
+  vacancyDescription: string;
+}) {
+  return {
+    context: `Кандидат получает короткий практический кейс для роли "${input.vacancyTitle}". Нужно показать ход мысли, приоритеты и умение применять опыт к реальной рабочей ситуации.`,
+    tasks: [
+      {
+        prompt: "Опишите, какие первые 3 шага вы предпримете в этой ситуации и почему именно в таком порядке.",
+      },
+      {
+        prompt: "Назовите основные риски, что вы проверите перед решением, и какие данные или ссылки приложите как подтверждение.",
+      },
+    ],
+    constraints: [
+      "Ответ должен быть практичным и применимым в рамках описанной вакансии.",
+      "Не используйте персональные данные клиентов, коллег или бывших работодателей.",
+    ],
+    rubric: [
+      {
+        criterion: "Практичность",
+        description: "Решение можно выполнить в реальных условиях роли.",
+        maxScore: 40,
+      },
+      {
+        criterion: "Структура",
+        description: "Ответ понятен, приоритеты объяснены, есть последовательность действий.",
+        maxScore: 30,
+      },
+      {
+        criterion: "Доказательность",
+        description: "Кандидат указывает наблюдаемые факты, данные или ссылки, на которые опирается.",
+        maxScore: 30,
+      },
+    ],
+  };
+}
+
+export const generateInterviewScenarioDraft: any = action({
+  args: { applicationId: v.id("applications") },
+  handler: async (ctx: any, args: { applicationId: any }): Promise<any> => {
+    const user: Doc<"users"> = await requireActionUser(ctx);
+    const context: any = await ctx.runQuery(
+      internal.interviewScenarios.getGenerationContextInternal,
+      {
+        applicationId: args.applicationId,
+        callerUserId: user._id,
+      },
+    );
+    const prompt = buildInterviewScenarioDraftPrompt({
+      vacancyTitle: context.vacancy.title,
+      vacancyDescription: context.vacancy.description,
+      vacancyCity: context.vacancy.city,
+      screeningAnswers: context.application.screeningAnswers,
+      profileSummary: buildScenarioProfileSummary(context.profile),
+    });
+    const result = await tryRequestStructuredJson(
+      "interview_scenario_draft",
+      prompt,
+      interviewScenarioDraftSchema,
+      { complex: true },
+    );
+    return {
+      ok: true as const,
+      aiFailed: !result.ok,
+      draft: result.ok
+        ? result.data
+        : fallbackInterviewScenarioDraft({
+            vacancyTitle: context.vacancy.title,
+            vacancyDescription: context.vacancy.description,
+          }),
+    };
+  },
+});
+
+export const evaluateInterviewScenarioSubmission: any = action({
+  args: { submissionId: v.id("interviewScenarioSubmissions") },
+  handler: async (ctx: any, args: { submissionId: any }): Promise<any> => {
+    const user: Doc<"users"> = await requireActionUser(ctx);
+    const context: any = await ctx.runQuery(
+      internal.interviewScenarios.getEvaluationContextInternal,
+      {
+        submissionId: args.submissionId,
+      },
+    );
+    if (
+      user.role !== "admin" &&
+      user._id !== context.submission.employerUserId &&
+      user._id !== context.submission.seekerUserId
+    ) {
+      throw new ConvexError("Forbidden");
+    }
+    return ctx.runAction((internal.ai as any).evaluateInterviewScenarioSubmissionInternal, {
+      submissionId: args.submissionId,
+    });
+  },
+});
+
+export const evaluateInterviewScenarioSubmissionInternal: any = internalAction({
+  args: { submissionId: v.id("interviewScenarioSubmissions") },
+  handler: async (ctx: any, args: { submissionId: any }): Promise<any> => {
+    const context: any = await ctx.runQuery(
+      internal.interviewScenarios.getEvaluationContextInternal,
+      {
+        submissionId: args.submissionId,
+      },
+    );
+    const prompt = buildInterviewScenarioEvaluationPrompt({
+      scenarioJson: JSON.stringify({
+        context: context.scenario.context,
+        tasks: context.scenario.tasks,
+        constraints: context.scenario.constraints,
+        rubric: context.scenario.rubric,
+        vacancy: {
+          title: context.vacancy.title,
+          description: context.vacancy.description,
+          city: context.vacancy.city,
+        },
+      }),
+      submissionJson: JSON.stringify({
+        attemptNumber: context.submission.attemptNumber,
+        answers: context.submission.answers,
+        profileSummary: buildScenarioProfileSummary(context.profile),
+      }),
+    });
+    const result = await tryRequestStructuredJson(
+      "interview_scenario_evaluation",
+      prompt,
+      interviewScenarioEvaluationSchema,
+      { complex: true },
+    );
+    if (!result.ok) {
+      await ctx.runMutation(internal.interviewScenarios.markEvaluationFailedInternal, {
+        submissionId: args.submissionId,
+        error: result.error,
+      });
+      return { ok: false as const, error: result.error };
+    }
+    const saved: any = await ctx.runMutation(
+      internal.interviewScenarios.saveEvaluationInternal,
+      {
+        submissionId: args.submissionId,
+        evaluation: result.data,
+      },
+    );
+    return { ok: true as const, submission: saved };
   },
 });
 

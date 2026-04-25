@@ -34,6 +34,17 @@ export const INTERVIEW_STATUSES = [
   "completed",
   "cancelled",
 ] as const;
+export const INTERVIEW_SCENARIO_STATUSES = [
+  "draft",
+  "published",
+  "archived",
+] as const;
+export const INTERVIEW_SCENARIO_SUBMISSION_STATUSES = [
+  "submitted",
+  "evaluating",
+  "evaluated",
+  "evaluation_failed",
+] as const;
 export const COMPANY_COMPLAINT_KINDS = [
   "no_response",
   "misleading_vacancy",
@@ -55,6 +66,9 @@ export type NotificationDeliveryStatus =
   (typeof NOTIFICATION_DELIVERY_STATUSES)[number];
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 export type InterviewStatus = (typeof INTERVIEW_STATUSES)[number];
+export type InterviewScenarioStatus = (typeof INTERVIEW_SCENARIO_STATUSES)[number];
+export type InterviewScenarioSubmissionStatus =
+  (typeof INTERVIEW_SCENARIO_SUBMISSION_STATUSES)[number];
 export type CompanyComplaintKind = (typeof COMPANY_COMPLAINT_KINDS)[number];
 export type CompanyComplaintStatus = (typeof COMPANY_COMPLAINT_STATUSES)[number];
 

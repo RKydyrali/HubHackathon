@@ -9,6 +9,7 @@ import { api, type Id } from "@/lib/convex-api";
 import { useI18n } from "@/lib/i18n";
 import { HiredApplicationThread } from "./HiredApplicationThread";
 import { PostHireNextSteps } from "./PostHireNextSteps";
+import { SeekerInterviewScenarioPanel } from "./SeekerInterviewScenarioPanel";
 
 export function SeekerApplicationDetailPage() {
   const { applicationId } = useParams();
@@ -41,6 +42,9 @@ export function SeekerApplicationDetailPage() {
         action={<StatusBadge status={data.application.status} locale={locale} />}
       />
       <div className="container-app flex max-w-2xl flex-col gap-6 py-6">
+        {data.application.status === "interview" ? (
+          <SeekerInterviewScenarioPanel applicationId={data.application._id} />
+        ) : null}
         {data.application.status === "hired" ? (
           <>
             <section className="rounded-xl border bg-card p-4">

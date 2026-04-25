@@ -160,6 +160,51 @@ export function buildInterviewAnswerFeedbackPrompt(input: {
   ].join("\n");
 }
 
+export function buildInterviewScenarioDraftPrompt(input: {
+  vacancyTitle: string;
+  vacancyDescription: string;
+  vacancyCity: string;
+  screeningAnswers?: Array<{ question: string; answer: string }>;
+  profileSummary?: string;
+}): string {
+  const answers = (input.screeningAnswers ?? [])
+    .slice(0, 8)
+    .map((item, index) => `${index + 1}. Q: ${item.question}\nA: ${item.answer}`)
+    .join("\n");
+  return [
+    "You are JumysAI, helping an employer create a practical case-interview scenario for a candidate.",
+    "Output Russian by default. Keep it suitable for a web app where the employer reviews and edits before publishing.",
+    "Create one structured case scenario with context, task prompts, constraints, and a scoring rubric.",
+    "Do not ask for sensitive personal data, identity documents, exact home address, health, family, religion, ethnicity, or other protected information.",
+    "Tasks must be concrete and answerable in writing. Prefer 2-4 tasks.",
+    "Constraints must be realistic for the vacancy and local Kazakhstan hiring context. Do not invent confidential company data.",
+    "Rubric items must add up to a useful 100-point assessment when possible.",
+    `Vacancy: ${input.vacancyTitle}`,
+    `City: ${input.vacancyCity}`,
+    `Vacancy description:\n${input.vacancyDescription.slice(0, 6000)}`,
+    input.profileSummary
+      ? `Candidate profile summary:\n${input.profileSummary.slice(0, 2000)}`
+      : "Candidate profile summary: none",
+    answers ? `Screening answers:\n${answers}` : "Screening answers: none",
+  ].join("\n");
+}
+
+export function buildInterviewScenarioEvaluationPrompt(input: {
+  scenarioJson: string;
+  submissionJson: string;
+}): string {
+  return [
+    "You are JumysAI evaluating a candidate's submitted case-interview solution for an employer.",
+    "Use only the scenario, rubric, and candidate submission provided. Do not invent facts or infer hidden experience.",
+    "Return rubric-based scores with concise evidence from the candidate's answer.",
+    "overallScore must be 0-100. Each criterion score should be proportional to that criterion's maxScore.",
+    "riskNotes should list concrete gaps, uncertainty, or missing evidence. If there are no material risks, return an empty array.",
+    "recommendation should be a short Russian advisory sentence for the employer; it must not make an automatic hiring decision.",
+    `Scenario JSON:\n${input.scenarioJson}`,
+    `Submission JSON:\n${input.submissionJson}`,
+  ].join("\n");
+}
+
 export function buildAiJobCriteriaPrompt(input: {
   message: string;
   previousCriteriaJson?: string;

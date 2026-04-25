@@ -36,7 +36,7 @@ import { SettingsPage } from "@/features/settings/SettingsPage";
 import { ApplyPage } from "@/features/vacancies/ApplyPage";
 import { EmployerVacanciesPage } from "@/features/vacancies/EmployerVacanciesPage";
 import { EmployerVacancyDetailPage } from "@/features/vacancies/EmployerVacancyDetailPage";
-import { HiringAssistantPage } from "@/features/hiring-assistant/HiringAssistantPage";
+import { AiHiringPage } from "@/features/hiring-assistant/AiHiringPage";
 import { ForYouPage } from "@/features/vacancies/ForYouPage";
 import { VacancyDetailPage } from "@/features/vacancies/VacancyDetailPage";
 import { VacancyListPage } from "@/features/vacancies/VacancyListPage";
@@ -113,10 +113,11 @@ const router = createBrowserRouter(
       ),
       children: [
         { path: "/employer/dashboard", element: <EmployerDashboardPage /> },
+        { path: "/employer/ai-hiring", element: <AiHiringPage /> },
         { path: "/employer/vacancies", element: <EmployerVacanciesPage /> },
         { path: "/employer/vacancies/:id", element: <EmployerVacancyDetailPage /> },
-        { path: "/employer/hiring-assistant", element: <HiringAssistantPage /> },
-        { path: "/employer/hiring-assistant/:chatId", element: <HiringAssistantPage /> },
+        { path: "/employer/hiring-assistant", element: <LegacyEmployerHiringAssistantRedirect /> },
+        { path: "/employer/hiring-assistant/:chatId", element: <LegacyEmployerHiringAssistantRedirect /> },
         { path: "/employer/applications", element: <EmployerApplicationsPage /> },
         { path: "/employer/applications/:id", element: <EmployerApplicationReviewPage /> },
         { path: "/employer/interviews", element: <InterviewsPage /> },
@@ -168,6 +169,18 @@ function LegacyJobRedirect() {
 function DashboardAiSearchRedirect() {
   const { chatId } = useParams();
   return <Navigate to={`/ai-search/${chatId}`} replace />;
+}
+
+function LegacyEmployerHiringAssistantRedirect() {
+  const { chatId } = useParams();
+  const { search } = useLocation();
+  const params = new URLSearchParams(search);
+  const vacancyId = params.get("vacancyId");
+  const next = new URLSearchParams();
+  next.set("chat", "open");
+  if (chatId) next.set("chatId", chatId);
+  if (vacancyId) next.set("vacancyId", vacancyId);
+  return <Navigate to={{ pathname: "/employer/ai-hiring", search: `?${next.toString()}` }} replace />;
 }
 
 function RootRoute() {

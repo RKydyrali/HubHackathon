@@ -39,7 +39,7 @@ export const navByRole: Record<UserRole, NavItem[]> = {
   ],
   employer: [
     { to: "/employer/dashboard", labelKey: "dashboard", icon: "House", end: true },
-    { to: "/employer/hiring-assistant", labelKey: "hiringAssistant", icon: "MagnifyingGlass" },
+    { to: "/employer/ai-hiring", labelKey: "hiringAssistant", icon: "MagnifyingGlass" },
     { to: "/employer/vacancies", labelKey: "vacancies", icon: "Briefcase" },
     { to: "/employer/applications", labelKey: "applications", icon: "Users" },
     { to: "/employer/interviews", labelKey: "interviews", icon: "Calendar" },

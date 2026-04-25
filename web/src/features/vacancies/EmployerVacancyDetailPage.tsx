@@ -1,5 +1,4 @@
-import { useAction, useQuery } from "convex/react";
-import { useEffect, useState } from "react";
+import { useQuery } from "convex/react";
 import { Link, useParams } from "react-router-dom";
 
 import { EmptyState } from "@/components/feedback/EmptyState";
@@ -12,55 +11,14 @@ import { StatusBadge } from "@/components/shared/StatusBadge";
 import { buttonVariants } from "@/components/ui/button";
 import { api, type Id } from "@/lib/convex-api";
 import { useI18n } from "@/lib/i18n";
+import { useVacancySeekerMatches } from "./useVacancySeekerMatches";
 import { VacancyEditor } from "./VacancyEditor";
 
 export function EmployerVacancyDetailPage() {
   const { id } = useParams();
   const { locale } = useI18n();
   const vacancy = useQuery(api.vacancies.getVacancy, id ? { vacancyId: id as Id<"vacancies"> } : "skip");
-  const getMatchingSeekers = useAction(api.ai.getMatchingSeekers);
-  const [seekerMatches, setSeekerMatches] = useState<Array<{ profile: any; matchScore: number }> | null>(null);
-  const [loadingSeekers, setLoadingSeekers] = useState(false);
-
-  useEffect(() => {
-    if (!vacancy) return;
-    if (vacancy.source !== "native") {
-      setSeekerMatches(null);
-      return;
-    }
-    let cancelled = false;
-    setLoadingSeekers(true);
-    void (async () => {
-      try {
-        const result = (await getMatchingSeekers({
-          vacancyId: vacancy._id as Id<"vacancies">,
-          limit: 8,
-        })) as Array<{ profile: any; matchScore: number }>;
-        if (!cancelled) {
-          // Keep only what we render.
-          const trimmed = (result ?? [])
-            .filter((r) => typeof r?.matchScore === "number" && r.profile)
-            .map((r) => ({
-              matchScore: r.matchScore,
-              profile: {
-                _id: String(r.profile._id),
-                fullName: r.profile.fullName,
-                city: r.profile.city,
-                skills: r.profile.skills,
-              },
-            }));
-          setSeekerMatches(trimmed);
-        }
-      } catch {
-        if (!cancelled) setSeekerMatches([]);
-      } finally {
-        if (!cancelled) setLoadingSeekers(false);
-      }
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [getMatchingSeekers, vacancy?._id, vacancy?.source]);
+  const seeker = useVacancySeekerMatches(vacancy?._id ? String(vacancy._id) : undefined);
 
   if (vacancy === undefined) return <LoadingSkeleton variant="form" />;
 
@@ -118,10 +76,10 @@ export function EmployerVacancyDetailPage() {
                     ? "Бұл HH вакансиясы. Мұнда кандидаттарды сәйкестендіру қолжетімсіз."
                     : "Это HH-вакансия. Матчинг кандидатов недоступен."}
                 </p>
-              ) : loadingSeekers || seekerMatches === null ? (
+              ) : seeker.loading ? (
                 <LoadingSkeleton variant="rows" />
-              ) : seekerMatches.length ? (
-                <SeekerMatchList matches={seekerMatches} />
+              ) : seeker.matches.length ? (
+                <SeekerMatchList matches={seeker.matches} />
               ) : (
                 <p className="text-sm text-muted-foreground">
                   {locale === "kk"

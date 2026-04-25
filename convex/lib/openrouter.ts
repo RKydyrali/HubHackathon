@@ -316,3 +316,35 @@ export const answerFeedbackSchema = z.object({
   score: z.number().min(0).max(100),
   suggestion: z.string().min(1),
 });
+
+export const interviewScenarioDraftSchema = z.object({
+  context: z.string().min(1),
+  tasks: z.array(z.object({ prompt: z.string().min(1) })).min(1).max(8),
+  constraints: z.array(z.string().min(1)).max(10),
+  rubric: z
+    .array(
+      z.object({
+        criterion: z.string().min(1),
+        description: z.string().min(1),
+        maxScore: z.number().min(1).max(100),
+      }),
+    )
+    .min(1)
+    .max(8),
+});
+
+export const interviewScenarioEvaluationSchema = z.object({
+  overallScore: z.number().min(0).max(100),
+  criterionScores: z
+    .array(
+      z.object({
+        criterion: z.string().min(1),
+        score: z.number().min(0).max(100),
+        maxScore: z.number().min(1).max(100),
+        evidence: z.string().min(1),
+      }),
+    )
+    .min(1),
+  riskNotes: z.array(z.string().min(1)).max(8),
+  recommendation: z.string().min(1),
+});

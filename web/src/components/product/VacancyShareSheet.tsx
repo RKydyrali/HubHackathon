@@ -59,7 +59,7 @@ export function VacancyShareSheet({
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
         render={
-          (trigger as any) ?? (
+          trigger ?? (
             <Button type="button" variant="outline">
               <QrCode data-icon="inline-start" weight="bold" />
               Share

@@ -21,9 +21,15 @@ type ChatMessage = {
 export function HiringAssistantPanel({
   chatId,
   initialVacancyId,
+  embed = false,
+  autoFocus = false,
+  onChatId,
 }: {
   chatId?: string;
   initialVacancyId?: string;
+  embed?: boolean;
+  autoFocus?: boolean;
+  onChatId?: (chatId?: string) => void;
 }) {
   const navigate = useNavigate();
   const { locale } = useI18n();
@@ -47,6 +53,7 @@ export function HiringAssistantPanel({
   const [pending, setPending] = useState(false);
   const [vacancyId, setVacancyId] = useState<string | undefined>(initialVacancyId);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     setVacancyId(initialVacancyId ?? activeChat?.vacancyId ?? undefined);
@@ -66,6 +73,11 @@ export function HiringAssistantPanel({
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [visibleMessages.length, pending]);
 
+  useEffect(() => {
+    if (!autoFocus) return;
+    textareaRef.current?.focus();
+  }, [autoFocus]);
+
   const handleSend = useCallback(async () => {
     const text = draft.trim();
     if (!text || pending) {
@@ -81,7 +93,14 @@ export function HiringAssistantPanel({
         createChat: !chatId,
       });
       if (res.chatId && !chatId) {
-        navigate(`/employer/hiring-assistant/${res.chatId}`, { replace: true });
+        onChatId?.(res.chatId);
+        if (!embed) {
+          const next = new URLSearchParams();
+          next.set("chat", "open");
+          next.set("chatId", res.chatId);
+          if (vacancyId) next.set("vacancyId", vacancyId);
+          navigate({ pathname: "/employer/ai-hiring", search: `?${next.toString()}` }, { replace: true });
+        }
       }
     } catch (e) {
       toast.error(locale === "kk" ? "Жіберу сәтсіз аяқталды" : "Не удалось отправить", {
@@ -90,7 +109,7 @@ export function HiringAssistantPanel({
     } finally {
       setPending(false);
     }
-  }, [chatId, draft, locale, navigate, pending, sendTurn, vacancyId]);
+  }, [chatId, draft, embed, locale, navigate, onChatId, pending, sendTurn, vacancyId]);
 
   const loading =
     currentUser === undefined ||
@@ -105,7 +124,8 @@ export function HiringAssistantPanel({
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[220px_minmax(0,1fr)]">
+    <div className={cn("grid gap-4", embed ? "grid-cols-1" : "lg:grid-cols-[220px_minmax(0,1fr)]")}>
+      {embed ? null : (
       <aside className="hidden rounded-2xl border bg-card/60 p-3 lg:block">
         <p className="mb-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
           {locale === "kk" ? "Диалогтар" : "Диалоги"}
@@ -114,7 +134,7 @@ export function HiringAssistantPanel({
           {(chats ?? []).map((c) => (
             <li key={c._id}>
               <Link
-                to={`/employer/hiring-assistant/${c._id}`}
+                to={`/employer/ai-hiring?chat=open&chatId=${c._id}${vacancyId ? `&vacancyId=${encodeURIComponent(vacancyId)}` : ""}`}
                 className={cn(
                   "block rounded-lg px-2 py-1.5 text-sm font-medium hover:bg-muted",
                   c._id === chatId ? "bg-primary/10 text-primary" : "text-foreground",
@@ -130,11 +150,17 @@ export function HiringAssistantPanel({
           variant="outline"
           size="sm"
           className="mt-3 w-full"
-          onClick={() => navigate("/employer/hiring-assistant")}
+          onClick={() => {
+            const next = new URLSearchParams();
+            next.set("chat", "open");
+            if (vacancyId) next.set("vacancyId", vacancyId);
+            navigate({ pathname: "/employer/ai-hiring", search: `?${next.toString()}` });
+          }}
         >
           {locale === "kk" ? "Жаңа" : "Новый"}
         </Button>
       </aside>
+      )}
 
       <div className="flex min-h-[420px] flex-col rounded-2xl border bg-card shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b px-4 py-3">
@@ -151,7 +177,13 @@ export function HiringAssistantPanel({
               onClick={() => {
                 void (async () => {
                   await deleteChat({ chatId: chatId as Id<"recruiterAiChats"> });
-                  navigate("/employer/hiring-assistant");
+                  onChatId?.(undefined);
+                  if (!embed) {
+                    const next = new URLSearchParams();
+                    next.set("chat", "open");
+                    if (vacancyId) next.set("vacancyId", vacancyId);
+                    navigate({ pathname: "/employer/ai-hiring", search: `?${next.toString()}` });
+                  }
                 })();
               }}
             >
@@ -198,6 +230,7 @@ export function HiringAssistantPanel({
 
         <div className="border-t p-3">
           <Textarea
+            ref={textareaRef}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             placeholder={

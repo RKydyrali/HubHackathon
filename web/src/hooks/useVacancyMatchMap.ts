@@ -1,7 +1,7 @@
 import { useAction, useConvexAuth, useQuery } from "convex/react";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-import { api, type Doc, type Id } from "@/lib/convex-api";
+import { api, type Doc } from "@/lib/convex-api";
 
 type MatchRow = { vacancy: Doc<"vacancies">; matchScore: number };
 

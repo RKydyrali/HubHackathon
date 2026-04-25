@@ -59,7 +59,17 @@ export function formatRelativeTime(timestamp: number) {
   return formatAbsoluteDate(timestamp);
 }
 
-export function formatAbsoluteDate(timestamp: number) {
+export function formatAbsoluteDate(
+  value: number | string | Date | null | undefined,
+  opts?: { fallback?: string },
+) {
+  const fallback = opts?.fallback ?? "—";
+
+  if (value == null) return fallback;
+
+  const date = value instanceof Date ? value : new Date(value);
+  if (!Number.isFinite(date.getTime())) return fallback;
+
   return new Intl.DateTimeFormat(KZ_DATE_LOCALE, {
     timeZone: KZ_TIME_ZONE,
     day: "2-digit",
@@ -67,7 +77,7 @@ export function formatAbsoluteDate(timestamp: number) {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
-  }).format(new Date(timestamp));
+  }).format(date);
 }
 
 export const EMPTY_STATES = {
