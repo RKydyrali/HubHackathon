@@ -20,8 +20,6 @@ import { BrandMark } from "@/components/shared/BrandMark";
 import { LocaleToggle } from "@/components/shared/LocaleToggle";
 import { AuroraBackground } from "@/components/skiper/AuroraBackground";
 import { Marquee } from "@/components/skiper/Marquee";
-import { NumberTicker } from "@/components/skiper/NumberTicker";
-import { ShimmerPill } from "@/components/skiper/ShimmerPill";
 import { SpotlightCard } from "@/components/skiper/SpotlightCard";
 import { Typewriter } from "@/components/skiper/Typewriter";
 import { WordReveal } from "@/components/skiper/WordReveal";
@@ -78,7 +76,6 @@ export function PublicWelcomePage() {
               <Badge variant="secondary" className="rounded-full px-3 py-1 text-xs">
                 {copy.publicHome.heroKicker}
               </Badge>
-              <ShimmerPill>{copy.publicHome.heroLivePill}</ShimmerPill>
             </div>
             <WordReveal
               as="h1"
@@ -247,7 +244,6 @@ function HeroSpotlight() {
         />
         <div className="relative flex items-center justify-between gap-3">
           <div>
-            <ShimmerPill className="mb-2">{copy.publicHome.aiDemoKicker}</ShimmerPill>
             <h2 className="mt-1 font-heading text-xl font-bold tracking-tight">
               <span className="text-gradient-brand">{copy.publicHome.aiDemoTitle}</span>
             </h2>
@@ -350,12 +346,10 @@ function HeroStats() {
           >
             <SpotlightCard className="h-full rounded-[1.5rem] border bg-card/85 p-5 shadow-card">
               <div className="flex items-baseline gap-1 font-heading text-3xl font-extrabold tracking-tight sm:text-4xl">
-                <NumberTicker
-                  value={item.value}
-                  className="text-gradient-brand"
-                  durationSeconds={1.4 + index * 0.2}
-                />
-                <span className="text-gradient-brand">{item.suffix}</span>
+                <span className="text-gradient-brand">
+                  {item.value}
+                  {item.suffix}
+                </span>
               </div>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.label}</p>
             </SpotlightCard>
