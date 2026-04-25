@@ -406,9 +406,9 @@ function fallbackInterviewScenarioDraft(input: {
   };
 }
 
-export const generateInterviewScenarioDraft: any = action({
+export const generateInterviewScenarioDraft = action({
   args: { applicationId: v.id("applications") },
-  handler: async (ctx: any, args: { applicationId: any }): Promise<any> => {
+  handler: async (ctx, args) => {
     const user: Doc<"users"> = await requireActionUser(ctx);
     const context: any = await ctx.runQuery(
       internal.interviewScenarios.getGenerationContextInternal,
@@ -443,9 +443,9 @@ export const generateInterviewScenarioDraft: any = action({
   },
 });
 
-export const evaluateInterviewScenarioSubmission: any = action({
+export const evaluateInterviewScenarioSubmission = action({
   args: { submissionId: v.id("interviewScenarioSubmissions") },
-  handler: async (ctx: any, args: { submissionId: any }): Promise<any> => {
+  handler: async (ctx, args): Promise<any> => {
     const user: Doc<"users"> = await requireActionUser(ctx);
     const context: any = await ctx.runQuery(
       internal.interviewScenarios.getEvaluationContextInternal,
@@ -460,15 +460,16 @@ export const evaluateInterviewScenarioSubmission: any = action({
     ) {
       throw new ConvexError("Forbidden");
     }
-    return ctx.runAction((internal.ai as any).evaluateInterviewScenarioSubmissionInternal, {
+    const evaluation: any = await ctx.runAction(internal.ai.evaluateInterviewScenarioSubmissionInternal, {
       submissionId: args.submissionId,
     });
+    return evaluation;
   },
 });
 
-export const evaluateInterviewScenarioSubmissionInternal: any = internalAction({
+export const evaluateInterviewScenarioSubmissionInternal = internalAction({
   args: { submissionId: v.id("interviewScenarioSubmissions") },
-  handler: async (ctx: any, args: { submissionId: any }): Promise<any> => {
+  handler: async (ctx, args) => {
     const context: any = await ctx.runQuery(
       internal.interviewScenarios.getEvaluationContextInternal,
       {

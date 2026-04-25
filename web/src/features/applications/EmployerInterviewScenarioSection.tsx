@@ -78,7 +78,7 @@ export function EmployerInterviewScenarioSection({ item }: { item: ApplicantWith
     api.interviewScenarios.getForApplication,
     item.application.status === "interview" ? { applicationId } : "skip",
   );
-  const generateDraft = useAction(api.ai.generateInterviewScenarioDraft);
+  const generateDraft = useAction((api.ai as any).generateInterviewScenarioDraft);
   const saveDraft = useMutation(api.interviewScenarios.saveDraft);
   const publishScenario = useMutation(api.interviewScenarios.publish);
   const [draft, setDraft] = useState<ScenarioDraft>(emptyDraft);

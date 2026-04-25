@@ -78,11 +78,13 @@ export function SeekerInterviewScenarioPanel({ applicationId }: { applicationId:
     return null;
   }
 
+  const scenarioId = scenario._id as Id<"interviewScenarios">;
+
   async function handleSubmit() {
     setPending(true);
     try {
       await submit({
-        scenarioId: scenario._id as Id<"interviewScenarios">,
+        scenarioId,
         answers: answers.map((answer, index) => ({
           taskIndex: index,
           answer: answer.answer,

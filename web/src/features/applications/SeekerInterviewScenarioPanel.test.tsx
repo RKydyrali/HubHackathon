@@ -2,9 +2,9 @@
 
 import "@testing-library/jest-dom/vitest";
 
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { useMutation, useQuery } from "convex/react";
-import { beforeEach, describe, expect, test, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import type { Id } from "@/lib/convex-api";
 import { SeekerInterviewScenarioPanel } from "./SeekerInterviewScenarioPanel";
@@ -28,6 +28,10 @@ const applicationId = "application_1" as Id<"applications">;
 
 describe("SeekerInterviewScenarioPanel", () => {
   const submit = vi.fn();
+
+  afterEach(() => {
+    cleanup();
+  });
 
   beforeEach(() => {
     submit.mockReset();
@@ -71,7 +75,7 @@ describe("SeekerInterviewScenarioPanel", () => {
     render(<SeekerInterviewScenarioPanel applicationId={applicationId} />);
 
     expect(screen.getByText(/service recovery/i)).toBeInTheDocument();
-    expect(screen.getByText(/AI assessment/i)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /AI assessment/i })).toBeInTheDocument();
     expect(screen.getByText("74%")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /resubmit solution/i })).toBeInTheDocument();
 
