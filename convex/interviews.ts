@@ -1,8 +1,31 @@
 import { ConvexError, v } from "convex/values";
 
-import { mutation, query } from "./_generated/server";
-import { assertOwnershipOrAdmin, assertRole, requireCurrentUser } from "./lib/auth";
+import { internal } from "./_generated/api";
+import { internalQuery, mutation, query } from "./_generated/server";
+import { requireCurrentUser } from "./lib/auth";
+import {
+  assertCanScheduleInterviewForApplication,
+  assertCanUpdateInterviewAsEmployer,
+  assertCanViewInterviewsForApplication,
+  assertEmployerOrAdmin,
+  assertSeekerOrAdmin,
+} from "./lib/permissions";
 import { interviewStatusValidator } from "./lib/validators";
+
+export const getInterviewNotificationContext = internalQuery({
+  args: { interviewId: v.id("interviews") },
+  handler: async (ctx, args) => {
+    const interview = await ctx.db.get(args.interviewId);
+    if (!interview) {
+      return null;
+    }
+    const vacancy = await ctx.db.get(interview.vacancyId);
+    if (!vacancy) {
+      return null;
+    }
+    return { interview, vacancy };
+  },
+});
 
 export const scheduleInterview = mutation({
   args: {
@@ -12,30 +35,35 @@ export const scheduleInterview = mutation({
   },
   handler: async (ctx, args) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["employer", "admin"]);
 
     const application = await ctx.db.get(args.applicationId);
     if (!application) {
       throw new ConvexError("Application not found");
-    }
-    if (application.status !== "interview") {
-      throw new ConvexError("Application must be in interview status");
     }
 
     const vacancy = await ctx.db.get(application.vacancyId);
     if (!vacancy) {
       throw new ConvexError("Vacancy not found");
     }
-    assertOwnershipOrAdmin(user, vacancy.ownerUserId);
+    assertCanScheduleInterviewForApplication(user, application, vacancy);
+
+    const employerUserId = vacancy.ownerUserId;
+    if (!employerUserId) {
+      throw new ConvexError("Vacancy has no employer owner");
+    }
 
     const interviewId = await ctx.db.insert("interviews", {
       applicationId: args.applicationId,
       vacancyId: application.vacancyId,
-      employerUserId: vacancy.ownerUserId!,
+      employerUserId,
       seekerUserId: application.seekerUserId,
       scheduledAt: args.scheduledAt,
       locationOrLink: args.locationOrLink,
       status: "scheduled",
+    });
+
+    await ctx.scheduler.runAfter(0, internal.notifications.handleInterviewScheduled, {
+      interviewId,
     });
 
     return ctx.db.get(interviewId);
@@ -49,42 +77,17 @@ export const updateInterviewStatus = mutation({
   },
   handler: async (ctx, args) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["employer", "admin"]);
     const interview = await ctx.db.get(args.interviewId);
     if (!interview) {
       throw new ConvexError("Interview not found");
     }
-    assertOwnershipOrAdmin(user, interview.employerUserId);
+    assertCanUpdateInterviewAsEmployer(user, interview);
     await ctx.db.patch(args.interviewId, { status: args.status });
+    await ctx.scheduler.runAfter(0, internal.notifications.handleInterviewStatusUpdated, {
+      interviewId: args.interviewId,
+      status: args.status,
+    });
     return ctx.db.get(args.interviewId);
-  },
-});
-
-export const listForApplication = query({
-  args: { applicationId: v.id("applications") },
-  handler: async (ctx, args) => {
-    const user = await requireCurrentUser(ctx);
-    const application = await ctx.db.get(args.applicationId);
-    if (!application) {
-      throw new ConvexError("Application not found");
-    }
-    const vacancy = await ctx.db.get(application.vacancyId);
-    if (!vacancy) {
-      throw new ConvexError("Vacancy not found");
-    }
-    const isParticipant =
-      user.role === "admin" ||
-      user._id === application.seekerUserId ||
-      user._id === vacancy.ownerUserId;
-
-    if (!isParticipant) {
-      throw new ConvexError("Forbidden");
-    }
-
-    return ctx.db
-      .query("interviews")
-      .withIndex("by_applicationId", (q) => q.eq("applicationId", args.applicationId))
-      .collect();
   },
 });
 
@@ -100,14 +103,7 @@ export const listByApplication = query({
     if (!vacancy) {
       throw new ConvexError("Vacancy not found");
     }
-    const isParticipant =
-      user.role === "admin" ||
-      user._id === application.seekerUserId ||
-      user._id === vacancy.ownerUserId;
-
-    if (!isParticipant) {
-      throw new ConvexError("Forbidden");
-    }
+    assertCanViewInterviewsForApplication(user, application, vacancy);
 
     return ctx.db
       .query("interviews")
@@ -120,7 +116,7 @@ export const listByOwner = query({
   args: {},
   handler: async (ctx) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["employer", "admin"]);
+    assertEmployerOrAdmin(user);
     return ctx.db
       .query("interviews")
       .withIndex("by_employerUserId", (q) => q.eq("employerUserId", user._id))
@@ -132,7 +128,7 @@ export const listBySeeker = query({
   args: {},
   handler: async (ctx) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["seeker", "admin"]);
+    assertSeekerOrAdmin(user);
     return ctx.db
       .query("interviews")
       .withIndex("by_seekerUserId", (q) => q.eq("seekerUserId", user._id))

@@ -1,0 +1,19 @@
+- main [ref=e3]:
+  - generic [ref=e5]:
+    - generic [ref=e6]:
+      - link "JumysAI" [ref=e7] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e8]:
+          - generic [ref=e9]:
+            - generic [ref=e10]: Jumys
+            - generic [ref=e11]: AI
+          - generic [ref=e12]: Актау
+      - button "Қазақ тіліне ауысу" [ref=e13] [cursor=pointer]:
+        - img
+        - text: Қаз
+    - generic [ref=e14]:
+      - paragraph [ref=e15]:
+        - img [ref=e16]
+        - text: Актау
+      - heading "Вход в JumysAI" [level=1] [ref=e18]
+      - paragraph [ref=e19]: Продолжите как соискатель, работодатель или администратор.

@@ -26,6 +26,8 @@ export const aiJobAssistantExtractionSchema = z.object({
   nextQuestion: z.string().nullable(),
   shouldShowResults: z.boolean(),
   confidence: z.number().min(0).max(1),
+  /** Short tap targets; server normalizes to exactly 4 when clarification is active. */
+  quickReplyOptions: z.array(z.string()).max(8).default([]),
 });
 
 export const aiJobAssistantDiscussionSchema = z.object({
@@ -90,6 +92,67 @@ export function emptyAiJobCriteria(): AiJobCriteria {
   };
 }
 
+/**
+ * Default clarification chips for the first missing signal (used when the model
+ * returns fewer than four or when the keyword fallback path runs without OpenRouter).
+ */
+export function buildQuickReplyOptionsForSignal(signal: string | undefined): [string, string, string, string] {
+  const table: Record<string, [string, string, string, string]> = {
+    district: ["12 мкр", "14 мкр", "Центр / приморский", "Не важно — по городу"],
+    schedule: ["Утро или день", "Вечер или после учёбы", "Смены, гибко", "Пока не определился(ась)"],
+    experienceLevel: [
+      "Без опыта, научат",
+      "Немного опыта",
+      "Опыт есть",
+      "Не важно — по условиям",
+    ],
+    skills: ["Общение и сервис", "Продажи", "Доставка / курьер", "Опишу в сообщении"],
+    workType: ["Полная занятость", "Подработка", "Временно / срочно", "Любой формат"],
+    salaryMin: ["От 150 000 ₸", "От 200 000 ₸", "От 250 000 ₸", "Сначала варианты, зарплату уточним"],
+    urgency: ["Нужно сегодня", "В течение недели", "Можно спокойно искать", "Срок не важен"],
+  };
+  return (
+    table[signal ?? ""] ?? [
+      "Да, это важно",
+      "Скорее нет",
+      "Не уверен(а)",
+      "Напишу подробнее ниже",
+    ]
+  );
+}
+
+export function mergeQuickReplyOptions(
+  fromAi: string[] | undefined,
+  signal: string | undefined,
+  include: boolean,
+): string[] {
+  if (!include) {
+    return [];
+  }
+  const defaults = buildQuickReplyOptionsForSignal(signal);
+  const cleaned = (fromAi ?? [])
+    .map((s) => s.trim())
+    .filter((s) => s.length > 0);
+  const out: string[] = [];
+  for (const o of cleaned) {
+    if (!out.includes(o)) {
+      out.push(o);
+    }
+    if (out.length === 4) {
+      return out;
+    }
+  }
+  for (const d of defaults) {
+    if (!out.includes(d)) {
+      out.push(d);
+    }
+    if (out.length === 4) {
+      return out;
+    }
+  }
+  return out.slice(0, 4);
+}
+
 export function mergeAiJobCriteria(
   base: AiJobCriteria | null | undefined,
   next: AiJobCriteria | null | undefined,
@@ -135,14 +198,16 @@ export function fallbackExtractCriteria(
   const missingSignals = prioritizeMissingSignals(criteria);
   const signalCount = countKnownSignals(criteria);
   const shouldShowResults = signalCount >= 2 || normalized.trim().length >= 16;
+  const nextQuestion = shouldShowResults ? null : buildNextQuestion(missingSignals[0]);
 
   return {
     intent: detectIntent(normalized),
     knownCriteria: aiJobCriteriaSchema.parse(criteria),
     missingSignals,
-    nextQuestion: shouldShowResults ? null : buildNextQuestion(missingSignals[0]),
+    nextQuestion,
     shouldShowResults,
     confidence: Math.min(0.74, 0.22 + signalCount * 0.13),
+    quickReplyOptions: mergeQuickReplyOptions(undefined, missingSignals[0], Boolean(nextQuestion)),
   };
 }
 
@@ -362,7 +427,7 @@ function profileSignalBoost(
 
   if (profile.district && (sameText(vacancy.district, profile.district) || text.includes(profile.district.toLowerCase()))) {
     boost += 10;
-    explanations.push("РїСЂРѕС„РёР»СЊ: РїРѕРґС…РѕРґРёС‚ СЂР°Р№РѕРЅ");
+    explanations.push("профиль: подходит район");
   } else if (profile.city && sameText(vacancy.city, profile.city)) {
     boost += 4;
   }
@@ -370,7 +435,7 @@ function profileSignalBoost(
   for (const skill of profile.skills.slice(0, 8)) {
     if (skill && text.includes(skill.toLowerCase())) {
       boost += 8;
-      explanations.push(`РїСЂРѕС„РёР»СЊ: РЅР°РІС‹Рє ${skill}`);
+      explanations.push(`профиль: навык ${skill}`);
     }
   }
 
@@ -382,7 +447,7 @@ function profileSignalBoost(
     .filter((word) => word.length >= 4);
   if (titleWords.some((word) => profileText.includes(word))) {
     boost += 6;
-    explanations.push("РїСЂРѕС„РёР»СЊ: РѕРїС‹С‚ Р±Р»РёР·РѕРє Рє СЂРѕР»Рё");
+    explanations.push("профиль: опыт близок к роли");
   }
 
   return { boost, explanations };

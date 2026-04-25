@@ -1,0 +1,340 @@
+[    1780ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:14337
+[    4745ms] [WARNING] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview @ http://127.0.0.1:5173/@vite/client:509
+[   22461ms] [ERROR] You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it. @ http://127.0.0.1:5173/@vite/client:509
+[   23192ms] Error: @clerk/clerk-react: You've added multiple <ClerkProvider> components in your React component tree. Wrap your components in a single <ClerkProvider>.
+    at Object.throw (http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:191:10)
+    at http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4263:53
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12904:13)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitHookEffectListMount (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6617:153)
+    at commitHookPassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6652:55)
+    at commitPassiveMountOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7618:22)
+    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7606:5)
+    at commitPassiveMountOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7672:14)
+    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7606:5)
+[   22544ms] [WARNING] %s
+
+%s
+ An error occurred in the <ClerkProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[   23193ms] Error: @clerk/clerk-react: You've added multiple <ClerkProvider> components in your React component tree. Wrap your components in a single <ClerkProvider>.
+    at Object.throw (http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:191:10)
+    at http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4263:53
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12904:13)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitHookEffectListMount (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6617:153)
+    at commitHookPassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6652:55)
+    at reconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7701:6)
+    at recursivelyTraverseReconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7688:5)
+    at reconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7713:14)
+    at doubleInvokeEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8924:125)
+[   22546ms] [WARNING] %s
+
+%s
+ An error occurred in the <ClerkProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[   23193ms] Error: @clerk/clerk-react: You've added multiple <ClerkProvider> components in your React component tree. Wrap your components in a single <ClerkProvider>.
+    at Object.throw (http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:191:10)
+    at http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4263:53
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12904:13)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitHookEffectListMount (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6617:153)
+    at commitHookPassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6652:55)
+    at commitPassiveMountOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7618:22)
+    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7606:5)
+    at commitPassiveMountOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7672:14)
+    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7606:5)
+[   22569ms] [WARNING] %s
+
+%s
+ An error occurred in the <ClerkProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[   23400ms] Error: @clerk/clerk-react: You've added multiple <ClerkProvider> components in your React component tree. Wrap your components in a single <ClerkProvider>.
+    at Object.throw (http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:191:10)
+    at http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4263:53
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12904:13)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitHookEffectListMount (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6617:153)
+    at commitHookPassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6652:55)
+    at reconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7701:6)
+    at recursivelyTraverseReconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7688:5)
+    at reconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7713:14)
+    at doubleInvokeEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8924:125)
+[   22570ms] [WARNING] %s
+
+%s
+ An error occurred in the <ClerkProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[   23401ms] NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
+    at removeChildFromContainer (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:10588:123)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7106:7)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7148:14)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7134:6)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7134:6)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+[   22698ms] [WARNING] %s
+
+%s
+ An error occurred in the <header> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[   23401ms] NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
+    at removeChildFromContainer (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:10588:123)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7106:7)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7134:6)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7148:14)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7134:6)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+[   22699ms] [WARNING] %s
+
+%s
+ An error occurred in the <div> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[   34172ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:14337
+[   35331ms] [WARNING] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview @ http://127.0.0.1:5173/@vite/client:509
+[   46346ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:14337
+[   47882ms] [WARNING] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview @ http://127.0.0.1:5173/@vite/client:509
+[   48443ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://127.0.0.1:5173/login:0
+[   51383ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:14337
+[   52680ms] [WARNING] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview @ http://127.0.0.1:5173/@vite/client:509
+[   78644ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://127.0.0.1:5173/login:0
+[  358728ms] [ERROR] You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it. @ http://127.0.0.1:5173/@vite/client:509
+[  360240ms] Error: @clerk/clerk-react: You've added multiple <ClerkProvider> components in your React component tree. Wrap your components in a single <ClerkProvider>.
+    at Object.throw (http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:191:10)
+    at http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4263:53
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12904:13)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitHookEffectListMount (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6617:153)
+    at commitHookPassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6652:55)
+    at commitPassiveMountOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7618:22)
+    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7606:5)
+    at commitPassiveMountOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7672:14)
+    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7606:5)
+[  358873ms] [WARNING] %s
+
+%s
+ An error occurred in the <ClerkProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[  360240ms] Error: @clerk/clerk-react: You've added multiple <ClerkProvider> components in your React component tree. Wrap your components in a single <ClerkProvider>.
+    at Object.throw (http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:191:10)
+    at http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4263:53
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12904:13)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitHookEffectListMount (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6617:153)
+    at commitHookPassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6652:55)
+    at reconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7701:6)
+    at recursivelyTraverseReconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7688:5)
+    at reconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7713:14)
+    at doubleInvokeEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8924:125)
+[  358875ms] [WARNING] %s
+
+%s
+ An error occurred in the <ClerkProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[  360240ms] Error: @clerk/clerk-react: You've added multiple <ClerkProvider> components in your React component tree. Wrap your components in a single <ClerkProvider>.
+    at Object.throw (http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:191:10)
+    at http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4263:53
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12904:13)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitHookEffectListMount (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6617:153)
+    at commitHookPassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6652:55)
+    at commitPassiveMountOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7618:22)
+    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7606:5)
+    at commitPassiveMountOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7672:14)
+    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7606:5)
+[  358905ms] [WARNING] %s
+
+%s
+ An error occurred in the <ClerkProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[  360250ms] Error: @clerk/clerk-react: You've added multiple <ClerkProvider> components in your React component tree. Wrap your components in a single <ClerkProvider>.
+    at Object.throw (http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:191:10)
+    at http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4263:53
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12904:13)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitHookEffectListMount (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6617:153)
+    at commitHookPassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6652:55)
+    at reconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7701:6)
+    at recursivelyTraverseReconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7688:5)
+    at reconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7713:14)
+    at doubleInvokeEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8924:125)
+[  358906ms] [WARNING] %s
+
+%s
+ An error occurred in the <ClerkProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[  360262ms] NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
+    at removeChildFromContainer (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:10588:123)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7106:7)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7134:6)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7134:6)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7148:14)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+[  358980ms] [WARNING] %s
+
+%s
+ An error occurred in the <main> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[  387501ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:14337
+[  391521ms] [WARNING] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview @ http://127.0.0.1:5173/@vite/client:509
+[  417879ms] [ERROR] Error handled by React Router default ErrorBoundary: ReferenceError: HeroMarquee is not defined
+    at PublicWelcomePage (http://127.0.0.1:5173/src/features/public/PublicWelcomePage.tsx?t=1777092666525:272:30)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:4213:19)
+    at updateFunctionComponent (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:5569:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6140:20)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8309:6)
+    at performWorkOnRoot (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7957:181) @ http://127.0.0.1:5173/@vite/client:509
+[  417881ms] [ERROR] Error handled by React Router default ErrorBoundary: ReferenceError: HeroMarquee is not defined
+    at PublicWelcomePage (http://127.0.0.1:5173/src/features/public/PublicWelcomePage.tsx?t=1777092666525:272:30)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:4213:19)
+    at updateFunctionComponent (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:5569:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6140:20)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8309:6)
+    at performWorkOnRoot (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7957:181) @ http://127.0.0.1:5173/@vite/client:509
+[  417888ms] [ERROR] Error handled by React Router default ErrorBoundary: ReferenceError: HeroMarquee is not defined
+    at PublicWelcomePage (http://127.0.0.1:5173/src/features/public/PublicWelcomePage.tsx?t=1777092666525:272:30)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:4213:19)
+    at updateFunctionComponent (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:5569:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6140:20)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8309:6)
+    at performWorkOnRoot (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7994:27) @ http://127.0.0.1:5173/@vite/client:509
+[  417889ms] [ERROR] Error handled by React Router default ErrorBoundary: ReferenceError: HeroMarquee is not defined
+    at PublicWelcomePage (http://127.0.0.1:5173/src/features/public/PublicWelcomePage.tsx?t=1777092666525:272:30)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:4213:19)
+    at updateFunctionComponent (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:5569:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6140:20)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8309:6)
+    at performWorkOnRoot (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7994:27) @ http://127.0.0.1:5173/@vite/client:509
+[  417894ms] [ERROR] %o
+
+%s
+
+%s
+ ReferenceError: HeroMarquee is not defined
+    at PublicWelcomePage (http://127.0.0.1:5173/src/features/public/PublicWelcomePage.tsx?t=1777092666525:272:30)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:4213:19)
+    at updateFunctionComponent (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:5569:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6140:20)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8309:6)
+    at performWorkOnRoot (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7994:27) The above error occurred in the <PublicWelcomePage> component. React will try to recreate this component tree from scratch using the error boundary you provided, RenderErrorBoundary. @ http://127.0.0.1:5173/@vite/client:509
+[  417897ms] [ERROR] React Router caught the following error during render ReferenceError: HeroMarquee is not defined
+    at PublicWelcomePage (http://127.0.0.1:5173/src/features/public/PublicWelcomePage.tsx?t=1777092666525:272:30)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:4213:19)
+    at updateFunctionComponent (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:5569:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6140:20)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8309:6)
+    at performWorkOnRoot (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7994:27) {componentStack: 
+    at PublicWelcomePage (http://127.0.0.1:5173/s…ite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4273:3)} @ http://127.0.0.1:5173/@vite/client:509
+[  436088ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:14337
+[  442243ms] [WARNING] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview @ http://127.0.0.1:5173/@vite/client:509
+[  442735ms] [ERROR] Error handled by React Router default ErrorBoundary: ReferenceError: HeroMarquee is not defined
+    at PublicWelcomePage (http://127.0.0.1:5173/src/features/public/PublicWelcomePage.tsx?t=1777092607238:272:30)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:4213:19)
+    at updateFunctionComponent (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:5569:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6140:20)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8309:6)
+    at performWorkOnRoot (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7957:181) @ http://127.0.0.1:5173/@vite/client:509
+[  442736ms] [ERROR] Error handled by React Router default ErrorBoundary: ReferenceError: HeroMarquee is not defined
+    at PublicWelcomePage (http://127.0.0.1:5173/src/features/public/PublicWelcomePage.tsx?t=1777092607238:272:30)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:4213:19)
+    at updateFunctionComponent (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:5569:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6140:20)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8309:6)
+    at performWorkOnRoot (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7957:181) @ http://127.0.0.1:5173/@vite/client:509
+[  442749ms] [ERROR] Error handled by React Router default ErrorBoundary: ReferenceError: HeroMarquee is not defined
+    at PublicWelcomePage (http://127.0.0.1:5173/src/features/public/PublicWelcomePage.tsx?t=1777092607238:272:30)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:4213:19)
+    at updateFunctionComponent (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:5569:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6140:20)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8309:6)
+    at performWorkOnRoot (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7994:27) @ http://127.0.0.1:5173/@vite/client:509
+[  442752ms] [ERROR] Error handled by React Router default ErrorBoundary: ReferenceError: HeroMarquee is not defined
+    at PublicWelcomePage (http://127.0.0.1:5173/src/features/public/PublicWelcomePage.tsx?t=1777092607238:272:30)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:4213:19)
+    at updateFunctionComponent (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:5569:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6140:20)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8309:6)
+    at performWorkOnRoot (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7994:27) @ http://127.0.0.1:5173/@vite/client:509
+[  442755ms] [ERROR] %o
+
+%s
+
+%s
+ ReferenceError: HeroMarquee is not defined
+    at PublicWelcomePage (http://127.0.0.1:5173/src/features/public/PublicWelcomePage.tsx?t=1777092607238:272:30)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:4213:19)
+    at updateFunctionComponent (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:5569:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6140:20)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8309:6)
+    at performWorkOnRoot (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7994:27) The above error occurred in the <PublicWelcomePage> component. React will try to recreate this component tree from scratch using the error boundary you provided, RenderErrorBoundary. @ http://127.0.0.1:5173/@vite/client:509
+[  442758ms] [ERROR] React Router caught the following error during render ReferenceError: HeroMarquee is not defined
+    at PublicWelcomePage (http://127.0.0.1:5173/src/features/public/PublicWelcomePage.tsx?t=1777092607238:272:30)
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12868:12)
+    at renderWithHooks (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:4213:19)
+    at updateFunctionComponent (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:5569:16)
+    at beginWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6140:20)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at performUnitOfWork (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8429:92)
+    at workLoopSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8325:37)
+    at renderRootSync (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8309:6)
+    at performWorkOnRoot (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7994:27) {componentStack: 
+    at PublicWelcomePage (http://127.0.0.1:5173/s…ite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4273:3)} @ http://127.0.0.1:5173/@vite/client:509
+[  465618ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:14337
+[  469780ms] [WARNING] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview @ http://127.0.0.1:5173/@vite/client:509
+[  821383ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://127.0.0.1:5173/login:0
+[  852798ms] [VERBOSE] [DOM] Input elements should have autocomplete attributes (suggested: "current-password"): (More info: https://goo.gl/9p2vKq) %o @ http://127.0.0.1:5173/login:0

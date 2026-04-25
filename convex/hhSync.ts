@@ -2,26 +2,7 @@ import { v } from "convex/values";
 
 import { internal } from "./_generated/api";
 import { internalAction } from "./_generated/server";
-import { normalizeHhVacancy, type HhVacancy } from "./lib/hh";
-
-type HhResponse = {
-  items: HhVacancy[];
-  pages: number;
-  page: number;
-};
-
-async function fetchHhPage(page: number): Promise<HhResponse> {
-  const url = new URL("https://api.hh.ru/vacancies");
-  url.searchParams.set("area", "159");
-  url.searchParams.set("page", String(page));
-  url.searchParams.set("per_page", "100");
-
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`HH sync failed on page ${page}: ${response.status}`);
-  }
-  return response.json() as Promise<HhResponse>;
-}
+import { fetchHhVacanciesPageSafe, normalizeHhVacancy } from "./lib/hh";
 
 export const syncHHVacancies = internalAction({
   args: {},
@@ -32,9 +13,15 @@ export const syncHHVacancies = internalAction({
 
     let page = 0;
     let pages = 1;
+    let lastError: string | undefined;
 
     while (page < pages) {
-      const payload = await fetchHhPage(page);
+      const fetched = await fetchHhVacanciesPageSafe(page);
+      if (!fetched.ok) {
+        lastError = fetched.error;
+        break;
+      }
+      const payload = fetched.data;
       pages = payload.pages;
 
       for (const item of payload.items) {
@@ -60,16 +47,22 @@ export const syncHHVacancies = internalAction({
       });
     }
 
-    const archival = await ctx.runMutation(internal.vacancies.archiveStaleHhVacancies, {
-      activeSourceIds: seenSourceIds,
-      syncedAt,
-    });
+    const archived =
+      lastError === undefined
+        ? (
+            await ctx.runMutation(internal.vacancies.archiveStaleHhVacancies, {
+              activeSourceIds: seenSourceIds,
+              syncedAt,
+            })
+          ).archived
+        : 0;
 
     return {
       syncedAt,
       seen: seenSourceIds.length,
       refreshedEmbeddings: embeddingRefreshIds.length,
-      archived: archival.archived,
+      archived,
+      ...(lastError ? { error: lastError, completed: false } : { completed: true }),
     };
   },
 });

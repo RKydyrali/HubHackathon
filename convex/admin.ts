@@ -2,11 +2,12 @@ import { paginationOptsValidator } from "convex/server";
 
 import type { QueryCtx } from "./_generated/server";
 import { query } from "./_generated/server";
-import { assertRole, requireCurrentUser } from "./lib/auth";
+import { requireCurrentUser } from "./lib/auth";
+import { assertAdmin } from "./lib/permissions";
 
 async function requireAdmin(ctx: QueryCtx) {
   const user = await requireCurrentUser(ctx);
-  assertRole(user, ["admin"]);
+  assertAdmin(user);
   return user;
 }
 

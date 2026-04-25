@@ -24,7 +24,7 @@ The current project scope includes:
 - Clerk-based frontend authentication
 - a Convex backend with schema, queries, mutations, actions, HTTP actions, and cron jobs
 - an AI layer for vacancy parsing, screening, embeddings, and matching
-- a Railway Telegram bot integration through `/bot/*`
+- a Railway Telegram bot integration through versioned HTTP routes (`/v1/bot/*`, with legacy `/bot/*` during deprecation)
 - Telegram notification delivery for key hiring events
 - HH vacancy import for Aktau discovery inventory
 
@@ -83,7 +83,7 @@ The Convex backend is responsible for:
 The Railway bot is responsible for:
 
 - Telegram conversation handling
-- mapping chat flows into calls to `/bot/*`
+- mapping chat flows into calls to `/v1/bot/*` (canonical; legacy `/bot/*` still accepted until removed)
 - formatting Telegram-native replies for discovery and application flows
 
 ### Source-of-truth model
@@ -338,7 +338,7 @@ Purpose: native in-app applications and screening results.
 | --- | --- | --- |
 | `vacancyId` | `Id<"vacancies">` | Target vacancy |
 | `seekerUserId` | `Id<"users">` | Applicant |
-| `status` | `submitted \| reviewing \| interview \| rejected \| hired` | Application state |
+| `status` | `submitted \| reviewing \| shortlisted \| interview \| offer_sent \| rejected \| hired \| withdrawn` | Application state |
 | `screeningAnswers` | optional array | Candidate answers |
 | `aiScore` | optional `number` | Screening score |
 | `aiSummary` | optional `string` | Screening summary |
@@ -355,8 +355,10 @@ Purpose: notification ledger and dedupe state.
 | Field | Type | Meaning |
 | --- | --- | --- |
 | `userId` | `Id<"users">` | Recipient |
-| `type` | `new_application \| status_change \| strong_match \| custom` | Event class |
+| `type` | `new_application \| status_change \| strong_match \| interview_update \| custom` | Event class |
 | `dedupeKey` | `string` | Deterministic spam guard |
+| `action` | optional object | Structured in-app CTA label key and href |
+| `payload` | optional object | Structured entity ids for routing, replacing dedupe parsing for new rows |
 | `title` | `string` | Message heading |
 | `body` | `string` | Message content |
 | `deliveryStatus` | `queued \| sent \| failed \| skipped` | Delivery state |
@@ -467,7 +469,7 @@ HH vacancy scope excludes:
 Applications can be created:
 
 - by signed-in seekers from the web app
-- by the Telegram bot through `/bot/applications`
+- by the Telegram bot through `POST /v1/bot/applications` (legacy: `POST /bot/applications`)
 
 In both cases, the backend uses shared internal logic so the validation rules are identical.
 
@@ -486,13 +488,16 @@ Default application transitions are:
 
 | From | Allowed next states |
 | --- | --- |
-| `submitted` | `reviewing` |
-| `reviewing` | `interview`, `rejected` |
-| `interview` | `hired`, `rejected` |
+| `submitted` | `reviewing`, `withdrawn` |
+| `reviewing` | `shortlisted`, `interview`, `rejected`, `withdrawn` |
+| `shortlisted` | `interview`, `rejected`, `withdrawn` |
+| `interview` | `offer_sent`, `hired`, `rejected` |
+| `offer_sent` | `hired`, `rejected` |
 | `rejected` | none |
 | `hired` | none |
+| `withdrawn` | none |
 
-Invalid jumps must be rejected. An admin-only recovery path exists for exceptional repair and support use.
+Invalid jumps must be rejected. Employers can advance the active hiring pipeline, while seekers and admins use `withdrawApplication` to enter `withdrawn`. An admin-only recovery path exists for exceptional repair and support use.
 
 ### Interviews and reviews
 
@@ -546,14 +551,25 @@ The bot should be able to:
 
 ### HTTP contract
 
-The backend exposes these routes in [convex/http.ts](/C:/Users/ramat/Documents/hackathon/convex/http.ts):
+The backend exposes these routes in [convex/http.ts](/C:/Users/ramat/Documents/hackathon/convex/http.ts). **Canonical paths** use the `/v1/bot` prefix. The same handlers are also registered under **`/bot/*`** for backward compatibility; those responses include a `Deprecation: true` header, and an optional `Sunset` header when `BOT_HTTP_LEGACY_SUNSET` is set (HTTP-date per RFC 7231).
+
+**Deploy the Railway bot against:** `{CONVEX_SITE_URL}/v1/bot/...` (site URL from the Convex dashboard), not the deployment URL used for the JS client.
 
 | Route | Method | Purpose |
 | --- | --- | --- |
-| `/bot/users/upsert` | `POST` | Create or link a Telegram-facing user record |
-| `/bot/vacancies` | `GET`, `POST` | Fetch public vacancies with simple filtering |
-| `/bot/applications` | `POST` | Submit a native vacancy application |
-| `/bot/notifications/send` | `POST` | Dispatch a deduped Telegram notification |
+| `/v1/bot/users/upsert` | `POST` | Create or link a Telegram-facing user record |
+| `/v1/bot/vacancies` | `GET`, `POST` | Fetch public vacancies with simple filtering |
+| `/v1/bot/applications` | `POST` | Submit a native vacancy application |
+| `/v1/bot/notifications/send` | `POST` | Dispatch a deduped Telegram notification |
+
+Legacy aliases (same contract): `POST /bot/users/upsert`, `GET`/`POST /bot/vacancies`, `POST /bot/applications`, `POST /bot/notifications/send`.
+
+#### Legacy route removal (Phase C)
+
+After monitoring shows no traffic on `/bot/*`:
+
+1. In [convex/http.ts](/C:/Users/ramat/Documents/hackathon/convex/http.ts), remove `registerBotHttpRoutes("/bot", true);` and delete `withLegacyDeprecation`, `legacyDeprecationHeaderInit`, and the `legacy` parameter from `botHttpAction` if no longer needed.
+2. Update this document and [PROJECT_SCOPE.md](/C:/Users/ramat/Documents/hackathon/PROJECT_SCOPE.md) to drop legacy path mentions and optional `BOT_HTTP_LEGACY_SUNSET`.
 
 ### Bot security
 
@@ -607,13 +623,19 @@ Expected environment variables:
 | Variable | Purpose |
 | --- | --- |
 | `CLERK_JWT_ISSUER_DOMAIN` | Clerk issuer for Convex auth config |
+| `VITE_CONVEX_URL` | Web client URL for `web/.env.local`, usually `https://<deployment>.convex.cloud` |
+| `VITE_CLERK_PUBLISHABLE_KEY` | Clerk frontend publishable key for `web/.env.local` |
+| `CONVEX_SITE_URL` | Convex HTTP site URL for the Telegram bot, usually `https://<deployment>.convex.site`; not the web client URL |
 | `BOT_SHARED_SECRET` | Shared secret for bot HTTP actions |
+| `BOT_HTTP_LEGACY_SUNSET` | Optional HTTP-date for `Sunset` on legacy `/bot/*` responses only |
 | `OPENROUTER_API_KEY` | OpenRouter credential |
 | `OPENROUTER_BASE_URL` | OpenRouter base URL |
 | `OPENROUTER_CHAT_MODEL` | Fast/default structured generation model |
 | `OPENROUTER_COMPLEX_MODEL` | More capable model for complex analysis |
 | `OPENROUTER_EMBEDDING_MODEL` | Embedding model name |
 | `TELEGRAM_BOT_TOKEN` | Telegram Bot API token |
+
+The Telegram bot runtime reads `TELEGRAM_BOT_TOKEN`, `CONVEX_SITE_URL`, and `BOT_SHARED_SECRET` from the shell or local env files. Convex runtime secrets such as `BOT_SHARED_SECRET`, `TELEGRAM_BOT_TOKEN`, Clerk issuer, and OpenRouter settings must also be configured on the Convex deployment.
 
 > [!IMPORTANT]
 > The embedding model name is configurable, but the embedding dimension is intentionally fixed in code and schema for the current deployment. Moving to a different vector size requires schema and data migration work.

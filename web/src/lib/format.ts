@@ -33,6 +33,17 @@ export function formatSalary(salary: SalaryInput, locale: "ru" | "kk" = "ru") {
   return locale === "kk" ? "Жалақы келісім бойынша" : "Зарплата по договоренности";
 }
 
+/** Table/list cells: return null when there is no numeric salary to show a muted dash instead. */
+export function formatSalaryForTableCell(
+  salary: SalaryInput,
+  locale: "ru" | "kk" = "ru",
+): string | null {
+  if (salary.salaryMin == null && salary.salaryMax == null) {
+    return null;
+  }
+  return formatSalary(salary, locale);
+}
+
 export function formatRelativeTime(timestamp: number) {
   const diffMs = timestamp - Date.now();
   const absMs = Math.abs(diffMs);
@@ -71,12 +82,16 @@ export function statusLabel(status: string) {
   const labels: Record<string, string> = {
     draft: "Draft",
     published: "Published",
+    paused: "Paused",
     archived: "Archived",
     submitted: "Submitted",
     reviewing: "Reviewing",
+    shortlisted: "Shortlisted",
     interview: "Interview",
+    offer_sent: "Offer sent",
     rejected: "Rejected",
     hired: "Hired",
+    withdrawn: "Withdrawn",
     queued: "Queued",
     sent: "Sent",
     failed: "Failed",

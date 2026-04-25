@@ -2,6 +2,26 @@ import { z } from "zod";
 
 import { DEFAULT_CITY, EMBEDDING_DIMENSION } from "./constants";
 
+function formatExternalError(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
+export type OpenRouterStructuredSuccess<T> = { ok: true; data: T };
+export type OpenRouterStructuredFailure = { ok: false; error: string };
+export type OpenRouterStructuredResult<T> =
+  | OpenRouterStructuredSuccess<T>
+  | OpenRouterStructuredFailure;
+
+export type OpenRouterEmbeddingSuccess = { ok: true; embedding: number[] };
+export type OpenRouterEmbeddingFailure = { ok: false; error: string };
+export type OpenRouterEmbeddingResult =
+  | OpenRouterEmbeddingSuccess
+  | OpenRouterEmbeddingFailure;
+
+export function createZeroEmbedding(): number[] {
+  return new Array(EMBEDDING_DIMENSION).fill(0);
+}
+
 const openRouterBaseUrl =
   process.env.OPENROUTER_BASE_URL ?? "https://openrouter.ai/api/v1";
 
@@ -21,6 +41,31 @@ export function getChatModel(complex = false): string {
 
 export function getEmbeddingModel(): string {
   return process.env.OPENROUTER_EMBEDDING_MODEL ?? "text-embedding-3-small";
+}
+
+/** OpenRouter model fallback chain for mock interview (see model fallbacks guide). */
+export const MOCK_INTERVIEW_MODELS = [
+  "google/gemini-2.5-flash-lite",
+  "google/gemini-2.0-flash-001",
+] as const;
+
+export type MockInterviewChatMessage = {
+  role: "user" | "assistant" | "system";
+  content: string;
+};
+
+function mockInterviewChatRequestBody(
+  messages: MockInterviewChatMessage[],
+  extra: Record<string, unknown>,
+): Record<string, unknown> {
+  const models = [...MOCK_INTERVIEW_MODELS];
+  return {
+    model: models[0],
+    models,
+    route: "fallback",
+    messages,
+    ...extra,
+  };
 }
 
 async function openRouterFetch<T>(
@@ -63,13 +108,19 @@ export async function requestStructuredJson<T>(
   schemaName: string,
   prompt: string,
   schema: z.ZodSchema<T>,
-  options?: { complex?: boolean },
+  options?: { complex?: boolean; systemPrompt?: string },
 ): Promise<T> {
+  const messages = options?.systemPrompt
+    ? [
+        { role: "system", content: options.systemPrompt },
+        { role: "user", content: prompt },
+      ]
+    : [{ role: "user", content: prompt }];
   const raw = await openRouterFetch(
     "/chat/completions",
     {
       model: getChatModel(options?.complex ?? false),
-      messages: [{ role: "user", content: prompt }],
+      messages,
       response_format: {
         type: "json_schema",
         json_schema: {
@@ -123,6 +174,109 @@ export async function requestEmbedding(text: string): Promise<number[]> {
   return embedding;
 }
 
+export async function tryRequestStructuredJson<T>(
+  schemaName: string,
+  prompt: string,
+  schema: z.ZodSchema<T>,
+  options?: { complex?: boolean; systemPrompt?: string },
+): Promise<OpenRouterStructuredResult<T>> {
+  try {
+    const data = await requestStructuredJson(
+      schemaName,
+      prompt,
+      schema,
+      options,
+    );
+    return { ok: true, data };
+  } catch (error) {
+    return { ok: false, error: formatExternalError(error) };
+  }
+}
+
+export async function requestChatCompletionWithMockInterviewModels(
+  messages: MockInterviewChatMessage[],
+): Promise<string> {
+  const raw = await openRouterFetch(
+    "/chat/completions",
+    mockInterviewChatRequestBody(messages, {}),
+    (json) => structuredOutputEnvelopeSchema.parse(json),
+  );
+  const content = raw.choices[0]?.message.content;
+  if (!content?.trim()) {
+    throw new Error("OpenRouter returned an empty chat response");
+  }
+  return content;
+}
+
+export async function requestStructuredJsonWithMockInterviewModels<T>(
+  schemaName: string,
+  prompt: string,
+  schema: z.ZodSchema<T>,
+): Promise<T> {
+  const raw = await openRouterFetch(
+    "/chat/completions",
+    mockInterviewChatRequestBody(messagesUserOnly(prompt), {
+      response_format: {
+        type: "json_schema",
+        json_schema: {
+          name: schemaName,
+          strict: true,
+          schema: z.toJSONSchema(schema),
+        },
+      },
+    }),
+    (json) => structuredOutputEnvelopeSchema.parse(json),
+  );
+  const content = raw.choices[0]?.message.content;
+  if (!content) {
+    throw new Error("OpenRouter returned an empty structured response");
+  }
+  return schema.parse(JSON.parse(content));
+}
+
+function messagesUserOnly(prompt: string): MockInterviewChatMessage[] {
+  return [{ role: "user", content: prompt }];
+}
+
+export async function tryRequestChatCompletionWithMockInterviewModels(
+  messages: MockInterviewChatMessage[],
+): Promise<OpenRouterStructuredResult<string>> {
+  try {
+    const data = await requestChatCompletionWithMockInterviewModels(messages);
+    return { ok: true, data };
+  } catch (error) {
+    return { ok: false, error: formatExternalError(error) };
+  }
+}
+
+export async function tryRequestStructuredJsonWithMockInterviewModels<T>(
+  schemaName: string,
+  prompt: string,
+  schema: z.ZodSchema<T>,
+): Promise<OpenRouterStructuredResult<T>> {
+  try {
+    const data = await requestStructuredJsonWithMockInterviewModels(
+      schemaName,
+      prompt,
+      schema,
+    );
+    return { ok: true, data };
+  } catch (error) {
+    return { ok: false, error: formatExternalError(error) };
+  }
+}
+
+export async function tryRequestEmbedding(
+  text: string,
+): Promise<OpenRouterEmbeddingResult> {
+  try {
+    const embedding = await requestEmbedding(text);
+    return { ok: true, embedding };
+  } catch (error) {
+    return { ok: false, error: formatExternalError(error) };
+  }
+}
+
 export const vacancyGenerationSchema = z.object({
   source: z.literal("native").default("native"),
   title: z.string().min(1),
@@ -140,4 +294,25 @@ export const screeningQuestionsSchema = z.object({
 export const screeningAnalysisSchema = z.object({
   score: z.number().min(0).max(100),
   summary: z.string().min(1),
+});
+
+export const mockInterviewDebriefSchema = z.object({
+  score: z.number().min(0).max(100),
+  summary: z.string().min(1),
+  strengths: z.array(z.string().min(1)),
+  improvements: z.array(z.string().min(1)),
+  hiringRecommendation: z.string().min(1),
+});
+
+export const elevatorPitchSchema = z.object({
+  score: z.number().min(0).max(100),
+  neutral: z.string().min(1),
+  short: z.string().min(1),
+  confident: z.string().min(1),
+  notes: z.array(z.string().min(1)).optional(),
+});
+
+export const answerFeedbackSchema = z.object({
+  score: z.number().min(0).max(100),
+  suggestion: z.string().min(1),
 });

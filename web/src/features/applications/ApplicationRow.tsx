@@ -28,7 +28,7 @@ export function ApplicationRow({
   );
 }
 
-export function ApplicationStatusBadge({ status }: { status: string }) {
+export function ApplicationStatusBadge({ status, className }: { status: string; className?: string }) {
   const { locale } = useI18n();
-  return <StatusBadge status={status} locale={locale} />;
+  return <StatusBadge status={status} locale={locale} className={className} />;
 }

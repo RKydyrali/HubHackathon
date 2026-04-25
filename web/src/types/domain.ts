@@ -3,7 +3,7 @@ import type { ApplicationStatus } from "@/lib/status";
 
 export type UserRole = "seeker" | "employer" | "admin";
 export type VacancySource = "native" | "hh";
-export type VacancyStatus = "draft" | "published" | "archived";
+export type VacancyStatus = "draft" | "published" | "paused" | "archived";
 
 export type Vacancy = Doc<"vacancies">;
 export type Profile = Doc<"profiles">;

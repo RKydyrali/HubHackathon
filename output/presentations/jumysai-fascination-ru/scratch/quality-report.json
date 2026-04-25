@@ -1,0 +1,14 @@
+{
+  "workspace": "C:\\Users\\ramat\\Documents\\hackathon\\output\\presentations\\jumysai-fascination-ru",
+  "pptx": "C:\\Users\\ramat\\Documents\\hackathon\\output\\presentations\\jumysai-fascination-ru\\output\\output.pptx",
+  "checks": {
+    "output_hygiene": {
+      "output_dir": "C:\\Users\\ramat\\Documents\\hackathon\\output\\presentations\\jumysai-fascination-ru\\output",
+      "unexpected_files": []
+    }
+  },
+  "failures": [
+    "PPTX package inspection failed: unzip -Z1 C:\\Users\\ramat\\Documents\\hackathon\\output\\presentations\\jumysai-fascination-ru\\output\\output.pptx failed"
+  ],
+  "warnings": []
+}

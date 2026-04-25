@@ -7,16 +7,24 @@ import {
   mutation,
   query,
 } from "./_generated/server";
+import type { Doc } from "./_generated/dataModel";
+import { requireCurrentUser } from "./lib/auth";
 import {
-  assertOwnershipOrAdmin,
-  assertRole,
-  requireCurrentUser,
-} from "./lib/auth";
+  assertCanAdminRecoverApplicationStatus,
+  assertCanApplyToVacancy,
+  assertCanListApplicationsForVacancy,
+  assertCanUpdateApplicationStatus,
+  assertCanWithdrawApplication,
+  assertEmployerOrAdmin,
+  assertSeekerOrAdmin,
+  assertVacancyAcceptsInAppApplications,
+} from "./lib/permissions";
 import {
   assertApplicationTransition,
   buildNotificationDedupeKey,
-  canApplyToVacancy,
+  isValidApplicationTransition,
 } from "./lib/domain";
+import { recordDemoAnalyticsEvent } from "./lib/demoAnalytics";
 import { applicationStatusValidator } from "./lib/validators";
 
 async function createApplicationRecord(
@@ -24,6 +32,8 @@ async function createApplicationRecord(
   input: {
     vacancyId: any;
     seekerUserId: any;
+    /** When set (user-facing apply), enforces seeker-or-admin + domain rules. */
+    actingUser?: Doc<"users">;
     screeningAnswers?: Array<{ question: string; answer: string }>;
   },
 ) {
@@ -31,8 +41,10 @@ async function createApplicationRecord(
   if (!vacancy) {
     throw new ConvexError("Vacancy not found");
   }
-  if (!canApplyToVacancy(vacancy.source, vacancy.status)) {
-    throw new ConvexError("This vacancy is not open for in-app applications");
+  if (input.actingUser) {
+    assertCanApplyToVacancy(input.actingUser, vacancy);
+  } else {
+    assertVacancyAcceptsInAppApplications(vacancy);
   }
 
   const existing = await ctx.db
@@ -49,6 +61,13 @@ async function createApplicationRecord(
     seekerUserId: input.seekerUserId,
     status: "submitted",
     screeningAnswers: input.screeningAnswers,
+  });
+
+  await recordDemoAnalyticsEvent(ctx, {
+    kind: "application_submitted",
+    vacancyId: input.vacancyId,
+    userId: input.seekerUserId,
+    metadata: { applicationId: String(applicationId) },
   });
 
   return { applicationId, vacancy };
@@ -68,17 +87,22 @@ export const createApplication = mutation({
   },
   handler: async (ctx, args) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["seeker", "admin"]);
+    assertSeekerOrAdmin(user);
 
     const result = await createApplicationRecord(ctx, {
       vacancyId: args.vacancyId,
       seekerUserId: user._id,
+      actingUser: user,
       screeningAnswers: args.screeningAnswers,
     });
 
+    const employerUserId = result.vacancy.ownerUserId;
+    if (!employerUserId) {
+      throw new ConvexError("Invariant: missing vacancy owner");
+    }
     await ctx.scheduler.runAfter(0, internal.notifications.handleNewApplication, {
       applicationId: result.applicationId,
-      employerUserId: result.vacancy.ownerUserId!,
+      employerUserId,
     });
 
     if (args.screeningAnswers?.length) {
@@ -95,7 +119,7 @@ export const listMyApplications = query({
   args: {},
   handler: async (ctx) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["seeker", "admin"]);
+    assertSeekerOrAdmin(user);
     return ctx.db
       .query("applications")
       .withIndex("by_seekerUserId", (q) => q.eq("seekerUserId", user._id))
@@ -107,7 +131,7 @@ export const listMyApplicationsWithVacancies = query({
   args: {},
   handler: async (ctx) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["seeker", "admin"]);
+    assertSeekerOrAdmin(user);
     const applications = await ctx.db
       .query("applications")
       .withIndex("by_seekerUserId", (q) => q.eq("seekerUserId", user._id))
@@ -126,11 +150,41 @@ export const listBySeeker = query({
   args: {},
   handler: async (ctx) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["seeker", "admin"]);
+    assertSeekerOrAdmin(user);
     const applications = await ctx.db
       .query("applications")
       .withIndex("by_seekerUserId", (q) => q.eq("seekerUserId", user._id))
+      .order("desc")
       .take(50);
+
+    const results = [];
+    for (const application of applications) {
+      const vacancy = await ctx.db.get(application.vacancyId);
+      results.push({ application, vacancy });
+    }
+    return results;
+  },
+});
+
+export const listForBotByTelegramChatId = internalQuery({
+  args: {
+    telegramChatId: v.string(),
+    limit: v.optional(v.number()),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db
+      .query("users")
+      .withIndex("by_telegramChatId", (q) => q.eq("telegramChatId", args.telegramChatId))
+      .unique();
+    if (!user || !user.isBotLinked) {
+      return null;
+    }
+
+    const applications = await ctx.db
+      .query("applications")
+      .withIndex("by_seekerUserId", (q) => q.eq("seekerUserId", user._id))
+      .order("desc")
+      .take(Math.min(args.limit ?? 5, 10));
 
     const results = [];
     for (const application of applications) {
@@ -145,12 +199,12 @@ export const listVacancyApplications = query({
   args: { vacancyId: v.id("vacancies") },
   handler: async (ctx, args) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["employer", "admin"]);
+    assertEmployerOrAdmin(user);
     const vacancy = await ctx.db.get(args.vacancyId);
     if (!vacancy) {
       throw new ConvexError("Vacancy not found");
     }
-    assertOwnershipOrAdmin(user, vacancy.ownerUserId);
+    assertCanListApplicationsForVacancy(user, vacancy);
     return ctx.db
       .query("applications")
       .withIndex("by_vacancyId", (q) => q.eq("vacancyId", args.vacancyId))
@@ -162,12 +216,12 @@ export const listVacancyApplicationsWithProfiles = query({
   args: { vacancyId: v.id("vacancies") },
   handler: async (ctx, args) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["employer", "admin"]);
+    assertEmployerOrAdmin(user);
     const vacancy = await ctx.db.get(args.vacancyId);
     if (!vacancy) {
       throw new ConvexError("Vacancy not found");
     }
-    assertOwnershipOrAdmin(user, vacancy.ownerUserId);
+    assertCanListApplicationsForVacancy(user, vacancy);
 
     const applications = await ctx.db
       .query("applications")
@@ -190,12 +244,12 @@ export const listByVacancy = query({
   args: { vacancyId: v.id("vacancies") },
   handler: async (ctx, args) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["employer", "admin"]);
+    assertEmployerOrAdmin(user);
     const vacancy = await ctx.db.get(args.vacancyId);
     if (!vacancy) {
       throw new ConvexError("Vacancy not found");
     }
-    assertOwnershipOrAdmin(user, vacancy.ownerUserId);
+    assertCanListApplicationsForVacancy(user, vacancy);
 
     const applications = await ctx.db
       .query("applications")
@@ -218,7 +272,7 @@ export const listMyOwnedApplicationsWithProfiles = query({
   args: {},
   handler: async (ctx) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["employer", "admin"]);
+    assertEmployerOrAdmin(user);
     const vacancies = await ctx.db
       .query("vacancies")
       .withIndex("by_ownerUserId", (q) => q.eq("ownerUserId", user._id))
@@ -246,7 +300,7 @@ export const listByOwner = query({
   args: {},
   handler: async (ctx) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["employer", "admin"]);
+    assertEmployerOrAdmin(user);
     const vacancies = await ctx.db
       .query("vacancies")
       .withIndex("by_ownerUserId", (q) => q.eq("ownerUserId", user._id))
@@ -270,6 +324,34 @@ export const listByOwner = query({
   },
 });
 
+export const withdrawApplication = mutation({
+  args: { applicationId: v.id("applications") },
+  handler: async (ctx, args) => {
+    const user = await requireCurrentUser(ctx);
+    const application = await ctx.db.get(args.applicationId);
+    if (!application) {
+      throw new ConvexError("Application not found");
+    }
+    assertCanWithdrawApplication(user, application);
+    if (!isValidApplicationTransition(application.status, "withdrawn")) {
+      throw new ConvexError("Application cannot be withdrawn in its current status");
+    }
+    await ctx.db.patch(args.applicationId, { status: "withdrawn" });
+    await ctx.scheduler.runAfter(0, internal.notifications.handleStatusChange, {
+      applicationId: args.applicationId,
+      seekerUserId: application.seekerUserId,
+      status: "withdrawn",
+      dedupeKey: buildNotificationDedupeKey({
+        type: "status_change",
+        recipientUserId: String(application.seekerUserId),
+        entityId: String(args.applicationId),
+        secondaryId: "withdrawn",
+      }),
+    });
+    return ctx.db.get(args.applicationId);
+  },
+});
+
 export const updateApplicationStatus = mutation({
   args: {
     applicationId: v.id("applications"),
@@ -277,7 +359,7 @@ export const updateApplicationStatus = mutation({
   },
   handler: async (ctx, args) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["employer", "admin"]);
+    assertEmployerOrAdmin(user);
     const application = await ctx.db.get(args.applicationId);
     if (!application) {
       throw new ConvexError("Application not found");
@@ -287,7 +369,10 @@ export const updateApplicationStatus = mutation({
     if (!vacancy) {
       throw new ConvexError("Vacancy not found");
     }
-    assertOwnershipOrAdmin(user, vacancy.ownerUserId);
+    assertCanUpdateApplicationStatus(user, vacancy);
+    if (args.status === "withdrawn") {
+      throw new ConvexError("Use withdrawApplication for seeker withdrawals");
+    }
     assertApplicationTransition(application.status, args.status);
 
     await ctx.db.patch(args.applicationId, { status: args.status });
@@ -314,7 +399,7 @@ export const adminRecoverApplicationStatus = mutation({
   },
   handler: async (ctx, args) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["admin"]);
+    assertCanAdminRecoverApplicationStatus(user);
     const application = await ctx.db.get(args.applicationId);
     if (!application) {
       throw new ConvexError("Application not found");
@@ -336,6 +421,21 @@ export const getForAnalysis = internalQuery({
       throw new ConvexError("Vacancy not found");
     }
     return { application, vacancy };
+  },
+});
+
+export const getNotificationContextForApplication = internalQuery({
+  args: { applicationId: v.id("applications") },
+  handler: async (ctx, args) => {
+    const application = await ctx.db.get(args.applicationId);
+    if (!application) {
+      return null;
+    }
+    const vacancy = await ctx.db.get(application.vacancyId);
+    if (!vacancy) {
+      return null;
+    }
+    return { vacancyTitle: vacancy.title };
   },
 });
 
@@ -374,9 +474,13 @@ export const createFromBot = internalMutation({
   handler: async (ctx, args) => {
     const result = await createApplicationRecord(ctx, args);
 
+    const employerUserId = result.vacancy.ownerUserId;
+    if (!employerUserId) {
+      throw new ConvexError("Invariant: missing vacancy owner");
+    }
     await ctx.scheduler.runAfter(0, internal.notifications.handleNewApplication, {
       applicationId: result.applicationId,
-      employerUserId: result.vacancy.ownerUserId!,
+      employerUserId,
     });
 
     if (args.screeningAnswers?.length) {

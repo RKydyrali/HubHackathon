@@ -1,15 +1,19 @@
+import { useMutation } from "convex/react";
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/shared/Button";
 import { Icon } from "@/components/shared/Icon";
 import { Row } from "@/components/shared/Row";
 import { SourceBadge, StatusBadge } from "@/components/shared/StatusBadge";
+import { api } from "@/lib/convex-api";
+import { demoAnalyticsApplyUrlMetadata } from "@/lib/demoAnalyticsClient";
 import { formatSalary } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
 import type { Vacancy } from "@/types/domain";
 
 export function VacancyRow({ vacancy, ownerView = false }: { vacancy: Vacancy; ownerView?: boolean }) {
   const { copy, locale } = useI18n();
+  const trackDemo = useMutation(api.demoAnalytics.track);
   const href = ownerView ? `/employer/vacancies/${vacancy._id}` : `/vacancies/${vacancy._id}`;
   const meta = `${vacancy.city}${vacancy.district ? `, ${vacancy.district}` : ""} - ${formatSalary(vacancy, locale)}`;
 
@@ -22,7 +26,20 @@ export function VacancyRow({ vacancy, ownerView = false }: { vacancy: Vacancy; o
       <div className="flex items-center justify-between gap-2">
         <span className="line-clamp-2">{vacancy.description}</span>
         {vacancy.source === "hh" && vacancy.externalApplyUrl ? (
-          <a href={vacancy.externalApplyUrl} target="_blank" rel="noreferrer" aria-label={`${copy.vacancies.applyHh}: ${vacancy.title}`}>
+          <a
+            href={vacancy.externalApplyUrl}
+            target="_blank"
+            rel="noreferrer"
+            aria-label={`${copy.vacancies.applyHh}: ${vacancy.title}`}
+            onClick={() => {
+              void trackDemo({
+                kind: "external_apply_clicked",
+                vacancyId: vacancy._id,
+                surface: "vacancy_row",
+                metadata: demoAnalyticsApplyUrlMetadata(vacancy.externalApplyUrl),
+              });
+            }}
+          >
             <Button variant="outline" size="sm">
               <Icon icon="ExternalLink" data-icon="inline-start" weight="bold" />
               HH.kz

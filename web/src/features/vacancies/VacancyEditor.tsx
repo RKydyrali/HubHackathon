@@ -4,7 +4,6 @@ import { useAction, useMutation } from "convex/react";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { z } from "zod";
 
 import { Button } from "@/components/shared/Button";
 import { SourceBadge, StatusBadge } from "@/components/shared/StatusBadge";
@@ -16,32 +15,15 @@ import { api, type Id } from "@/lib/convex-api";
 import { useI18n } from "@/lib/i18n";
 import { formatSalary } from "@/lib/format";
 import type { Vacancy } from "@/types/domain";
-
-const optionalNumber = z.preprocess(
-  (value) => (value === "" || value === undefined ? undefined : Number(value)),
-  z.number().optional(),
-);
-
-const vacancySchema = z.object({
-  title: z.string().min(2, "Укажите название вакансии"),
-  description: z.string().min(10, "Добавьте понятное описание"),
-  district: z.string().optional(),
-  salaryMin: optionalNumber,
-  salaryMax: optionalNumber,
-  screeningQuestionsText: z.string().optional(),
-});
-
-type VacancyInput = z.input<typeof vacancySchema>;
-type VacancyForm = z.output<typeof vacancySchema>;
-
-type GeneratedVacancy = {
-  title?: string;
-  description?: string;
-  city?: string;
-  salaryMin?: number | null;
-  salaryMax?: number | null;
-  salaryCurrency?: string | null;
-};
+import {
+  type GeneratedVacancyFields,
+  buildCreateNativePayload,
+  parseQuestions,
+  toDefaultValues,
+  vacancySchema,
+  type VacancyFormInput,
+  type VacancyFormValues,
+} from "./vacancyFormModel";
 
 export function VacancyEditor({ vacancy, onCreated }: { vacancy?: Vacancy | null; onCreated?: () => void }) {
   const createVacancy = useMutation(api.vacancies.createNativeVacancy);
@@ -58,7 +40,7 @@ export function VacancyEditor({ vacancy, onCreated }: { vacancy?: Vacancy | null
   const readOnly = vacancy?.source === "hh";
   const isCreating = !vacancy;
 
-  const form = useForm<VacancyInput, unknown, VacancyForm>({
+  const form = useForm<VacancyFormInput, unknown, VacancyFormValues>({
     resolver: zodResolver(vacancySchema),
     mode: "onChange",
     defaultValues: toDefaultValues(vacancy),
@@ -68,18 +50,16 @@ export function VacancyEditor({ vacancy, onCreated }: { vacancy?: Vacancy | null
     form.reset(toDefaultValues(vacancy));
   }, [form, vacancy]);
 
-  async function submit(values: VacancyForm) {
+  async function submit(values: VacancyFormValues) {
     if (readOnly) return;
     const screeningQuestions = parseQuestions(values.screeningQuestionsText);
-    const payload = {
+    const payload = buildCreateNativePayload({
       title: values.title,
       description: values.description,
-      city: "Aktau",
-      district: values.district || undefined,
-      salaryMin: values.salaryMin || undefined,
-      salaryMax: values.salaryMax || undefined,
-      salaryCurrency: "KZT",
-    };
+      district: values.district,
+      salaryMin: values.salaryMin,
+      salaryMax: values.salaryMax,
+    });
 
     if (vacancy) {
       await updateVacancy({
@@ -107,7 +87,7 @@ export function VacancyEditor({ vacancy, onCreated }: { vacancy?: Vacancy | null
     if (!trimmed) return;
     setGeneratingDraft(true);
     try {
-      const generated = (await generateVacancy({ rawText: trimmed })) as GeneratedVacancy;
+      const generated = (await generateVacancy({ rawText: trimmed })) as GeneratedVacancyFields;
       form.setValue("title", generated.title ?? form.getValues("title"), { shouldValidate: true });
       form.setValue("description", generated.description ?? form.getValues("description"), { shouldValidate: true });
       form.setValue("salaryMin", generated.salaryMin ?? undefined, { shouldValidate: true });
@@ -309,22 +289,4 @@ export function VacancyEditor({ vacancy, onCreated }: { vacancy?: Vacancy | null
       </div>
     </form>
   );
-}
-
-function toDefaultValues(vacancy?: Vacancy | null): VacancyInput {
-  return {
-    title: vacancy?.title ?? "",
-    description: vacancy?.description ?? "",
-    district: vacancy?.district ?? "",
-    salaryMin: vacancy?.salaryMin,
-    salaryMax: vacancy?.salaryMax,
-    screeningQuestionsText: vacancy?.screeningQuestions?.join("\n") ?? "",
-  };
-}
-
-function parseQuestions(value?: string) {
-  return (value ?? "")
-    .split("\n")
-    .map((line) => line.trim())
-    .filter(Boolean);
 }

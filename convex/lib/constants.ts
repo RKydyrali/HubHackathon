@@ -5,13 +5,16 @@ export const EMBEDDING_DIMENSION = 1536;
 
 export const USER_ROLES = ["seeker", "employer", "admin"] as const;
 export const VACANCY_SOURCES = ["native", "hh"] as const;
-export const VACANCY_STATUSES = ["draft", "published", "archived"] as const;
+export const VACANCY_STATUSES = ["draft", "published", "paused", "archived"] as const;
 export const APPLICATION_STATUSES = [
   "submitted",
   "reviewing",
+  "shortlisted",
   "interview",
+  "offer_sent",
   "rejected",
   "hired",
+  "withdrawn",
 ] as const;
 export const NOTIFICATION_DELIVERY_STATUSES = [
   "queued",
@@ -23,6 +26,7 @@ export const NOTIFICATION_TYPES = [
   "new_application",
   "status_change",
   "strong_match",
+  "interview_update",
   "custom",
 ] as const;
 export const INTERVIEW_STATUSES = [
@@ -39,3 +43,9 @@ export type NotificationDeliveryStatus =
   (typeof NOTIFICATION_DELIVERY_STATUSES)[number];
 export type NotificationType = (typeof NOTIFICATION_TYPES)[number];
 export type InterviewStatus = (typeof INTERVIEW_STATUSES)[number];
+
+/** Mock interview: production limits (see convex/lib/mockInterviewHardening.ts). */
+export const MOCK_INTERVIEW_MAX_USER_MESSAGE_CHARS = 8000;
+export const MOCK_INTERVIEW_MAX_MESSAGES_PER_SESSION = 100;
+export const MOCK_INTERVIEW_MAX_DEBRIEF_TRANSCRIPT_CHARS = 28000;
+export const MOCK_INTERVIEW_MIN_USER_MESSAGES_TO_FINALIZE = 1;

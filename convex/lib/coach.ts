@@ -110,7 +110,9 @@ export function buildStructuredCoach(input: {
   }
 
   const activeApplications = input.applications.filter(({ application }) =>
-    ["submitted", "reviewing", "interview"].includes(application.status),
+    ["submitted", "reviewing", "shortlisted", "interview", "offer_sent"].includes(
+      application.status,
+    ),
   );
   const bestMatch = [...input.matches].sort((a, b) => b.matchScore - a.matchScore)[0];
   const level = activeApplications.length > 0 ? "active" : "building";

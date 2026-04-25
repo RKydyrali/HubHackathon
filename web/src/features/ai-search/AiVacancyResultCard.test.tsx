@@ -4,10 +4,14 @@ import "@testing-library/jest-dom/vitest";
 
 import { cleanup, render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { afterEach, describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 
 import type { Id } from "@/lib/convex-api";
 import { AiVacancyResultCard } from "./AiVacancyResultCard";
+
+vi.mock("convex/react", () => ({
+  useMutation: () => vi.fn(),
+}));
 
 describe("AiVacancyResultCard", () => {
   afterEach(() => cleanup());

@@ -1,23 +1,22 @@
 import { useParams, useSearchParams } from "react-router-dom";
 
-import { PageHeader } from "@/components/layout/PageHeader";
-import { PublicNavbar } from "@/components/public/PublicNavbar";
 import { useI18n } from "@/lib/i18n";
 import { AiJobAssistant } from "./AiJobAssistant";
 
-export function AiSearchPage({ dashboard = false }: { dashboard?: boolean }) {
+export function AiSearchPage() {
   const { chatId } = useParams();
   const [params] = useSearchParams();
   const { copy } = useI18n();
-  const basePath = dashboard ? "/dashboard/ai-search" : "/ai-search";
 
   return (
-    <>
-      {dashboard ? null : <PublicNavbar />}
-      <PageHeader title={copy.ai.title} subtitle={copy.ai.subtitle} />
-      <main className="container-app pb-6 pt-5">
-        <AiJobAssistant chatId={chatId} initialQuery={params.get("q") ?? undefined} basePath={basePath} dashboard={dashboard} />
-      </main>
-    </>
+    <main className="container-app max-w-6xl py-4 pb-10 sm:py-6">
+      <div className="mb-4 text-center sm:mb-5 sm:text-left">
+        <h1 className="font-heading text-lg font-semibold tracking-tight text-foreground sm:text-xl">
+          {copy.ai.title}
+        </h1>
+        <p className="mx-auto mt-1 max-w-xl text-sm text-muted-foreground sm:mx-0">{copy.ai.subtitle}</p>
+      </div>
+      <AiJobAssistant chatId={chatId} initialQuery={params.get("q") ?? undefined} basePath="/ai-search" />
+    </main>
   );
 }

@@ -4,10 +4,14 @@ import "@testing-library/jest-dom/vitest";
 
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
-import { describe, expect, test } from "vitest";
+import { describe, expect, test, vi } from "vitest";
 
 import type { Id } from "@/lib/convex-api";
 import { VacancyCard } from "./VacancyCard";
+
+vi.mock("convex/react", () => ({
+  useMutation: () => vi.fn(),
+}));
 
 describe("VacancyCard", () => {
   test("keeps native applications in-app and HH applications external", () => {

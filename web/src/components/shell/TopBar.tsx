@@ -1,5 +1,5 @@
 import { SignOutButton, useUser } from "@clerk/clerk-react";
-import { Bell, ChatCircleText, Heart, MapPin, SignOut } from "@phosphor-icons/react";
+import { Bell, Briefcase, ChatCircleText, MapPin, SignOut } from "@phosphor-icons/react";
 import { Link } from "react-router-dom";
 
 import { Badge } from "@/components/shared/Badge";
@@ -8,6 +8,8 @@ import { Button } from "@/components/shared/Button";
 import { LocaleToggle } from "@/components/shared/LocaleToggle";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useI18n } from "@/lib/i18n";
+import { defaultHomeForRole } from "@/routing/guards";
+import { AI_MATCHING_ROOT } from "@/routing/navPaths";
 import type { UserRole } from "@/types/domain";
 
 export function TopBar({ role }: { role: UserRole }) {
@@ -25,23 +27,27 @@ export function TopBar({ role }: { role: UserRole }) {
     <div className="sticky top-0 z-20 border-b bg-background/84 px-4 backdrop-blur-xl">
       <div className="flex min-h-[4.25rem] items-center justify-between gap-3">
         <div className="min-w-0 md:hidden">
-          <BrandMark compact />
+          <BrandMark compact to={defaultHomeForRole(role)} />
         </div>
         <div className="hidden min-w-0 items-center gap-3 md:flex">
-          <Button variant="outline" size="sm" className="rounded-full">
-            <MapPin data-icon="inline-start" weight="bold" />
-            {copy.city}
-          </Button>
+          <Link to="/vacancies">
+            <Button variant="outline" size="sm" className="rounded-full" aria-label={copy.nav.vacancies}>
+              <MapPin data-icon="inline-start" weight="bold" />
+              {copy.city}
+            </Button>
+          </Link>
           <Badge tone="info" className="capitalize">
             {role}
           </Badge>
         </div>
         <div className="flex items-center gap-1.5 sm:gap-2">
           <LocaleToggle />
-          <Button variant="ghost" size="icon-sm" aria-label={copy.nav.vacancies}>
-            <Heart weight="regular" />
-          </Button>
-          <Link to={role === "seeker" ? "/dashboard/ai-search" : "/ai-search"}>
+          <Link to="/vacancies">
+            <Button variant="ghost" size="icon-sm" aria-label={copy.nav.vacancies}>
+              <Briefcase weight="regular" />
+            </Button>
+          </Link>
+          <Link to={AI_MATCHING_ROOT}>
             <Button variant="ghost" size="icon-sm" aria-label={copy.nav.aiSearch}>
               <ChatCircleText weight="regular" />
             </Button>

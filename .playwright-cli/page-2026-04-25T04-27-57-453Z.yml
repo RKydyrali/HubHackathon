@@ -1,0 +1,392 @@
+- generic [ref=e196]:
+  - banner "Вакансии" [ref=e197]:
+    - generic [ref=e198]:
+      - link "JumysAI" [ref=e199] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e200]:
+          - generic [ref=e201]:
+            - generic [ref=e202]: Jumys
+            - generic [ref=e203]: AI
+          - generic [ref=e204]: Актау
+      - link "Войти" [ref=e205] [cursor=pointer]:
+        - /url: /login
+  - generic [ref=e208]:
+    - group [ref=e210]:
+      - group [ref=e211]:
+        - img [ref=e212]
+      - textbox "Поиск" [ref=e214]:
+        - /placeholder: Поиск по названию, компании или навыкам
+    - generic [ref=e215]:
+      - button "Локация" [ref=e217] [cursor=pointer]:
+        - generic [ref=e218]:
+          - img
+          - generic [ref=e219]: Любая локация
+        - img
+      - generic [ref=e220]:
+        - button "Новый" [ref=e221] [cursor=pointer]
+        - button "Горячая" [ref=e222] [cursor=pointer]
+      - combobox "Зарплата" [ref=e223] [cursor=pointer]:
+        - generic [ref=e224]: Любой диапазон
+        - img: ▼
+      - textbox [ref=e225]: all
+      - combobox "Опыт" [ref=e226] [cursor=pointer]:
+        - generic [ref=e227]: Любой уровень
+        - img: ▼
+      - textbox [ref=e228]: all
+      - combobox "Источник" [ref=e229] [cursor=pointer]:
+        - generic [ref=e230]: Все источники
+        - img: ▼
+      - textbox [ref=e231]: all
+      - button "Ещё фильтры" [ref=e232] [cursor=pointer]:
+        - img
+        - generic [ref=e233]: Ещё фильтры
+    - generic [ref=e234]:
+      - combobox "Сортировка" [ref=e235] [cursor=pointer]:
+        - img
+        - generic [ref=e236]: Сначала новые
+        - img: ▼
+      - textbox [ref=e237]: newest
+  - generic [ref=e238]:
+    - generic [ref=e240]:
+      - generic [ref=e241]: "Всего: 50"
+      - generic [ref=e242]: "JumysAI: 50"
+      - generic [ref=e243]: "HH.kz: 0"
+    - generic [ref=e244]:
+      - alert [ref=e245]:
+        - img [ref=e246]
+        - generic [ref=e248]: Важно
+        - generic [ref=e249]: Ориентировочное совпадение по профилю
+      - table [ref=e252]:
+        - rowgroup [ref=e253]:
+          - row "Название Компания Локация Зарплата Источник Совпадение Действие" [ref=e254]:
+            - columnheader "Название" [ref=e255]
+            - columnheader "Компания" [ref=e256]
+            - columnheader "Локация" [ref=e257]
+            - columnheader "Зарплата" [ref=e258]
+            - columnheader "Источник" [ref=e259]
+            - columnheader "Совпадение" [ref=e260]
+            - columnheader "Действие" [ref=e261]
+        - rowgroup [ref=e262]:
+          - row "Инженер по обслуживанию спецтехники Новый Горячая Прямой работодатель Актау, мкр. 16-й 550 000-1 259 218 KZT JumysAI 81% 81 % Откликнуться Действие" [ref=e263]:
+            - cell "Инженер по обслуживанию спецтехники Новый Горячая" [ref=e264]:
+              - generic [ref=e266]:
+                - link "Инженер по обслуживанию спецтехники" [ref=e267] [cursor=pointer]:
+                  - /url: /vacancies/js7cchac6rvytp9aphfw4r4bed85fwq3
+                - generic [ref=e268]:
+                  - generic [ref=e269]: Новый
+                  - generic [ref=e270]: Горячая
+            - cell "Прямой работодатель" [ref=e271]:
+              - generic "Прямой работодатель" [ref=e272]
+            - cell "Актау, мкр. 16-й" [ref=e273]:
+              - generic [ref=e274]:
+                - img [ref=e275]
+                - generic [ref=e277]: Актау, мкр. 16-й
+            - cell "550 000-1 259 218 KZT" [ref=e278]:
+              - generic "550 000-1 259 218 KZT" [ref=e279]
+            - cell "JumysAI" [ref=e280]:
+              - generic "Отклик и статус будут в JumysAI." [ref=e282]:
+                - img
+                - text: JumysAI
+            - cell "81% 81 %" [ref=e283]:
+              - generic [ref=e285]:
+                - generic [ref=e286]: 81%
+                - progressbar "Ориентировочное совпадение по профилю" [ref=e287]: x
+            - cell "Откликнуться Действие" [ref=e290]:
+              - generic:
+                - link "Откликнуться" [ref=e291] [cursor=pointer]:
+                  - /url: /vacancies/js7cchac6rvytp9aphfw4r4bed85fwq3/apply
+                  - button "Откликнуться" [ref=e292]
+                - button "Действие" [ref=e293] [cursor=pointer]:
+                  - img
+          - row "Full-stack разработчик (TypeScript) Новый Горячая Прямой работодатель Актау, мкр. 12-й 550 000-1 262 577 KZT JumysAI 86% 86 % Откликнуться Действие" [ref=e294]:
+            - cell "Full-stack разработчик (TypeScript) Новый Горячая" [ref=e295]:
+              - generic [ref=e297]:
+                - link "Full-stack разработчик (TypeScript)" [ref=e298] [cursor=pointer]:
+                  - /url: /vacancies/js7as21nbrjxxpfz1571yrvcnd85e7cg
+                - generic [ref=e299]:
+                  - generic [ref=e300]: Новый
+                  - generic [ref=e301]: Горячая
+            - cell "Прямой работодатель" [ref=e302]:
+              - generic "Прямой работодатель" [ref=e303]
+            - cell "Актау, мкр. 12-й" [ref=e304]:
+              - generic [ref=e305]:
+                - img [ref=e306]
+                - generic [ref=e308]: Актау, мкр. 12-й
+            - cell "550 000-1 262 577 KZT" [ref=e309]:
+              - generic "550 000-1 262 577 KZT" [ref=e310]
+            - cell "JumysAI" [ref=e311]:
+              - generic "Отклик и статус будут в JumysAI." [ref=e313]:
+                - img
+                - text: JumysAI
+            - cell "86% 86 %" [ref=e314]:
+              - generic [ref=e316]:
+                - generic [ref=e317]: 86%
+                - progressbar "Ориентировочное совпадение по профилю" [ref=e318]: x
+            - cell "Откликнуться Действие" [ref=e321]:
+              - generic:
+                - link "Откликнуться" [ref=e322] [cursor=pointer]:
+                  - /url: /vacancies/js7as21nbrjxxpfz1571yrvcnd85e7cg/apply
+                  - button "Откликнуться" [ref=e323]
+                - button "Действие" [ref=e324] [cursor=pointer]:
+                  - img
+          - row "Прораб (гражданское строительство) Новый Горячая Прямой работодатель Актау, мкр. 17-й 550 000-1 203 147 KZT JumysAI 63% 63 % Откликнуться Действие" [ref=e325]:
+            - cell "Прораб (гражданское строительство) Новый Горячая" [ref=e326]:
+              - generic [ref=e328]:
+                - link "Прораб (гражданское строительство)" [ref=e329] [cursor=pointer]:
+                  - /url: /vacancies/js72fkc1q9pbabgk4yhmqej9mn85fp8p
+                - generic [ref=e330]:
+                  - generic [ref=e331]: Новый
+                  - generic [ref=e332]: Горячая
+            - cell "Прямой работодатель" [ref=e333]:
+              - generic "Прямой работодатель" [ref=e334]
+            - cell "Актау, мкр. 17-й" [ref=e335]:
+              - generic [ref=e336]:
+                - img [ref=e337]
+                - generic [ref=e339]: Актау, мкр. 17-й
+            - cell "550 000-1 203 147 KZT" [ref=e340]:
+              - generic "550 000-1 203 147 KZT" [ref=e341]
+            - cell "JumysAI" [ref=e342]:
+              - generic "Отклик и статус будут в JumysAI." [ref=e344]:
+                - img
+                - text: JumysAI
+            - cell "63% 63 %" [ref=e345]:
+              - generic [ref=e347]:
+                - generic [ref=e348]: 63%
+                - progressbar "Ориентировочное совпадение по профилю" [ref=e349]: x
+            - cell "Откликнуться Действие" [ref=e352]:
+              - generic:
+                - link "Откликнуться" [ref=e353] [cursor=pointer]:
+                  - /url: /vacancies/js72fkc1q9pbabgk4yhmqej9mn85fp8p/apply
+                  - button "Откликнуться" [ref=e354]
+                - button "Действие" [ref=e355] [cursor=pointer]:
+                  - img
+          - row "Системный администратор Новый Горячая Прямой работодатель Актау, мкр. 12-й 380 000-823 518 KZT JumysAI 79% 79 % Откликнуться Действие" [ref=e356]:
+            - cell "Системный администратор Новый Горячая" [ref=e357]:
+              - generic [ref=e359]:
+                - link "Системный администратор" [ref=e360] [cursor=pointer]:
+                  - /url: /vacancies/js73ah5n03kdywqkph6hk3vfcd85eqj0
+                - generic [ref=e361]:
+                  - generic [ref=e362]: Новый
+                  - generic [ref=e363]: Горячая
+            - cell "Прямой работодатель" [ref=e364]:
+              - generic "Прямой работодатель" [ref=e365]
+            - cell "Актау, мкр. 12-й" [ref=e366]:
+              - generic [ref=e367]:
+                - img [ref=e368]
+                - generic [ref=e370]: Актау, мкр. 12-й
+            - cell "380 000-823 518 KZT" [ref=e371]:
+              - generic "380 000-823 518 KZT" [ref=e372]
+            - cell "JumysAI" [ref=e373]:
+              - generic "Отклик и статус будут в JumysAI." [ref=e375]:
+                - img
+                - text: JumysAI
+            - cell "79% 79 %" [ref=e376]:
+              - generic [ref=e378]:
+                - generic [ref=e379]: 79%
+                - progressbar "Ориентировочное совпадение по профилю" [ref=e380]: x
+            - cell "Откликнуться Действие" [ref=e383]:
+              - generic:
+                - link "Откликнуться" [ref=e384] [cursor=pointer]:
+                  - /url: /vacancies/js73ah5n03kdywqkph6hk3vfcd85eqj0/apply
+                  - button "Откликнуться" [ref=e385]
+                - button "Действие" [ref=e386] [cursor=pointer]:
+                  - img
+          - row "Кладовщик-комплектовщик Новый Горячая Прямой работодатель Актау, мкр. 9-й 550 000-1 279 514 KZT JumysAI 65% 65 % Откликнуться Действие" [ref=e387]:
+            - cell "Кладовщик-комплектовщик Новый Горячая" [ref=e388]:
+              - generic [ref=e390]:
+                - link "Кладовщик-комплектовщик" [ref=e391] [cursor=pointer]:
+                  - /url: /vacancies/js7036smmhaejvyx5sre727d3h85f6mj
+                - generic [ref=e392]:
+                  - generic [ref=e393]: Новый
+                  - generic [ref=e394]: Горячая
+            - cell "Прямой работодатель" [ref=e395]:
+              - generic "Прямой работодатель" [ref=e396]
+            - cell "Актау, мкр. 9-й" [ref=e397]:
+              - generic [ref=e398]:
+                - img [ref=e399]
+                - generic [ref=e401]: Актау, мкр. 9-й
+            - cell "550 000-1 279 514 KZT" [ref=e402]:
+              - generic "550 000-1 279 514 KZT" [ref=e403]
+            - cell "JumysAI" [ref=e404]:
+              - generic "Отклик и статус будут в JumysAI." [ref=e406]:
+                - img
+                - text: JumysAI
+            - cell "65% 65 %" [ref=e407]:
+              - generic [ref=e409]:
+                - generic [ref=e410]: 65%
+                - progressbar "Ориентировочное совпадение по профилю" [ref=e411]: x
+            - cell "Откликнуться Действие" [ref=e414]:
+              - generic:
+                - link "Откликнуться" [ref=e415] [cursor=pointer]:
+                  - /url: /vacancies/js7036smmhaejvyx5sre727d3h85f6mj/apply
+                  - button "Откликнуться" [ref=e416]
+                - button "Действие" [ref=e417] [cursor=pointer]:
+                  - img
+          - row "Оператор по добыче нефти и газа Новый Горячая Прямой работодатель Актау, мкр. 17-й 322 000-632 372 KZT JumysAI 84% 84 % Откликнуться Действие" [ref=e418]:
+            - cell "Оператор по добыче нефти и газа Новый Горячая" [ref=e419]:
+              - generic [ref=e421]:
+                - link "Оператор по добыче нефти и газа" [ref=e422] [cursor=pointer]:
+                  - /url: /vacancies/js79qzw6gy5k72sh91gjt48ja585fxq2
+                - generic [ref=e423]:
+                  - generic [ref=e424]: Новый
+                  - generic [ref=e425]: Горячая
+            - cell "Прямой работодатель" [ref=e426]:
+              - generic "Прямой работодатель" [ref=e427]
+            - cell "Актау, мкр. 17-й" [ref=e428]:
+              - generic [ref=e429]:
+                - img [ref=e430]
+                - generic [ref=e432]: Актау, мкр. 17-й
+            - cell "322 000-632 372 KZT" [ref=e433]:
+              - generic "322 000-632 372 KZT" [ref=e434]
+            - cell "JumysAI" [ref=e435]:
+              - generic "Отклик и статус будут в JumysAI." [ref=e437]:
+                - img
+                - text: JumysAI
+            - cell "84% 84 %" [ref=e438]:
+              - generic [ref=e440]:
+                - generic [ref=e441]: 84%
+                - progressbar "Ориентировочное совпадение по профилю" [ref=e442]: x
+            - cell "Откликнуться Действие" [ref=e445]:
+              - generic:
+                - link "Откликнуться" [ref=e446] [cursor=pointer]:
+                  - /url: /vacancies/js79qzw6gy5k72sh91gjt48ja585fxq2/apply
+                  - button "Откликнуться" [ref=e447]
+                - button "Действие" [ref=e448] [cursor=pointer]:
+                  - img
+          - row "Инженер по бурению (младший) Новый Горячая Прямой работодатель Актау, посёлок Заозёрный 437 000-928 594 KZT JumysAI 79% 79 % Откликнуться Действие" [ref=e449]:
+            - cell "Инженер по бурению (младший) Новый Горячая" [ref=e450]:
+              - generic [ref=e452]:
+                - link "Инженер по бурению (младший)" [ref=e453] [cursor=pointer]:
+                  - /url: /vacancies/js77x43r87jwg5mxwq3f3hqtzd85e2c2
+                - generic [ref=e454]:
+                  - generic [ref=e455]: Новый
+                  - generic [ref=e456]: Горячая
+            - cell "Прямой работодатель" [ref=e457]:
+              - generic "Прямой работодатель" [ref=e458]
+            - cell "Актау, посёлок Заозёрный" [ref=e459]:
+              - generic [ref=e460]:
+                - img [ref=e461]
+                - generic [ref=e463]: Актау, посёлок Заозёрный
+            - cell "437 000-928 594 KZT" [ref=e464]:
+              - generic "437 000-928 594 KZT" [ref=e465]
+            - cell "JumysAI" [ref=e466]:
+              - generic "Отклик и статус будут в JumysAI." [ref=e468]:
+                - img
+                - text: JumysAI
+            - cell "79% 79 %" [ref=e469]:
+              - generic [ref=e471]:
+                - generic [ref=e472]: 79%
+                - progressbar "Ориентировочное совпадение по профилю" [ref=e473]: x
+            - cell "Откликнуться Действие" [ref=e476]:
+              - generic:
+                - link "Откликнуться" [ref=e477] [cursor=pointer]:
+                  - /url: /vacancies/js77x43r87jwg5mxwq3f3hqtzd85e2c2/apply
+                  - button "Откликнуться" [ref=e478]
+                - button "Действие" [ref=e479] [cursor=pointer]:
+                  - img
+          - row "Инженер сметчик Новый Горячая Прямой работодатель Актау, мкр. 9-й 550 000-1 265 591 KZT JumysAI 79% 79 % Откликнуться Действие" [ref=e480]:
+            - cell "Инженер сметчик Новый Горячая" [ref=e481]:
+              - generic [ref=e483]:
+                - link "Инженер сметчик" [ref=e484] [cursor=pointer]:
+                  - /url: /vacancies/js70vxqymz24ajk53ve121a95s85ewg3
+                - generic [ref=e485]:
+                  - generic [ref=e486]: Новый
+                  - generic [ref=e487]: Горячая
+            - cell "Прямой работодатель" [ref=e488]:
+              - generic "Прямой работодатель" [ref=e489]
+            - cell "Актау, мкр. 9-й" [ref=e490]:
+              - generic [ref=e491]:
+                - img [ref=e492]
+                - generic [ref=e494]: Актау, мкр. 9-й
+            - cell "550 000-1 265 591 KZT" [ref=e495]:
+              - generic "550 000-1 265 591 KZT" [ref=e496]
+            - cell "JumysAI" [ref=e497]:
+              - generic "Отклик и статус будут в JumysAI." [ref=e499]:
+                - img
+                - text: JumysAI
+            - cell "79% 79 %" [ref=e500]:
+              - generic [ref=e502]:
+                - generic [ref=e503]: 79%
+                - progressbar "Ориентировочное совпадение по профилю" [ref=e504]: x
+            - cell "Откликнуться Действие" [ref=e507]:
+              - generic:
+                - link "Откликнуться" [ref=e508] [cursor=pointer]:
+                  - /url: /vacancies/js70vxqymz24ajk53ve121a95s85ewg3/apply
+                  - button "Откликнуться" [ref=e509]
+                - button "Действие" [ref=e510] [cursor=pointer]:
+                  - img
+          - row "Мастер смены (ДНГ) Новый Горячая Прямой работодатель Актау, мкр. 11-й 805 000-1 980 358 KZT JumysAI 59% 59 % Откликнуться Действие" [ref=e511]:
+            - cell "Мастер смены (ДНГ) Новый Горячая" [ref=e512]:
+              - generic [ref=e514]:
+                - link "Мастер смены (ДНГ)" [ref=e515] [cursor=pointer]:
+                  - /url: /vacancies/js79nnx5kfbnz56beywd26f8dx85egfk
+                - generic [ref=e516]:
+                  - generic [ref=e517]: Новый
+                  - generic [ref=e518]: Горячая
+            - cell "Прямой работодатель" [ref=e519]:
+              - generic "Прямой работодатель" [ref=e520]
+            - cell "Актау, мкр. 11-й" [ref=e521]:
+              - generic [ref=e522]:
+                - img [ref=e523]
+                - generic [ref=e525]: Актау, мкр. 11-й
+            - cell "805 000-1 980 358 KZT" [ref=e526]:
+              - generic "805 000-1 980 358 KZT" [ref=e527]
+            - cell "JumysAI" [ref=e528]:
+              - generic "Отклик и статус будут в JumysAI." [ref=e530]:
+                - img
+                - text: JumysAI
+            - cell "59% 59 %" [ref=e531]:
+              - generic [ref=e533]:
+                - generic [ref=e534]: 59%
+                - progressbar "Ориентировочное совпадение по профилю" [ref=e535]: x
+            - cell "Откликнуться Действие" [ref=e538]:
+              - generic:
+                - link "Откликнуться" [ref=e539] [cursor=pointer]:
+                  - /url: /vacancies/js79nnx5kfbnz56beywd26f8dx85egfk/apply
+                  - button "Откликнуться" [ref=e540]
+                - button "Действие" [ref=e541] [cursor=pointer]:
+                  - img
+          - row "Прораб (гражданское строительство) Новый Горячая Прямой работодатель Актау, мкр. 19-й 380 000-821 807 KZT JumysAI 86% 86 % Откликнуться Действие" [ref=e542]:
+            - cell "Прораб (гражданское строительство) Новый Горячая" [ref=e543]:
+              - generic [ref=e545]:
+                - link "Прораб (гражданское строительство)" [ref=e546] [cursor=pointer]:
+                  - /url: /vacancies/js7amzj9s02a5wd0q51ej78pr985fn24
+                - generic [ref=e547]:
+                  - generic [ref=e548]: Новый
+                  - generic [ref=e549]: Горячая
+            - cell "Прямой работодатель" [ref=e550]:
+              - generic "Прямой работодатель" [ref=e551]
+            - cell "Актау, мкр. 19-й" [ref=e552]:
+              - generic [ref=e553]:
+                - img [ref=e554]
+                - generic [ref=e556]: Актау, мкр. 19-й
+            - cell "380 000-821 807 KZT" [ref=e557]:
+              - generic "380 000-821 807 KZT" [ref=e558]
+            - cell "JumysAI" [ref=e559]:
+              - generic "Отклик и статус будут в JumysAI." [ref=e561]:
+                - img
+                - text: JumysAI
+            - cell "86% 86 %" [ref=e562]:
+              - generic [ref=e564]:
+                - generic [ref=e565]: 86%
+                - progressbar "Ориентировочное совпадение по профилю" [ref=e566]: x
+            - cell "Откликнуться Действие" [ref=e569]:
+              - generic:
+                - link "Откликнуться" [ref=e570] [cursor=pointer]:
+                  - /url: /vacancies/js7amzj9s02a5wd0q51ej78pr985fn24/apply
+                  - button "Откликнуться" [ref=e571]
+                - button "Действие" [ref=e572] [cursor=pointer]:
+                  - img
+    - generic [ref=e573]:
+      - paragraph [ref=e574]: 1–10 из 50 вакансий
+      - generic [ref=e575]:
+        - button "Назад" [disabled]:
+          - img
+        - generic [ref=e576]:
+          - button "1" [ref=e577] [cursor=pointer]
+          - button "2" [ref=e578] [cursor=pointer]
+          - button "3" [ref=e579] [cursor=pointer]
+          - button "4" [ref=e580] [cursor=pointer]
+          - button "5" [ref=e581] [cursor=pointer]
+        - button "Вперёд" [ref=e582] [cursor=pointer]:
+          - img

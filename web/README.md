@@ -1,73 +1,23 @@
-# React + TypeScript + Vite
+# JumysAI Web
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Vite React app for the JumysAI frontend. It remains runnable on its own from this directory, and it is also started by the root `npm run dev` command.
 
-Currently, two official plugins are available:
+## Environment
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Copy `.env.example` to `.env.local` in this directory.
 
-## React Compiler
+| Variable | Description |
+| --- | --- |
+| `VITE_CONVEX_URL` | Convex client URL for the web app, usually `https://<deployment>.convex.cloud`. Do not use the `.convex.site` HTTP URL here. |
+| `VITE_CLERK_PUBLISHABLE_KEY` | Clerk publishable key for the frontend. |
+| `VITE_CLERK_JWT_TEMPLATE` | Clerk JWT template name used for Convex auth. Defaults to `convex`. |
+| `VITE_TELEGRAM_BOT_URL` | Public Telegram bot link shown in the UI. |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Scripts
 
-## Expanding the ESLint configuration
+- `npm run dev` - start Vite with HMR.
+- `npm run build` - typecheck and build the app.
+- `npm run lint` - run ESLint.
+- `npm test` - run Vitest tests.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+From the repository root, use `npm run dev:web` for just the web app or `npm run dev` for the full local stack.

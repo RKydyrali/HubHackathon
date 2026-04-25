@@ -1,7 +1,7 @@
 import { useMutation } from "convex/react";
 import { Briefcase, UserCircle } from "@phosphor-icons/react";
 import { useState } from "react";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
@@ -13,15 +13,19 @@ import { useI18n } from "@/lib/i18n";
 import { motionPresets } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { useUserRole } from "@/hooks/useUserRole";
+import { AI_MATCHING_ROOT } from "@/routing/navPaths";
+import { resolveReturnPathForRole } from "@/routing/guards";
 
 type OnboardingRole = "seeker" | "employer";
 
 export function OnboardingPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const role = useUserRole();
   const chooseRole = useMutation(api.users.chooseOnboardingRole);
   const [pendingRole, setPendingRole] = useState<OnboardingRole | null>(null);
   const { copy } = useI18n();
+  const from = (location.state as { from?: string } | null)?.from;
 
   const options = [
     {
@@ -29,7 +33,7 @@ export function OnboardingPage() {
       title: copy.auth.seekerTitle,
       body: copy.auth.seekerBody,
       Icon: UserCircle,
-      redirectTo: "/dashboard",
+      redirectTo: AI_MATCHING_ROOT,
     },
     {
       role: "employer" as const,
@@ -40,9 +44,9 @@ export function OnboardingPage() {
     },
   ];
 
-  if (!role.loading && role.value === "seeker") return <Navigate to="/dashboard" replace />;
-  if (!role.loading && role.value === "employer") return <Navigate to="/employer/dashboard" replace />;
-  if (!role.loading && role.value === "admin") return <Navigate to="/admin" replace />;
+  if (!role.loading && role.value === "seeker") return <Navigate to={resolveReturnPathForRole("seeker", from)} replace />;
+  if (!role.loading && role.value === "employer") return <Navigate to={resolveReturnPathForRole("employer", from)} replace />;
+  if (!role.loading && role.value === "admin") return <Navigate to={resolveReturnPathForRole("admin", from)} replace />;
 
   async function selectRole(nextRole: OnboardingRole) {
     const option = options.find((item) => item.role === nextRole)!;
@@ -50,7 +54,7 @@ export function OnboardingPage() {
     try {
       await chooseRole({ role: nextRole });
       toast.success(option.title);
-      navigate(option.redirectTo, { replace: true });
+      navigate(resolveReturnPathForRole(nextRole, from) || option.redirectTo, { replace: true });
     } finally {
       setPendingRole(null);
     }
@@ -88,7 +92,7 @@ export function OnboardingPage() {
           ))}
         </div>
         <div className="mt-6">
-          <Button variant="ghost" onClick={() => navigate("/")} type="button">
+          <Button variant="ghost" onClick={() => navigate("/vacancies")} type="button">
             {copy.auth.backToVacancies}
           </Button>
         </div>

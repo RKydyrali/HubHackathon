@@ -1,9 +1,18 @@
 import { Skeleton } from "@/components/ui/skeleton";
 
-type SkeletonVariant = "page" | "rows" | "form" | "vacancy-card" | "table" | "dashboard" | "chat";
+type SkeletonVariant =
+  | "page"
+  | "rows"
+  | "form"
+  | "vacancy-card"
+  | "vacancy-list"
+  | "table"
+  | "dashboard"
+  | "chat";
 
 export function LoadingSkeleton({ variant = "rows" }: { variant?: SkeletonVariant }) {
   if (variant === "vacancy-card") return <VacancyCardSkeleton />;
+  if (variant === "vacancy-list") return <VacancyListSkeleton />;
   if (variant === "form") return <FormSkeleton />;
   if (variant === "table") return <TableSkeleton />;
   if (variant === "dashboard" || variant === "page") return <DashboardSkeleton />;
@@ -41,6 +50,34 @@ export function VacancyCardSkeleton() {
         <Skeleton className="h-9 w-28 rounded-md" />
         <Skeleton className="h-9 w-24 rounded-md" />
       </div>
+    </div>
+  );
+}
+
+function VacancyListSkeleton() {
+  return (
+    <div className="mx-auto flex w-full max-w-3xl flex-col gap-3 p-0">
+      {Array.from({ length: 6 }).map((_, i) => (
+        <div
+          key={i}
+          className="rounded-2xl border border-border/80 bg-card/60 px-4 py-3.5 shadow-sm"
+        >
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0 flex-1 space-y-2.5">
+              <Skeleton className="h-4 w-2/3 rounded-md" />
+              <Skeleton className="h-3.5 w-1/3 rounded-md" />
+              <div className="flex gap-3">
+                <Skeleton className="h-3.5 w-24 rounded-md" />
+                <Skeleton className="h-3.5 w-32 rounded-md" />
+              </div>
+            </div>
+            <div className="flex w-full flex-col items-end gap-2 sm:max-w-[7rem]">
+              <Skeleton className="h-4 w-16 rounded-md" />
+              <Skeleton className="h-6 w-12 rounded-full" />
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   );
 }

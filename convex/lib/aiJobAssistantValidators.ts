@@ -55,6 +55,7 @@ export const aiJobAssistantExtractionValidator = v.object({
   nextQuestion: v.union(v.string(), v.null()),
   shouldShowResults: v.boolean(),
   confidence: v.number(),
+  quickReplyOptions: v.array(v.string()),
 });
 
 export const aiJobChatMessageRoleValidator = v.union(

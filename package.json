@@ -4,17 +4,24 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev": "concurrently -k -n convex,web,bot -c cyan,green,magenta \"npm run dev:convex\" \"npm run dev:web\" \"npm run dev:bot\"",
+    "dev:convex": "convex dev",
+    "dev:web": "npm --prefix web run dev",
+    "dev:bot": "npm --prefix telegram-bot run dev",
     "convex:dev": "convex dev",
     "convex:codegen": "convex codegen",
+    "convex:seed:mangystau": "node scripts/run-mangystau-seed.mjs",
     "typecheck": "tsc --noEmit",
     "test": "vitest run"
   },
   "dependencies": {
+    "@faker-js/faker": "^9.9.0",
     "convex": "^1.36.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
+    "concurrently": "^9.2.1",
     "typescript": "^5.9.3",
     "vitest": "^4.1.5"
   }

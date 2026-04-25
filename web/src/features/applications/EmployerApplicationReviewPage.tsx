@@ -5,10 +5,11 @@ import { EmptyState } from "@/components/feedback/EmptyState";
 import { LoadingSkeleton } from "@/components/feedback/LoadingSkeleton";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SplitPane } from "@/components/layout/SplitPane";
+import { ApplicationAiAnalysisCard } from "@/features/applications/ApplicationAiAnalysisCard";
+import { EmployerApplicationInboxItem } from "@/features/applications/EmployerApplicationInboxItem";
+import { ReviewPanel } from "@/features/applications/ReviewPanel";
 import { api } from "@/lib/convex-api";
 import { useI18n } from "@/lib/i18n";
-import { ApplicationRow } from "./ApplicationRow";
-import { ReviewPanel } from "./ReviewPanel";
 
 export function EmployerApplicationReviewPage() {
   const { id } = useParams();
@@ -31,10 +32,27 @@ export function EmployerApplicationReviewPage() {
       {selected ? (
         <SplitPane
           left={
-            <div className="container-app grid gap-2 py-5">
-              {applications.map((item) => (
-                <ApplicationRow key={item.application._id} item={item} employerView />
-              ))}
+            <div className="min-w-0 md:min-h-0 md:max-h-[calc(100dvh-9rem)] md:overflow-y-auto md:pr-1">
+              <div className="container-app flex flex-col gap-6 py-5">
+                {applications.length > 1 ? (
+                  <div>
+                    <h2 className="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                      {copy.applications.otherApplications}
+                    </h2>
+                    <ul className="grid gap-2">
+                      {applications.map((item) => (
+                        <li key={item.application._id}>
+                          <EmployerApplicationInboxItem
+                            item={item}
+                            selected={item.application._id === id}
+                          />
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ) : null}
+                <ApplicationAiAnalysisCard item={selected} />
+              </div>
             </div>
           }
           right={<ReviewPanel item={selected} />}

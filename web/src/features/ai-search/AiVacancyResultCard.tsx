@@ -1,9 +1,12 @@
 import { CheckCircle, Lightning, MapPin, Scales, Sparkle } from "@phosphor-icons/react";
+import { useMutation } from "convex/react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 import { Button } from "@/components/shared/Button";
 import { SourceBadge } from "@/components/shared/StatusBadge";
+import { api } from "@/lib/convex-api";
+import { demoAnalyticsApplyUrlMetadata } from "@/lib/demoAnalyticsClient";
 import { formatSalary } from "@/lib/format";
 import { useI18n } from "@/lib/i18n";
 import { motionPresets } from "@/lib/motion";
@@ -23,6 +26,7 @@ export function AiVacancyResultCard({
   onToggleCompare?: () => void;
 }) {
   const { copy, locale } = useI18n();
+  const trackDemo = useMutation(api.demoAnalytics.track);
   const isNative = vacancy.source === "native";
   const fastStart = explanation.some((item) => /быстро|без опыта|тез|тәжірибесіз/i.test(item));
 
@@ -95,6 +99,14 @@ export function AiVacancyResultCard({
             target="_blank"
             rel="noreferrer"
             aria-label={`${copy.vacancies.applyHh}: ${vacancy.title}`}
+            onClick={() => {
+              void trackDemo({
+                kind: "external_apply_clicked",
+                vacancyId: vacancy._id,
+                surface: "ai_result_card",
+                metadata: demoAnalyticsApplyUrlMetadata(vacancy.externalApplyUrl),
+              });
+            }}
           >
             <Button size="sm" variant="outline">
               {copy.vacancies.applyHh}

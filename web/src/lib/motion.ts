@@ -1,13 +1,13 @@
 export const motionPresets = {
   page: {
-    initial: { opacity: 0, y: 18 },
+    initial: { opacity: 0, y: 8 },
     animate: { opacity: 1, y: 0 },
-    transition: { type: "spring", stiffness: 90, damping: 18, mass: 0.8 },
+    transition: { type: "spring", stiffness: 150, damping: 24, mass: 0.7 },
   },
   card: {
-    initial: { opacity: 0, y: 16 },
+    initial: { opacity: 0, y: 8 },
     animate: { opacity: 1, y: 0 },
-    transition: { type: "spring", stiffness: 110, damping: 20, mass: 0.7 },
+    transition: { type: "spring", stiffness: 160, damping: 24, mass: 0.7 },
   },
   list: {
     initial: "hidden",
@@ -16,14 +16,14 @@ export const motionPresets = {
       hidden: {},
       show: {
         transition: {
-          staggerChildren: 0.055,
+          staggerChildren: 0.035,
         },
       },
     },
   },
   listItem: {
     variants: {
-      hidden: { opacity: 0, y: 14, scale: 0.985 },
+      hidden: { opacity: 0, y: 8, scale: 0.995 },
       show: { opacity: 1, y: 0, scale: 1 },
     },
     transition: { type: "spring", stiffness: 120, damping: 22, mass: 0.75 },

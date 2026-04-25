@@ -1,13 +1,33 @@
 import { DEFAULT_CITY } from "./constants";
 
+export type AiJobPromptMessage = {
+  role: "user" | "assistant" | "system";
+  content: string;
+};
+
+export type AiJobVisibleVacancyPromptContext = {
+  title: string;
+  district?: string | null;
+  salary?: string | null;
+  source: string;
+};
+
 export function buildVacancyGenerationPrompt(rawText: string): string {
   return [
-    "Extract a structured job vacancy from the employer text.",
-    `Default city to ${DEFAULT_CITY} when omitted.`,
-    "Return concise, production-ready values.",
-    "If salary is unclear, leave salaryMin and salaryMax as null.",
+    "You are JumysAI. Turn informal employer notes into a structured job posting for a hyperlocal platform in Kazakhstan (Aktau / Mangystau).",
+    "Output language: Russian for title and description, even if the input mixes languages.",
+    "title: a clear job title a candidate would tap on (2–7 words). Rewrite vague phrasing (e.g. «мне нужен рабочий» → concrete role: «Рабочий / разнорабочий», «Исполнитель» only if the sector is unknown). Avoid first-person; no marketing fluff.",
+    "description: 4–8 short paragraphs or bullet-style lines suitable for a job board. Use this structure when information allows:",
+    "1) one line on the role in plain terms;",
+    "2) key daily tasks and responsibilities (specific verbs; if the user wrote one vague word like «работать», replace it with a neutral but concrete template for a general worker, e.g. выполнение поручений руководителя, соблюдение ТБ, поддержание порядка — and add «уточните детали в чате с работодателем» only as a last resort when the sector is truly unknown);",
+    "3) must-have vs nice-to-have experience;",
+    "4) schedule and location cues from the text;",
+    "5) pay and conditions if stated.",
+    "Do not fabricate exact salary numbers: only fill salaryMin/salaryMax if the user gave numbers, ranges, or unambiguous phrasing (e.g. «200 тысяч тенге», «250k ₸»). Otherwise leave them null. Prefer KZT.",
+    "If the text is minimal, still write a professional description from what is sure, and label gaps briefly («график и формат смены уточняются») without inventing employer-specific facts.",
+    `Default city to ${DEFAULT_CITY} when the location is missing or only «Актау»-level; keep district/microdistrict inside description text if the user named one.`,
     "Keep source as native.",
-    `Raw employer text: ${rawText}`,
+    `Raw employer text:\n${rawText}`,
   ].join("\n");
 }
 
@@ -26,6 +46,70 @@ export function buildScreeningQuestionsPrompt(vacancy: {
   ].join("\n");
 }
 
+export function buildResumeProfileExtractionPrompt(resumeText: string): string {
+  return [
+    "You are JumysAI helping a job seeker turn pasted resume text into a profile draft.",
+    "AI prepared a draft, please review before saving. Return only fields for a preview; do not persist anything.",
+    "Extract: fullName, city, district, skills, bio, resumeText.",
+    "Do not invent names, districts, employers, education, salary, dates, or skills that are not supported by the pasted text.",
+    "Use null for district if it is missing. Default city to Aktau when the resume does not name a city.",
+    "skills must be concise profile skills, not long sentences. bio must be 1-3 honest sentences in Russian.",
+    "resumeText must preserve the pasted resume text.",
+    `Pasted resume text:\n${resumeText}`,
+  ].join("\n");
+}
+
+const MOCK_INTERVIEW_DESCRIPTION_MAX = 6000;
+
+export function buildMockInterviewSystemPrompt(input: {
+  vacancyTitle: string;
+  vacancyDescription: string;
+  vacancyCity: string;
+  profileSnippet?: string;
+}): string {
+  const description =
+    input.vacancyDescription.length > MOCK_INTERVIEW_DESCRIPTION_MAX
+      ? `${input.vacancyDescription.slice(0, MOCK_INTERVIEW_DESCRIPTION_MAX)}…`
+      : input.vacancyDescription;
+  const profileBlock = input.profileSnippet?.trim()
+    ? `\nКратко о кандидате (из профиля):\n${input.profileSnippet.trim()}`
+    : "";
+  return [
+    "Ты — опытный интервьюер по найму. Проводи мок-интервью на русском языке.",
+    "Задавай по одному чёткому вопросу за раз, опираясь на вакансию.",
+    "Не выдавай заранее «правильные ответы»; после ответа кандидата можно кратко реагировать и переходить к следующему вопросу.",
+    "Держи тон профессиональным и уважительным.",
+    `Вакансия: ${input.vacancyTitle}`,
+    `Город: ${input.vacancyCity}`,
+    `Описание:\n${description}`,
+    profileBlock,
+  ]
+    .filter(Boolean)
+    .join("\n");
+}
+
+export function buildMockInterviewDebriefPrompt(input: {
+  vacancyTitle: string;
+  vacancyDescription: string;
+  transcript: string;
+}): string {
+  const description =
+    input.vacancyDescription.length > MOCK_INTERVIEW_DESCRIPTION_MAX
+      ? `${input.vacancyDescription.slice(0, MOCK_INTERVIEW_DESCRIPTION_MAX)}…`
+      : input.vacancyDescription;
+  return [
+    "Оцени мок-интервью кандидата по этой вакансии.",
+    "Строго, но справедливо: score от 0 до 100.",
+    "summary — короткий нейтральный текст о соответствии роли и пробелах.",
+    "strengths и improvements — по 2–5 конкретных пунктов на русском.",
+    "hiringRecommendation — одна строка-вердикт (например: рекомендуется к следующему этапу / с оговорками / не рекомендуется) на русском.",
+    `Vacancy title: ${input.vacancyTitle}`,
+    `Vacancy description: ${description}`,
+    "Transcript (роли user = кандидат, assistant = интервьюер):",
+    input.transcript,
+  ].join("\n");
+}
+
 export function buildScreeningAnalysisPrompt(input: {
   vacancyTitle: string;
   vacancyDescription: string;
@@ -41,9 +125,38 @@ export function buildScreeningAnalysisPrompt(input: {
     "Score the candidate answers from 0 to 100 for this vacancy.",
     "Provide a short neutral summary focused on job fit and gaps.",
     "Be strict but fair.",
+    "Write the summary in Russian. For each answer, you may use clear labels like Pros:, Cons:, and Rating: on separate lines to improve scannability.",
     `Vacancy title: ${input.vacancyTitle}`,
     `Vacancy description: ${input.vacancyDescription}`,
     `Answers:\n${answers}`,
+  ].join("\n");
+}
+
+export function buildElevatorPitchImprovePrompt(input: { rawText: string }): string {
+  return [
+    "Ты — карьерный коуч. Улучши elevator pitch кандидата.",
+    "Выходной язык: русский.",
+    "Сохрани смысл и факты, не выдумывай опыт, компании, цифры или должности, если их нет в исходном тексте.",
+    "Стиль: ясно, по делу, дружелюбно и уверенно; без канцелярита и без «воды».",
+    "Оцени качество исходного питча score от 0 до 100 (строго, но честно).",
+    "Верни JSON по схеме: score (0..100), neutral (улучшенная версия 3–5 предложений), short (1–2 предложения), confident (3–5 предложений, чуть увереннее), notes (0–5 коротких заметок).",
+    "neutral/short/confident должны быть готовыми текстами, без маркировки вроде 'Neutral:'.",
+    `Исходный текст:\n${input.rawText}`,
+  ].join("\n");
+}
+
+export function buildInterviewAnswerFeedbackPrompt(input: {
+  question: string;
+  answer: string;
+}): string {
+  return [
+    "Ты — интервьюер и наставник. Оцени ответ кандидата на вопрос собеседования.",
+    "Выходной язык: русский.",
+    "score от 0 до 100 (строго, но справедливо).",
+    "suggestion — одна конкретная, применимая рекомендация, что улучшить в следующей попытке (1–2 предложения).",
+    "Не выдумывай факты. Не добавляй длинные списки.",
+    `Вопрос:\n${input.question}`,
+    `Ответ:\n${input.answer}`,
   ].join("\n");
 }
 
@@ -51,21 +164,55 @@ export function buildAiJobCriteriaPrompt(input: {
   message: string;
   previousCriteriaJson?: string;
   followUpTurns: number;
+  recentMessages?: AiJobPromptMessage[];
+  profileSummary?: string[];
+  visibleVacancies?: AiJobVisibleVacancyPromptContext[];
 }): string {
+  const recentMessages = (input.recentMessages ?? [])
+    .slice(-8)
+    .map((message) => `${message.role}: ${message.content.slice(0, 500)}`);
+  const profileSummary = (input.profileSummary ?? [])
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, 8);
+  const visibleVacancies = (input.visibleVacancies ?? [])
+    .slice(0, 8)
+    .map((vacancy) =>
+      JSON.stringify({
+        title: vacancy.title,
+        district: vacancy.district ?? null,
+        salary: vacancy.salary ?? null,
+        source: vacancy.source,
+      }),
+    );
+
   return [
     "You are JumysAI, a practical job matching assistant for Aktau and Mangystau.",
     "Extract structured job-search criteria from the user's Russian or mixed-language message.",
+    "Output Russian; use Kazakh only if the user writes primarily in Kazakh.",
     "Ask only useful follow-up questions for matching. Avoid career motivation questions.",
     "Never ask for IIN, documents, exact home address, or sensitive personal data.",
     "Prefer local district and microdistrict signals such as 12 мкр, 14 мкр, центр, приморский.",
+    "Do not invent city, district, salary, employer, schedule, or vacancy details. Use null or ask a short follow-up when the user/context does not provide a value.",
+    "Use recent chat context, profile summary, and visible matched vacancies only as context; the latest user message is still authoritative for new changes.",
     "If at least two useful signals are known, shouldShowResults can be true.",
     "If followUpTurns is 2 or more, prefer showing results unless a critical field is missing.",
     "If followUpTurns is 5 or more, set shouldShowResults to true and nextQuestion to null.",
-    "Keep nextQuestion short, conversational, and in Russian.",
+    "Keep nextQuestion short, conversational, and in Russian (one short sentence).",
+    "If nextQuestion is not null, set quickReplyOptions to exactly 4 very short (max 6-8 words) Russian answer suggestions a user can tap. They must match the topic of nextQuestion. If there is no follow-up (nextQuestion is null), set quickReplyOptions to [].",
     `followUpTurns: ${input.followUpTurns}`,
     input.previousCriteriaJson
       ? `Previous criteria JSON: ${input.previousCriteriaJson}`
       : "Previous criteria JSON: null",
+    recentMessages.length
+      ? `Recent chat context:\n${recentMessages.join("\n")}`
+      : "Recent chat context: none",
+    profileSummary.length
+      ? `Profile summary: ${profileSummary.join(", ")}`
+      : "Profile summary: none",
+    visibleVacancies.length
+      ? `Visible matched vacancies:\n${visibleVacancies.join("\n")}`
+      : "Visible matched vacancies: none",
     `User message: ${input.message}`,
   ].join("\n");
 }

@@ -33,12 +33,12 @@ export function Table<T>({
   mobileRow?: (item: T) => ReactNode;
 }) {
   return (
-    <div className={cn("surface-card overflow-hidden rounded-2xl", className)}>
+    <div className={cn("overflow-hidden rounded-lg border bg-card", className)}>
       <UiTable className="hidden text-left text-sm md:table">
-        <TableHeader className="sticky top-0 bg-secondary/72 text-xs font-semibold uppercase text-muted-foreground">
+        <TableHeader className="sticky top-0 bg-background text-xs font-medium text-muted-foreground">
           <TableRow>
             {columns.map((column) => (
-              <TableHead key={column.key} className={cn("px-3 py-3", column.className)}>
+              <TableHead key={column.key} className={cn("h-11 px-3", column.className)}>
                 {column.header}
               </TableHead>
             ))}
@@ -47,15 +47,15 @@ export function Table<T>({
         <TableBody>
           {data.length === 0 ? (
             <TableRow>
-              <TableCell className="px-3 py-10 text-center text-sm text-muted-foreground" colSpan={columns.length}>
+              <TableCell className="px-3 py-12 text-center text-sm text-muted-foreground" colSpan={columns.length}>
                 {empty}
               </TableCell>
             </TableRow>
           ) : (
             data.map((item) => (
-              <TableRow key={getKey(item)} className="hover:bg-muted/48">
+              <TableRow key={getKey(item)} className="transition-colors hover:bg-muted/60">
                 {columns.map((column) => (
-                  <TableCell key={column.key} className={cn("px-3 py-3 align-middle whitespace-normal", column.className)}>
+                  <TableCell key={column.key} className={cn("h-14 px-3 align-middle whitespace-normal", column.className)}>
                     {column.cell(item)}
                   </TableCell>
                 ))}

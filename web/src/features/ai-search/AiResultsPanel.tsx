@@ -2,6 +2,7 @@ import { MagnifyingGlass, Scales } from "@phosphor-icons/react";
 import { motion } from "framer-motion";
 
 import { AiPartialResultsNotice } from "@/components/feedback/AiPartialResultsNotice";
+import { AiAdvisoryNotice } from "@/components/product/AiTrust";
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { Button } from "@/components/shared/Button";
 import { useI18n } from "@/lib/i18n";
@@ -54,7 +55,8 @@ export function AiResultsPanel({
   return (
     <section className="flex flex-col gap-4" aria-label={locale === "kk" ? "Сәйкес вакансиялар" : "Подходящие вакансии"}>
       <AiPartialResultsNotice />
-      <div className="sticky top-24 z-10 rounded-2xl border bg-card/92 p-3 shadow-card backdrop-blur-xl">
+      <AiAdvisoryNotice />
+      <div className="sticky top-24 z-10 rounded-lg border bg-card/95 p-3 backdrop-blur">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="flex items-center gap-2 text-sm text-muted-foreground">
             <Scales className="size-4 text-primary" weight="bold" />
@@ -119,7 +121,7 @@ function ResultSection({
 }) {
   return (
     <motion.div className="flex flex-col gap-3" variants={motionPresets.listItem.variants}>
-      <h2 className="flex items-center gap-2 font-heading text-lg font-extrabold tracking-tight text-foreground">
+      <h2 className="flex items-center gap-2 font-heading text-base font-semibold tracking-tight text-foreground">
         <MagnifyingGlass className="size-4 text-primary" weight="bold" />
         {title}
       </h2>

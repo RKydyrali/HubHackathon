@@ -7,7 +7,8 @@ import {
   mutation,
   query,
 } from "./_generated/server";
-import { assertRole, requireCurrentUser } from "./lib/auth";
+import { requireCurrentUser } from "./lib/auth";
+import { assertSeekerOrAdmin } from "./lib/permissions";
 import { DEFAULT_CITY } from "./lib/constants";
 
 export const getMyProfile = query({
@@ -32,7 +33,7 @@ export const upsertMyProfile = mutation({
   },
   handler: async (ctx, args) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["seeker", "admin"]);
+    assertSeekerOrAdmin(user);
 
     const existing = await ctx.db
       .query("profiles")

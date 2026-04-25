@@ -7,26 +7,19 @@ import {
   mutation,
   query,
 } from "./_generated/server";
-import {
-  assertOwnershipOrAdmin,
-  assertRole,
-  getUserByClerkId,
-  requireCurrentUser,
-} from "./lib/auth";
-import {
-  canApplyToVacancy,
-  isMutableVacancy,
-  isVisibleVacancy,
-} from "./lib/domain";
+import { getUserByIdentity, requireCurrentUser } from "./lib/auth";
+import { filterPublicVacancies, isVisibleVacancy } from "./lib/domain";
 import { DEFAULT_CITY } from "./lib/constants";
 import { hasHhVacancyChanged } from "./lib/hh";
+import {
+  assertCanGenerateScreeningQuestionsForVacancy,
+  assertCanViewVacanciesForAiDiscussion,
+  assertCanCreateNativeVacancy,
+  assertCanEditVacancy,
+  assertCanViewVacancy,
+  assertEmployerOrAdmin,
+} from "./lib/permissions";
 import { vacancySourceValidator } from "./lib/validators";
-
-function assertNativeEditable(vacancy: { source: "native" | "hh" }) {
-  if (!isMutableVacancy(vacancy.source)) {
-    throw new ConvexError("HH vacancies are read-only");
-  }
-}
 
 export const createNativeVacancy = mutation({
   args: {
@@ -40,7 +33,7 @@ export const createNativeVacancy = mutation({
   },
   handler: async (ctx, args) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["employer", "admin"]);
+    assertCanCreateNativeVacancy(user);
 
     const vacancyId = await ctx.db.insert("vacancies", {
       ownerUserId: user._id,
@@ -78,13 +71,11 @@ export const updateNativeVacancy = mutation({
   },
   handler: async (ctx, args) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["employer", "admin"]);
     const vacancy = await ctx.db.get(args.vacancyId);
     if (!vacancy) {
       throw new ConvexError("Vacancy not found");
     }
-    assertNativeEditable(vacancy);
-    assertOwnershipOrAdmin(user, vacancy.ownerUserId);
+    assertCanEditVacancy(user, vacancy);
 
     const patch = {
       title: args.title ?? vacancy.title,
@@ -109,13 +100,11 @@ export const publishVacancy = mutation({
   args: { vacancyId: v.id("vacancies") },
   handler: async (ctx, args) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["employer", "admin"]);
     const vacancy = await ctx.db.get(args.vacancyId);
     if (!vacancy) {
       throw new ConvexError("Vacancy not found");
     }
-    assertNativeEditable(vacancy);
-    assertOwnershipOrAdmin(user, vacancy.ownerUserId);
+    assertCanEditVacancy(user, vacancy);
     await ctx.db.patch(args.vacancyId, { status: "published" });
     return ctx.db.get(args.vacancyId);
   },
@@ -125,13 +114,11 @@ export const archiveNativeVacancy = mutation({
   args: { vacancyId: v.id("vacancies") },
   handler: async (ctx, args) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["employer", "admin"]);
     const vacancy = await ctx.db.get(args.vacancyId);
     if (!vacancy) {
       throw new ConvexError("Vacancy not found");
     }
-    assertNativeEditable(vacancy);
-    assertOwnershipOrAdmin(user, vacancy.ownerUserId);
+    assertCanEditVacancy(user, vacancy);
     await ctx.db.patch(args.vacancyId, { status: "archived" });
     return ctx.db.get(args.vacancyId);
   },
@@ -153,12 +140,12 @@ export const getVacancy = query({
       throw new ConvexError("Forbidden");
     }
 
-    const user = await getUserByClerkId(ctx, identity.subject);
+    const user = await getUserByIdentity(ctx, identity);
     if (!user) {
       throw new ConvexError("Forbidden");
     }
 
-    assertOwnershipOrAdmin(user, vacancy.ownerUserId);
+    assertCanViewVacancy(user, vacancy);
     return vacancy;
   },
 });
@@ -169,6 +156,7 @@ export const listPublicVacancies = query({
     district: v.optional(v.string()),
     source: v.optional(vacancySourceValidator),
     limit: v.optional(v.number()),
+    region: v.optional(v.literal("aktau")),
   },
   handler: async (ctx, args) => {
     const limit = Math.min(args.limit ?? 20, 50);
@@ -177,11 +165,7 @@ export const listPublicVacancies = query({
       .withIndex("by_status", (q) => q.eq("status", "published"))
       .collect();
 
-    return vacancies
-      .filter((vacancy) => (args.city ? vacancy.city === args.city : true))
-      .filter((vacancy) => (args.district ? vacancy.district === args.district : true))
-      .filter((vacancy) => (args.source ? vacancy.source === args.source : true))
-      .slice(0, limit);
+    return filterPublicVacancies(vacancies, { ...args, limit });
   },
 });
 
@@ -191,19 +175,16 @@ export const listPublic = query({
     district: v.optional(v.string()),
     source: v.optional(vacancySourceValidator),
     limit: v.optional(v.number()),
+    region: v.optional(v.literal("aktau")),
   },
   handler: async (ctx, args) => {
     const limit = Math.min(args.limit ?? 20, 50);
     const vacancies = await ctx.db
       .query("vacancies")
       .withIndex("by_status", (q) => q.eq("status", "published"))
-      .take(50);
+      .collect();
 
-    return vacancies
-      .filter((vacancy) => (args.city ? vacancy.city === args.city : true))
-      .filter((vacancy) => (args.district ? vacancy.district === args.district : true))
-      .filter((vacancy) => (args.source ? vacancy.source === args.source : true))
-      .slice(0, limit);
+    return filterPublicVacancies(vacancies, { ...args, limit });
   },
 });
 
@@ -211,7 +192,7 @@ export const listMyVacancies = query({
   args: {},
   handler: async (ctx) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["employer", "admin"]);
+    assertEmployerOrAdmin(user);
     return ctx.db
       .query("vacancies")
       .withIndex("by_ownerUserId", (q) => q.eq("ownerUserId", user._id))
@@ -223,7 +204,7 @@ export const listMyVacanciesWithApplicantCounts = query({
   args: {},
   handler: async (ctx) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["employer", "admin"]);
+    assertEmployerOrAdmin(user);
     const vacancies = await ctx.db
       .query("vacancies")
       .withIndex("by_ownerUserId", (q) => q.eq("ownerUserId", user._id))
@@ -245,10 +226,11 @@ export const listByOwner = query({
   args: {},
   handler: async (ctx) => {
     const user = await requireCurrentUser(ctx);
-    assertRole(user, ["employer", "admin"]);
+    assertEmployerOrAdmin(user);
     const vacancies = await ctx.db
       .query("vacancies")
       .withIndex("by_ownerUserId", (q) => q.eq("ownerUserId", user._id))
+      .order("desc")
       .take(50);
 
     const results = [];
@@ -274,6 +256,25 @@ export const getForAi = internalQuery({
   },
 });
 
+export const getForAiScreening = internalQuery({
+  args: {
+    vacancyId: v.id("vacancies"),
+    callerUserId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.callerUserId);
+    if (!user) {
+      throw new ConvexError("Forbidden");
+    }
+    const vacancy = await ctx.db.get(args.vacancyId);
+    if (!vacancy) {
+      throw new ConvexError("Vacancy not found");
+    }
+    assertCanGenerateScreeningQuestionsForVacancy(user, vacancy);
+    return vacancy;
+  },
+});
+
 export const fetchByIds = internalQuery({
   args: { ids: v.array(v.id("vacancies")) },
   handler: async (ctx, args) => {
@@ -284,6 +285,28 @@ export const fetchByIds = internalQuery({
         results.push(vacancy);
       }
     }
+    return results;
+  },
+});
+
+export const fetchVisibleByIdsForAi = internalQuery({
+  args: {
+    ids: v.array(v.id("vacancies")),
+    callerUserId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    const user = await ctx.db.get(args.callerUserId);
+    if (!user) {
+      throw new ConvexError("Forbidden");
+    }
+    const results = [];
+    for (const id of args.ids) {
+      const vacancy = await ctx.db.get(id);
+      if (vacancy) {
+        results.push(vacancy);
+      }
+    }
+    assertCanViewVacanciesForAiDiscussion(user, results);
     return results;
   },
 });

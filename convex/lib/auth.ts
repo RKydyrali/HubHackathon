@@ -3,6 +3,7 @@ import { ConvexError } from "convex/values";
 
 import type { Doc, Id } from "../_generated/dataModel";
 import type { UserRole } from "./constants";
+import { assertCanActAsVacancyOwnerOrAdmin } from "./permissions";
 
 type DbCtx = GenericQueryCtx<any> | GenericMutationCtx<any>;
 type ClerkIdentity = { subject: string; tokenIdentifier?: string };
@@ -66,10 +67,5 @@ export function assertOwnershipOrAdmin(
   user: Doc<"users">,
   ownerUserId: Id<"users"> | undefined,
 ): void {
-  if (user.role === "admin") {
-    return;
-  }
-  if (!ownerUserId || user._id !== ownerUserId) {
-    throw new ConvexError("Forbidden");
-  }
+  assertCanActAsVacancyOwnerOrAdmin(user, ownerUserId);
 }

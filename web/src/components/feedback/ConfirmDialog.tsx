@@ -1,6 +1,17 @@
 import { useState } from "react";
 
 import { Button } from "@/components/shared/Button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Spinner } from "@/components/ui/spinner";
 import { useI18n } from "@/lib/i18n";
 
 export function ConfirmDialog({
@@ -8,13 +19,18 @@ export function ConfirmDialog({
   title,
   body,
   onConfirm,
+  variant = "destructive",
+  irreversible = false,
 }: {
   label: string;
   title?: string;
   body?: string;
-  onConfirm: () => void;
+  onConfirm: () => void | Promise<void>;
+  variant?: "destructive" | "default";
+  irreversible?: boolean;
 }) {
   const [open, setOpen] = useState(false);
+  const [pending, setPending] = useState(false);
   const { copy, locale } = useI18n();
   const resolvedTitle = title ?? copy.common.confirm;
   const resolvedBody =
@@ -23,33 +39,48 @@ export function ConfirmDialog({
       ? "Бұл әрекет тірі операциялық деректерге әсер етуі мүмкін."
       : "Это действие может повлиять на рабочие данные.");
 
+  async function confirm() {
+    setPending(true);
+    try {
+      await onConfirm();
+      setOpen(false);
+    } finally {
+      setPending(false);
+    }
+  }
+
   return (
-    <>
-      <Button variant="destructive" onClick={() => setOpen(true)}>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger render={<Button variant={variant === "destructive" ? "destructive" : "outline"} />}>
         {label}
-      </Button>
-      {open ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-black/45 p-4">
-          <section className="w-full max-w-sm rounded-xl border bg-card p-4 shadow-lg">
-            <h2 className="text-base font-semibold">{resolvedTitle}</h2>
-            <p className="mt-2 text-sm leading-6 text-muted-foreground">{resolvedBody}</p>
-            <div className="mt-4 flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setOpen(false)}>
-                {copy.common.cancel}
-              </Button>
-              <Button
-                variant="destructive"
-                onClick={() => {
-                  onConfirm();
-                  setOpen(false);
-                }}
-              >
-                {copy.common.confirm}
-              </Button>
-            </div>
-          </section>
-        </div>
-      ) : null}
-    </>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{resolvedTitle}</DialogTitle>
+          <DialogDescription>{resolvedBody}</DialogDescription>
+        </DialogHeader>
+        {irreversible ? (
+          <p className="rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive">
+            {locale === "kk"
+              ? "Бұл әрекетті артқа қайтару қиын болуы мүмкін."
+              : "This action may be difficult to undo."}
+          </p>
+        ) : null}
+        <DialogFooter>
+          <DialogClose render={<Button variant="outline" disabled={pending} />}>
+            {copy.common.cancel}
+          </DialogClose>
+          <Button
+            type="button"
+            variant={variant === "destructive" ? "destructive" : "default"}
+            disabled={pending}
+            onClick={() => void confirm()}
+          >
+            {pending ? <Spinner data-icon="inline-start" /> : null}
+            {copy.common.confirm}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

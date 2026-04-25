@@ -1,0 +1,172 @@
+[    1401ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:14337
+[    3145ms] [WARNING] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview @ http://127.0.0.1:5173/@vite/client:509
+[   24195ms] [ERROR] You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it. @ http://127.0.0.1:5173/@vite/client:509
+[   24843ms] Error: @clerk/clerk-react: You've added multiple <ClerkProvider> components in your React component tree. Wrap your components in a single <ClerkProvider>.
+    at Object.throw (http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:191:10)
+    at http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4263:53
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12904:13)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitHookEffectListMount (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6617:153)
+    at commitHookPassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6652:55)
+    at commitPassiveMountOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7618:22)
+    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7606:5)
+    at commitPassiveMountOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7672:14)
+    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7606:5)
+[   24379ms] [WARNING] %s
+
+%s
+ An error occurred in the <ClerkProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[   24863ms] Error: @clerk/clerk-react: You've added multiple <ClerkProvider> components in your React component tree. Wrap your components in a single <ClerkProvider>.
+    at Object.throw (http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:191:10)
+    at http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4263:53
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12904:13)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitHookEffectListMount (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6617:153)
+    at commitHookPassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6652:55)
+    at reconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7701:6)
+    at recursivelyTraverseReconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7688:5)
+    at reconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7713:14)
+    at doubleInvokeEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8924:125)
+[   24382ms] [WARNING] %s
+
+%s
+ An error occurred in the <ClerkProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[   24864ms] Error: @clerk/clerk-react: You've added multiple <ClerkProvider> components in your React component tree. Wrap your components in a single <ClerkProvider>.
+    at Object.throw (http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:191:10)
+    at http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4263:53
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12904:13)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitHookEffectListMount (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6617:153)
+    at commitHookPassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6652:55)
+    at commitPassiveMountOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7618:22)
+    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7606:5)
+    at commitPassiveMountOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7672:14)
+    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7606:5)
+[   24414ms] [WARNING] %s
+
+%s
+ An error occurred in the <ClerkProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[   24864ms] Error: @clerk/clerk-react: You've added multiple <ClerkProvider> components in your React component tree. Wrap your components in a single <ClerkProvider>.
+    at Object.throw (http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:191:10)
+    at http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4263:53
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12904:13)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitHookEffectListMount (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6617:153)
+    at commitHookPassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6652:55)
+    at reconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7701:6)
+    at recursivelyTraverseReconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7688:5)
+    at reconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7713:14)
+    at doubleInvokeEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8924:125)
+[   24417ms] [WARNING] %s
+
+%s
+ An error occurred in the <ClerkProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[   25207ms] NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
+    at removeChildFromContainer (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:10588:123)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7106:7)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7134:6)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7148:14)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7134:6)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+[   25193ms] [WARNING] %s
+
+%s
+ An error occurred in the <div> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[   28554ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:14337
+[   30925ms] [WARNING] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview @ http://127.0.0.1:5173/@vite/client:509
+[  360616ms] [ERROR] You are calling ReactDOMClient.createRoot() on a container that has already been passed to createRoot() before. Instead, call root.render() on the existing root instead if you want to update it. @ http://127.0.0.1:5173/@vite/client:509
+[  362294ms] Error: @clerk/clerk-react: You've added multiple <ClerkProvider> components in your React component tree. Wrap your components in a single <ClerkProvider>.
+    at Object.throw (http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:191:10)
+    at http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4263:53
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12904:13)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitHookEffectListMount (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6617:153)
+    at commitHookPassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6652:55)
+    at commitPassiveMountOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7618:22)
+    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7606:5)
+    at commitPassiveMountOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7672:14)
+    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7606:5)
+[  360910ms] [WARNING] %s
+
+%s
+ An error occurred in the <ClerkProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[  362295ms] Error: @clerk/clerk-react: You've added multiple <ClerkProvider> components in your React component tree. Wrap your components in a single <ClerkProvider>.
+    at Object.throw (http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:191:10)
+    at http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4263:53
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12904:13)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitHookEffectListMount (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6617:153)
+    at commitHookPassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6652:55)
+    at reconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7701:6)
+    at recursivelyTraverseReconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7688:5)
+    at reconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7713:14)
+    at doubleInvokeEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8924:125)
+[  360911ms] [WARNING] %s
+
+%s
+ An error occurred in the <ClerkProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[  362295ms] Error: @clerk/clerk-react: You've added multiple <ClerkProvider> components in your React component tree. Wrap your components in a single <ClerkProvider>.
+    at Object.throw (http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:191:10)
+    at http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4263:53
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12904:13)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitHookEffectListMount (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6617:153)
+    at commitHookPassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6652:55)
+    at commitPassiveMountOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7618:22)
+    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7606:5)
+    at commitPassiveMountOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7672:14)
+    at recursivelyTraversePassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7606:5)
+[  360952ms] [WARNING] %s
+
+%s
+ An error occurred in the <ClerkProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[  362295ms] Error: @clerk/clerk-react: You've added multiple <ClerkProvider> components in your React component tree. Wrap your components in a single <ClerkProvider>.
+    at Object.throw (http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:191:10)
+    at http://127.0.0.1:5173/node_modules/.vite/deps/@clerk_clerk-react.js?v=dc2ef3c6:4263:53
+    at Object.react_stack_bottom_frame (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:12904:13)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitHookEffectListMount (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6617:153)
+    at commitHookPassiveMountEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:6652:55)
+    at reconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7701:6)
+    at recursivelyTraverseReconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7688:5)
+    at reconnectPassiveEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7713:14)
+    at doubleInvokeEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:8924:125)
+[  360953ms] [WARNING] %s
+
+%s
+ An error occurred in the <ClerkProvider> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[  362301ms] NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.
+    at removeChildFromContainer (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:10588:123)
+    at runWithFiberInDEV (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:851:66)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7106:7)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7134:6)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7148:14)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+    at commitDeletionEffectsOnFiber (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7134:6)
+    at recursivelyTraverseDeletionEffects (http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:7073:50)
+[  361736ms] [WARNING] %s
+
+%s
+ An error occurred in the <div> component. Consider adding an error boundary to your tree to customize error handling behavior.
+Visit https://react.dev/link/error-boundaries to learn more about error boundaries. @ http://127.0.0.1:5173/@vite/client:509
+[  389136ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:14337
+[  393010ms] [WARNING] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview @ http://127.0.0.1:5173/@vite/client:509
+[  437861ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:14337
+[  442734ms] [WARNING] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview @ http://127.0.0.1:5173/@vite/client:509
+[  467418ms] [INFO] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold @ http://127.0.0.1:5173/node_modules/.vite/deps/react-dom_client.js?v=dc2ef3c6:14337
+[  471677ms] [WARNING] Clerk: Clerk has been loaded with development keys. Development instances have strict usage limits and should not be used when deploying your application to production. Learn more: https://clerk.com/docs/deployments/overview @ http://127.0.0.1:5173/@vite/client:509

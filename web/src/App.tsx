@@ -1,11 +1,16 @@
+import { useAuth } from "@clerk/clerk-react";
+import { useQuery } from "convex/react";
 import {
   createBrowserRouter,
   Navigate,
   RouterProvider,
+  useLocation,
   useParams,
 } from "react-router-dom";
 
-import { AppShell } from "@/components/shell/AppShell";
+import { LoadingSkeleton } from "@/components/feedback/LoadingSkeleton";
+import { AppShellFromUser } from "@/components/shell/AppShellFromUser";
+import { VacanciesChrome } from "@/components/shell/VacanciesChrome";
 import { AdminApplicationsPage } from "@/features/admin/AdminApplicationsPage";
 import { AdminInterviewsPage } from "@/features/admin/AdminInterviewsPage";
 import { AdminNotificationsPage } from "@/features/admin/AdminNotificationsPage";
@@ -19,24 +24,28 @@ import { ApplicationsPage } from "@/features/applications/ApplicationsPage";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { OnboardingPage } from "@/features/auth/OnboardingPage";
 import { EmployerDashboardPage } from "@/features/dashboard/EmployerDashboardPage";
-import { SeekerDashboardPage } from "@/features/dashboard/SeekerDashboardPage";
 import { InterviewsPage } from "@/features/interviews/InterviewsPage";
+import { PrepareMockInterviewPage } from "@/features/interviews/PrepareMockInterviewPage";
+import { SeekerInterviewsPage } from "@/features/interviews/SeekerInterviewsPage";
+import { InterviewTrainerPage } from "@/features/interview-trainer/InterviewTrainerPage";
 import { NotificationsPage } from "@/features/notifications/NotificationsPage";
 import { ProfilePage } from "@/features/profile/ProfilePage";
-import { PublicHomePage } from "@/features/public/PublicHomePage";
+import { PublicWelcomePage } from "@/features/public/PublicWelcomePage";
+import { SettingsPage } from "@/features/settings/SettingsPage";
 import { ApplyPage } from "@/features/vacancies/ApplyPage";
 import { EmployerVacanciesPage } from "@/features/vacancies/EmployerVacanciesPage";
 import { EmployerVacancyDetailPage } from "@/features/vacancies/EmployerVacancyDetailPage";
+import { ForYouPage } from "@/features/vacancies/ForYouPage";
 import { VacancyDetailPage } from "@/features/vacancies/VacancyDetailPage";
 import { VacancyListPage } from "@/features/vacancies/VacancyListPage";
+import { api } from "@/lib/convex-api";
 import { ProtectedRoute } from "@/routing/guards";
+import { AI_MATCHING_ROOT } from "@/routing/navPaths";
 
 const router = createBrowserRouter(
   [
-    { path: "/", element: <PublicHomePage /> },
-    { path: "/ai-search", element: <AiSearchPage /> },
-    { path: "/ai-search/:chatId", element: <AiSearchPage /> },
     { path: "/login/*", element: <LoginPage /> },
+    { path: "/", element: <RootRoute /> },
     {
       path: "/onboarding",
       element: (
@@ -45,28 +54,58 @@ const router = createBrowserRouter(
         </ProtectedRoute>
       ),
     },
+    /* Public vacancy URLs: anonymous = no shell; signed-in = AppShellFromUser (see VacanciesChrome). */
+    {
+      element: <VacanciesChrome />,
+      children: [
+        { path: "/vacancies", element: <VacancyListPage /> },
+        { path: "/vacancies/:id", element: <VacancyDetailPage /> },
+      ],
+    },
     {
       element: (
-        <ProtectedRoute roles={["seeker", "admin"]}>
-          <AppShell role="seeker" />
+        <ProtectedRoute roles={["seeker", "employer", "admin"]}>
+          <AppShellFromUser />
         </ProtectedRoute>
       ),
       children: [
-        { path: "/dashboard", element: <SeekerDashboardPage /> },
-        { path: "/dashboard/ai-search", element: <AiSearchPage dashboard /> },
-        { path: "/dashboard/ai-search/:chatId", element: <AiSearchPage dashboard /> },
-        { path: "/vacancies", element: <VacancyListPage /> },
-        { path: "/vacancies/:id", element: <VacancyDetailPage /> },
+        { path: AI_MATCHING_ROOT, element: <AiSearchPage /> },
+        { path: "/ai-search/:chatId", element: <AiSearchPage /> },
+        { path: "/settings", element: <SettingsPage /> },
+      ],
+    },
+    {
+      element: (
+        <ProtectedRoute roles={["seeker"]} requireProfile>
+          <AppShellFromUser />
+        </ProtectedRoute>
+      ),
+      children: [
+        { path: "/for-you", element: <ForYouPage /> },
+      ],
+    },
+    {
+      element: (
+        <ProtectedRoute roles={["seeker"]}>
+          <AppShellFromUser />
+        </ProtectedRoute>
+      ),
+      children: [
+        { path: "/dashboard", element: <Navigate to={AI_MATCHING_ROOT} replace /> },
+        { path: "/prepare/:vacancyId", element: <PrepareMockInterviewPage /> },
+        { path: "/interview-trainer", element: <InterviewTrainerPage /> },
+        /* More specific than /vacancies/:id on VacanciesChrome; keep first within this group. */
         { path: "/vacancies/:id/apply", element: <ApplyPage /> },
         { path: "/applications", element: <ApplicationsPage /> },
+        { path: "/interviews", element: <SeekerInterviewsPage /> },
         { path: "/profile", element: <ProfilePage /> },
         { path: "/notifications", element: <NotificationsPage /> },
       ],
     },
     {
       element: (
-        <ProtectedRoute roles={["employer", "admin"]}>
-          <AppShell role="employer" />
+        <ProtectedRoute roles={["employer"]}>
+          <AppShellFromUser />
         </ProtectedRoute>
       ),
       children: [
@@ -82,7 +121,7 @@ const router = createBrowserRouter(
     {
       element: (
         <ProtectedRoute roles={["admin"]}>
-          <AppShell role="admin" />
+          <AppShellFromUser />
         </ProtectedRoute>
       ),
       children: [
@@ -94,18 +133,10 @@ const router = createBrowserRouter(
         { path: "/admin/notifications", element: <AdminNotificationsPage /> },
       ],
     },
+    { path: "/dashboard/ai-search", element: <LegacyAiSearchRedirect /> },
+    { path: "/dashboard/ai-search/:chatId", element: <DashboardAiSearchRedirect /> },
     { path: "/jobs", element: <Navigate to="/vacancies" replace /> },
     { path: "/jobs/:id", element: <LegacyJobRedirect /> },
-    { path: "/app/seeker", element: <Navigate to="/dashboard" replace /> },
-    { path: "/app/seeker/ai-search", element: <Navigate to="/dashboard/ai-search" replace /> },
-    { path: "/app/seeker/jobs", element: <Navigate to="/vacancies" replace /> },
-    { path: "/app/seeker/applications", element: <Navigate to="/applications" replace /> },
-    { path: "/app/seeker/profile", element: <Navigate to="/profile" replace /> },
-    { path: "/app/seeker/notifications", element: <Navigate to="/notifications" replace /> },
-    { path: "/app/employer", element: <Navigate to="/employer/dashboard" replace /> },
-    { path: "/app/employer/vacancies", element: <Navigate to="/employer/vacancies" replace /> },
-    { path: "/app/employer/applicants", element: <Navigate to="/employer/applications" replace /> },
-    { path: "/app/employer/notifications", element: <Navigate to="/employer/notifications" replace /> },
     { path: "*", element: <Navigate to="/" replace /> },
   ],
   {
@@ -119,7 +150,52 @@ export default function App() {
   return <RouterProvider router={router} future={{ v7_startTransition: true }} />;
 }
 
+function LegacyAiSearchRedirect() {
+  const { search } = useLocation();
+  return <Navigate to={{ pathname: AI_MATCHING_ROOT, search }} replace />;
+}
+
 function LegacyJobRedirect() {
   const { id } = useParams();
   return <Navigate to={`/vacancies/${id}`} replace />;
+}
+
+function DashboardAiSearchRedirect() {
+  const { chatId } = useParams();
+  return <Navigate to={`/ai-search/${chatId}`} replace />;
+}
+
+function RootRoute() {
+  const { isLoaded, isSignedIn } = useAuth();
+
+  if (!isLoaded) {
+    return <LoadingSkeleton variant="page" />;
+  }
+
+  if (!isSignedIn) {
+    return <PublicWelcomePage />;
+  }
+
+  return (
+    <ProtectedRoute roles={["seeker", "employer", "admin"]}>
+      <RoleHomeRedirect />
+    </ProtectedRoute>
+  );
+}
+
+function RoleHomeRedirect() {
+  const currentUser = useQuery(api.users.getSelf, {});
+
+  if (currentUser === undefined || currentUser === null) {
+    return <LoadingSkeleton variant="page" />;
+  }
+
+  if (currentUser.role === "employer") {
+    return <Navigate to="/employer/dashboard" replace />;
+  }
+  if (currentUser.role === "admin") {
+    return <Navigate to="/admin" replace />;
+  }
+
+  return <Navigate to={AI_MATCHING_ROOT} replace />;
 }

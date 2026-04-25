@@ -2,6 +2,10 @@ import { ConvexError, v } from "convex/values";
 
 import { mutation, query } from "./_generated/server";
 import { requireCurrentUser } from "./lib/auth";
+import {
+  assertCanReadReviewsAboutUser,
+  assertCanSubmitReview,
+} from "./lib/permissions";
 
 export const createReview = mutation({
   args: {
@@ -21,15 +25,12 @@ export const createReview = mutation({
       throw new ConvexError("Vacancy not found");
     }
 
-    const isAllowedReviewer =
-      user._id === application.seekerUserId || user._id === vacancy.ownerUserId;
-    const targetIsCounterparty =
-      args.targetUserId === application.seekerUserId ||
-      args.targetUserId === vacancy.ownerUserId;
-
-    if (!isAllowedReviewer || !targetIsCounterparty || args.targetUserId === user._id) {
-      throw new ConvexError("Forbidden");
-    }
+    assertCanSubmitReview({
+      author: user,
+      application,
+      vacancy,
+      targetUserId: args.targetUserId,
+    });
 
     const reviewId = await ctx.db.insert("reviews", {
       authorUserId: user._id,
@@ -46,6 +47,8 @@ export const createReview = mutation({
 export const listReviewsForUser = query({
   args: { userId: v.id("users") },
   handler: async (ctx, args) => {
+    const viewer = await requireCurrentUser(ctx);
+    assertCanReadReviewsAboutUser(viewer, args.userId);
     const reviews = await ctx.db.query("reviews").collect();
     return reviews.filter((review) => review.targetUserId === args.userId);
   },
