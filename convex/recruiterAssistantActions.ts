@@ -16,8 +16,22 @@ import {
   recruiterAgentRouterSchema,
   recruiterMatchPackSchema,
   recruiterVacancyCoachSchema,
+  type RecruiterAgentRouter,
 } from "./lib/recruiterAssistantSchemas";
 import { tryRequestEmbedding, tryRequestStructuredJson } from "./lib/openrouter";
+
+export type RecruiterSendTurnResult = {
+  chatId: Id<"recruiterAiChats"> | null;
+  assistantMessage: string;
+  metadata: Record<string, unknown>;
+  router: RecruiterAgentRouter | {
+    mode: "match_candidates";
+    clarifyingQuestion: null;
+    quickReplies: string[];
+    reasoning: string;
+  };
+  quickReplies: string[];
+};
 
 function isUsableEmbedding(embedding: number[] | undefined): boolean {
   return Boolean(
@@ -57,7 +71,7 @@ export const sendTurn = action({
     message: v.string(),
     createChat: v.optional(v.boolean()),
   },
-  handler: async (ctx, args) => {
+  handler: async (ctx, args): Promise<RecruiterSendTurnResult> => {
     const user = await requireEmployerAssistantActionUser(ctx);
     if (user.role !== "employer" && user.role !== "admin") {
       throw new ConvexError("Forbidden");
@@ -66,10 +80,11 @@ export const sendTurn = action({
     let vacancy: Doc<"vacancies"> | null = null;
     const effectiveVacancyId = args.vacancyId;
     if (effectiveVacancyId) {
-      vacancy = await ctx.runQuery(internal.vacancies.getForAi, {
+      const loadedVacancy = await ctx.runQuery(internal.vacancies.getForAi, {
         vacancyId: effectiveVacancyId,
       });
-      assertCanRunNativeVacancySeekerMatching(user, vacancy);
+      assertCanRunNativeVacancySeekerMatching(user, loadedVacancy);
+      vacancy = loadedVacancy;
     }
 
     let chatVacancyId = effectiveVacancyId;
@@ -80,8 +95,11 @@ export const sendTurn = action({
         throw new ConvexError("Chat not found");
       }
       if (!chatVacancyId && chat.vacancyId) {
-        vacancy = await ctx.runQuery(internal.vacancies.getForAi, { vacancyId: chat.vacancyId });
-        assertCanRunNativeVacancySeekerMatching(user, vacancy);
+        const loadedVacancy = await ctx.runQuery(internal.vacancies.getForAi, {
+          vacancyId: chat.vacancyId,
+        });
+        assertCanRunNativeVacancySeekerMatching(user, loadedVacancy);
+        vacancy = loadedVacancy;
         chatVacancyId = chat.vacancyId;
       }
     }
@@ -134,20 +152,7 @@ export const sendTurn = action({
     );
 
     let assistantParts: string[] = [];
-    let metadata: {
-      kind?: string;
-      candidateCards?: Array<{
-        profileId: Id<"profiles">;
-        seekerUserId: Id<"users">;
-        fullName: string;
-        city: string;
-        matchScore: number;
-        reasons: string[];
-      }>;
-      jobSuggestions?: NonNullable<
-        NonNullable<Doc<"recruiterAiChatMessages">["metadata"]>["jobSuggestions"]
-      >;
-    } = {};
+    const metadata: Record<string, unknown> = {};
 
     if (mode === "clarify") {
       const q =
@@ -189,7 +194,7 @@ export const sendTurn = action({
               });
             assistantParts.push(packAi.data.assistantMessage);
             metadata.kind = mode === "both" ? "match_and_job" : "match";
-            metadata.candidateCards = cards;
+            metadata.candidateCards = cards as unknown;
           } else {
             assistantParts.push(
               "Не удалось сгенерировать объяснения матча (AI недоступен). Ниже показан сырой список по векторной близости.",
@@ -202,7 +207,7 @@ export const sendTurn = action({
               city: prof.city,
               matchScore: Math.max(55, 92 - i * 5),
               reasons: ["Совпадение по профилю и описанию роли (эвристика без LLM)."],
-            }));
+            })) as unknown;
           }
         }
       }
@@ -219,8 +224,9 @@ export const sendTurn = action({
         );
         if (coachAi.ok) {
           assistantParts.push(coachAi.data.assistantMessage);
-          metadata.kind =
-            mode === "both" || Boolean(metadata.candidateCards?.length) ? "match_and_job" : "job";
+          const hasCards =
+            Array.isArray(metadata.candidateCards) && metadata.candidateCards.length > 0;
+          metadata.kind = mode === "both" || hasCards ? "match_and_job" : "job";
           metadata.jobSuggestions = {
             titleSuggestion: coachAi.data.titleSuggestion ?? undefined,
             requirementsRewrite: coachAi.data.requirementsRewrite ?? undefined,
@@ -242,11 +248,11 @@ export const sendTurn = action({
 
     let outChatId = activeChatId;
     if (!outChatId && args.createChat !== false) {
-      const created = await ctx.runMutation(api.recruiterAssistant.startChat, {
+      const created = (await ctx.runMutation(api.recruiterAssistant.startChat, {
         title: vacancy?.title?.slice(0, 80) ?? "Подбор и вакансия",
         vacancyId: chatVacancyId,
-      });
-      outChatId = created!._id;
+      })) as Doc<"recruiterAiChats">;
+      outChatId = created._id;
     }
 
     if (outChatId) {
@@ -260,7 +266,7 @@ export const sendTurn = action({
         chatId: outChatId,
         role: "assistant",
         content: assistantMessage,
-        metadata: Object.keys(metadata).length ? metadata : { kind: "reply" },
+        metadata: (Object.keys(metadata).length ? metadata : { kind: "reply" }) as never,
       });
     }
 

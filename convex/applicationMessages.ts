@@ -30,10 +30,10 @@ export const listByApplication = query({
     if (!bundle) {
       return [];
     }
-    assertCanAccessHiredApplicationMessaging(user, bundle.application, bundle.vacancy);
     if (bundle.application.status !== "hired") {
       return [];
     }
+    assertCanAccessHiredApplicationMessaging(user, bundle.application, bundle.vacancy);
     return ctx.db
       .query("applicationMessages")
       .withIndex("by_applicationId", (q) => q.eq("applicationId", args.applicationId))

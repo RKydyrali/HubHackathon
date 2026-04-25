@@ -35,7 +35,8 @@ type NavItem = {
     | "admin"
     | "aiSearch"
     | "forYou"
-    | "interviewTrainer";
+    | "interviewTrainer"
+    | "hiringAssistant";
   end?: boolean;
 };
 
@@ -50,6 +51,7 @@ export const topNavByRole: Record<UserRole, NavItem[]> = {
   ],
   employer: [
     { to: AI_MATCHING_ROOT, labelKey: "aiSearch", end: true },
+    { to: "/employer/hiring-assistant", labelKey: "hiringAssistant" },
     { to: "/employer/vacancies", labelKey: "vacancies" },
     { to: "/employer/applications", labelKey: "applications" },
     { to: "/employer/interviews", labelKey: "interviews" },

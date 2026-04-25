@@ -20,6 +20,7 @@ import { requireCurrentUser } from "./lib/auth";
 import {
   assertCanAccessHiredApplicationMessaging,
   assertCanListApplicationsForVacancy,
+  canAnalyzeScreeningApplication,
 } from "./lib/permissions";
 import { postHireChannelValidator, postHireVisibilityValidator } from "./lib/recruiterChatValidators";
 
@@ -190,12 +191,16 @@ export const getWorkspace = query({
     if (!b) {
       return null;
     }
-    assertCanAccessHiredApplicationMessaging(user, b.application, b.vacancy);
+    if (!canAnalyzeScreeningApplication(user, b.application, b.vacancy)) {
+      return null;
+    }
     const isHired = b.application.status === "hired";
-    const rows = await ctx.db
-      .query("postHireChannelConsents")
-      .withIndex("by_applicationId_and_channel", (q) => q.eq("applicationId", args.applicationId))
-      .collect();
+    const rows = isHired
+      ? await ctx.db
+          .query("postHireChannelConsents")
+          .withIndex("by_applicationId_and_channel", (q) => q.eq("applicationId", args.applicationId))
+          .collect()
+      : [];
     const rowByChannel = new Map(rows.map((r) => [r.channel, r]));
 
     const channels = CHANNELS.map((channel) => {

@@ -15,7 +15,9 @@ export function ApplicationRow({
   const { copy } = useI18n();
   const profile = "profile" in item ? item.profile : null;
   const title = employerView ? profile?.fullName ?? copy.common.noProfile : item.vacancy?.title ?? copy.vacancies.notFound;
-  const detailHref = employerView ? `/employer/applications/${item.application._id}` : "/applications";
+    const detailHref = employerView
+      ? `/employer/applications/${item.application._id}`
+      : `/applications/${item.application._id}`;
 
   return (
     <Row

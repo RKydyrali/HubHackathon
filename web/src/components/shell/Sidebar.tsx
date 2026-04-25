@@ -20,7 +20,8 @@ type NavItem = {
     | "admin"
     | "aiSearch"
     | "forYou"
-    | "interviewTrainer";
+    | "interviewTrainer"
+    | "hiringAssistant";
   icon: IconName;
   end?: boolean;
 };
@@ -39,6 +40,7 @@ export const navByRole: Record<UserRole, NavItem[]> = {
   employer: [
     { to: "/employer/dashboard", labelKey: "dashboard", icon: "House", end: true },
     { to: AI_MATCHING_ROOT, labelKey: "aiSearch", icon: "Sparkle", end: true },
+    { to: "/employer/hiring-assistant", labelKey: "hiringAssistant", icon: "MagnifyingGlass" },
     { to: "/employer/vacancies", labelKey: "vacancies", icon: "Briefcase" },
     { to: "/employer/applications", labelKey: "applications", icon: "Users" },
     { to: "/employer/interviews", labelKey: "interviews", icon: "Calendar" },

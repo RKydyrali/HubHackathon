@@ -19,6 +19,8 @@ import { getStatusMeta } from "@/lib/status-ui";
 import { ALLOWED_TRANSITIONS } from "@/lib/status";
 import type { ApplicantWithProfile } from "@/types/domain";
 import { ApplicationStatusTimeline } from "./ApplicationStatusTimeline";
+import { HiredApplicationThread } from "./HiredApplicationThread";
+import { PostHireNextSteps } from "./PostHireNextSteps";
 
 const scheduleSchema = z.object({
   scheduledAt: z.string().min(1, "Укажите дату и время"),
@@ -112,6 +114,16 @@ export function ReviewPanel({ item }: { item: ApplicantWithProfile }) {
             </div>
           </div>
         </SectionPanel>
+
+        {item.application.status === "hired" ? (
+          <section className="rounded-lg border bg-background p-4">
+            <HiredApplicationThread applicationId={item.application._id as Id<"applications">} />
+          </section>
+        ) : null}
+
+        {item.application.status === "hired" ? (
+          <PostHireNextSteps applicationId={item.application._id as Id<"applications">} role="employer" />
+        ) : null}
 
         <section className="rounded-lg border bg-background p-4">
           <h3 className="font-semibold text-foreground">{copy.vacancies.screening}</h3>

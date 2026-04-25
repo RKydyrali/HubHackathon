@@ -278,7 +278,7 @@ export function assertCanAccessAiJobChat(
 
 export function canRunNativeVacancySeekerMatching(
   user: Doc<"users">,
-  vacancy: { source: "native" | "hh"; ownerUserId: Id<"users"> | undefined },
+  vacancy: { source: "native" | "hh"; ownerUserId?: Id<"users"> | undefined },
 ): boolean {
   if (vacancy.source !== "native") {
     return false;
@@ -291,7 +291,7 @@ export function canRunNativeVacancySeekerMatching(
 
 export function assertCanRunNativeVacancySeekerMatching(
   user: Doc<"users">,
-  vacancy: { source: "native" | "hh"; ownerUserId: Id<"users"> | undefined },
+  vacancy: { source: "native" | "hh"; ownerUserId?: Id<"users"> | undefined },
 ): void {
   if (!canRunNativeVacancySeekerMatching(user, vacancy)) {
     throw new ConvexError("Forbidden");

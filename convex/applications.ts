@@ -18,6 +18,7 @@ import {
   assertEmployerOrAdmin,
   assertSeekerOrAdmin,
   assertVacancyAcceptsInAppApplications,
+  canAnalyzeScreeningApplication,
 } from "./lib/permissions";
 import {
   assertApplicationTransition,
@@ -143,6 +144,29 @@ export const listMyApplicationsWithVacancies = query({
       results.push({ application, vacancy });
     }
     return results;
+  },
+});
+
+export const getByIdForParticipant = query({
+  args: { applicationId: v.id("applications") },
+  handler: async (ctx, args) => {
+    const user = await requireCurrentUser(ctx);
+    const application = await ctx.db.get(args.applicationId);
+    if (!application) {
+      return null;
+    }
+    const vacancy = await ctx.db.get(application.vacancyId);
+    if (!vacancy) {
+      return null;
+    }
+    if (!canAnalyzeScreeningApplication(user, application, vacancy)) {
+      return null;
+    }
+    const profile = await ctx.db
+      .query("profiles")
+      .withIndex("by_userId", (q) => q.eq("userId", application.seekerUserId))
+      .unique();
+    return { application, vacancy, profile };
   },
 });
 

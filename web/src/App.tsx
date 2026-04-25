@@ -21,6 +21,7 @@ import { AiSearchPage } from "@/features/ai-search/AiSearchPage";
 import { EmployerApplicationReviewPage } from "@/features/applications/EmployerApplicationReviewPage";
 import { EmployerApplicationsPage } from "@/features/applications/EmployerApplicationsPage";
 import { ApplicationsPage } from "@/features/applications/ApplicationsPage";
+import { SeekerApplicationDetailPage } from "@/features/applications/SeekerApplicationDetailPage";
 import { LoginPage } from "@/features/auth/LoginPage";
 import { OnboardingPage } from "@/features/auth/OnboardingPage";
 import { EmployerDashboardPage } from "@/features/dashboard/EmployerDashboardPage";
@@ -35,6 +36,7 @@ import { SettingsPage } from "@/features/settings/SettingsPage";
 import { ApplyPage } from "@/features/vacancies/ApplyPage";
 import { EmployerVacanciesPage } from "@/features/vacancies/EmployerVacanciesPage";
 import { EmployerVacancyDetailPage } from "@/features/vacancies/EmployerVacancyDetailPage";
+import { HiringAssistantPage } from "@/features/hiring-assistant/HiringAssistantPage";
 import { ForYouPage } from "@/features/vacancies/ForYouPage";
 import { VacancyDetailPage } from "@/features/vacancies/VacancyDetailPage";
 import { VacancyListPage } from "@/features/vacancies/VacancyListPage";
@@ -97,6 +99,7 @@ const router = createBrowserRouter(
         /* More specific than /vacancies/:id on VacanciesChrome; keep first within this group. */
         { path: "/vacancies/:id/apply", element: <ApplyPage /> },
         { path: "/applications", element: <ApplicationsPage /> },
+        { path: "/applications/:applicationId", element: <SeekerApplicationDetailPage /> },
         { path: "/interviews", element: <SeekerInterviewsPage /> },
         { path: "/profile", element: <ProfilePage /> },
         { path: "/notifications", element: <NotificationsPage /> },
@@ -112,6 +115,8 @@ const router = createBrowserRouter(
         { path: "/employer/dashboard", element: <EmployerDashboardPage /> },
         { path: "/employer/vacancies", element: <EmployerVacanciesPage /> },
         { path: "/employer/vacancies/:id", element: <EmployerVacancyDetailPage /> },
+        { path: "/employer/hiring-assistant", element: <HiringAssistantPage /> },
+        { path: "/employer/hiring-assistant/:chatId", element: <HiringAssistantPage /> },
         { path: "/employer/applications", element: <EmployerApplicationsPage /> },
         { path: "/employer/applications/:id", element: <EmployerApplicationReviewPage /> },
         { path: "/employer/interviews", element: <InterviewsPage /> },

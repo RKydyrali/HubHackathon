@@ -1,6 +1,6 @@
 import { useAction, useQuery } from "convex/react";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 
 import { EmptyState } from "@/components/feedback/EmptyState";
 import { LoadingSkeleton } from "@/components/feedback/LoadingSkeleton";
@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { SectionPanel } from "@/components/layout/SectionPanel";
 import { SeekerMatchList } from "@/components/product/SeekerMatchList";
 import { StatusBadge } from "@/components/shared/StatusBadge";
+import { buttonVariants } from "@/components/ui/button";
 import { api, type Id } from "@/lib/convex-api";
 import { useI18n } from "@/lib/i18n";
 import { VacancyEditor } from "./VacancyEditor";
@@ -80,6 +81,24 @@ export function EmployerVacancyDetailPage() {
             <DetailPanel title={vacancy.title}>
               <VacancyEditor vacancy={vacancy} />
             </DetailPanel>
+            {vacancy.source === "native" ? (
+              <SectionPanel
+                title={locale === "kk" ? "AI найм көмекшісі" : "AI-ассистент найма"}
+                subtitle={
+                  locale === "kk"
+                    ? "Кандидаттарды сүзу және осы вакансия мәтінін түзету бір чатта."
+                    : "Подбор кандидатов и доработка текста этой вакансии в одном чате."
+                }
+                patterned
+              >
+                <Link
+                  to={`/employer/hiring-assistant?vacancyId=${vacancy._id}`}
+                  className={buttonVariants({ variant: "default", size: "sm" })}
+                >
+                  {locale === "kk" ? "Ассистентті ашу" : "Открыть ассистента"}
+                </Link>
+              </SectionPanel>
+            ) : null}
             <SectionPanel
               title={locale === "kk" ? "Үздік кандидаттар" : "Топ кандидатов"}
               subtitle={
